@@ -1,0 +1,11 @@
+{
+  "title": "Pollar Docs",
+  "pages": [
+    "index",
+    "getting-started",
+    "core-concepts",
+    "sdk-reference",
+    "operator-guide",
+    "guides"
+  ]
+}

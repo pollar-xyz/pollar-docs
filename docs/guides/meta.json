@@ -1,0 +1,9 @@
+{
+  "title": "Guides",
+  "pages": [
+    "deferred-flow-guide",
+    "passkeys-guide",
+    "payments-ui",
+    "mainnet-checklist"
+  ]
+}

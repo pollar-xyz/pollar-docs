@@ -1,0 +1,14 @@
+{
+  "title": "Configuration",
+  "pages": [
+    "app-settings",
+    "app-wallets",
+    "funding-mode",
+    "api-keys",
+    "domains",
+    "branding-ui",
+    "webhooks",
+    "alerts",
+    "integrations"
+  ]
+}

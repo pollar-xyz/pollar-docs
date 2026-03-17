@@ -1,0 +1,10 @@
+{
+  "title": "Core Concepts",
+  "pages": [
+    "architecture",
+    "funding-modes",
+    "stellar-primitives",
+    "security-model",
+    "transaction-history"
+  ]
+}

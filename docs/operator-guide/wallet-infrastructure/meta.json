@@ -1,0 +1,9 @@
+{
+  "title": "Wallet Infrastructure",
+  "pages": [
+    "wallets",
+    "tokens-trustlines",
+    "gas-sponsorship",
+    "distribution-wallet"
+  ]
+}

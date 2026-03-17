@@ -1,0 +1,10 @@
+{
+  "title": "Operator Guide",
+  "pages": [
+    "dashboard-overview",
+    "configuration",
+    "wallet-infrastructure",
+    "user-management",
+    "observability"
+  ]
+}
