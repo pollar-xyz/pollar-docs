@@ -57,9 +57,11 @@ Futurenet is not supported by default. If your project requires it, [contact us]
 
 ---
 
-## Sponsorship wallets
+## App wallets
 
-When you create an app in the Dashboard, Pollar provisions a set of Stellar accounts that cover costs on behalf of your users. There are three wallet types, each with a distinct role:
+When you create an app in the Dashboard, Pollar provisions a set of Stellar accounts
+that cover costs on behalf of your users — not user funds, but the infrastructure
+costs of running wallets on Stellar. There are three distinct roles:
 
 | Wallet                  | Covers                                       | Charged when               |
 | ----------------------- | -------------------------------------------- | -------------------------- |
@@ -67,7 +69,17 @@ When you create an app in the Dashboard, Pollar provisions a set of Stellar acco
 | **Gas wallet**          | Transaction fees for all on-chain operations | Every transaction          |
 | **Distribution wallet** | Assets sent via `fund()`                     | Every `fund()` call        |
 
-By default a single wallet is created and covers all three roles. You can configure separate wallets for each role from the Dashboard as your app scales.
+By default a single wallet is created when you create your app and covers all three
+roles. This is fine for development and early-stage apps.
+
+As your app scales, separating them into three distinct wallets gives you independent
+balance tracking, separate funding schedules, and tighter control over each cost
+center. For example, your gas wallet gets topped up frequently in small amounts while
+your funding wallet is replenished in larger batches tied to user growth. Mixing them
+in a single wallet makes it harder to monitor and plan each cost independently.
+
+For configuration and recommended minimum balances see
+[Operator guide/Configuration/App Wallets](../operator-guide/configuration/app-wallets).
 
 ---
 
