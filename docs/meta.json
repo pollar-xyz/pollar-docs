@@ -1,7 +1,6 @@
 {
-  "title": "Pollar Docs",
+  "title": "Pollar V0",
   "pages": [
-    "index",
     "getting-started",
     "core-concepts",
     "sdk-reference",

@@ -57,14 +57,14 @@ All errors from the Pollar SDK and Server follow a consistent structure.
 
 ## Funding & Sponsorship
 
-| Code                                | Status | Description                                                             | Resolution                                                                 |
-| ----------------------------------- | ------ | ----------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `INSUFFICIENT_FUNDING_BALANCE`      | 402    | Funding wallet does not have enough XLM to cover the activation reserve | Top up your funding wallet from **Dashboard → Sponsorship Budget**         |
-| `INSUFFICIENT_GAS_BALANCE`          | 402    | Gas wallet does not have enough XLM to pay transaction fees             | Top up your gas wallet from **Dashboard → Sponsorship Budget**             |
-| `INSUFFICIENT_DISTRIBUTION_BALANCE` | 402    | Distribution wallet does not have enough of the requested asset         | Top up your distribution wallet from **Dashboard → Distribution Wallet**   |
-| `FUND_NOT_ENABLED_ON_MAINNET`       | 403    | `fund()` was called on mainnet without explicit enablement              | Enable from **Dashboard → Distribution Wallet → Allow fund() on mainnet**  |
-| `FUND_ASSET_NOT_CONFIGURED`         | 422    | The requested asset is not configured for distribution                  | Add the asset from **Dashboard → Distribution Wallet → Configured assets** |
-| `FUND_RATE_LIMIT_EXCEEDED`          | 429    | User has exceeded the configured funding rate limit                     | Configured in **Dashboard → Distribution Wallet → Rate limits**            |
+| Code                                | Status | Description                                                             | Resolution                                                                  |
+| ----------------------------------- | ------ | ----------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `INSUFFICIENT_FUNDING_BALANCE`      | 402    | Funding wallet does not have enough XLM to cover the activation reserve | Top up your funding wallet from **Dashboard → Configuration → App Wallets** |
+| `INSUFFICIENT_GAS_BALANCE`          | 402    | Gas wallet does not have enough XLM to pay transaction fees             | Top up your gas wallet from **Dashboard → Sponsorship Budget**              |
+| `INSUFFICIENT_DISTRIBUTION_BALANCE` | 402    | Distribution wallet does not have enough of the requested asset         | Top up your distribution wallet from **Dashboard → Distribution Wallet**    |
+| `FUND_NOT_ENABLED_ON_MAINNET`       | 403    | `fund()` was called on mainnet without explicit enablement              | Enable from **Dashboard → Distribution Wallet → Allow fund() on mainnet**   |
+| `FUND_ASSET_NOT_CONFIGURED`         | 422    | The requested asset is not configured for distribution                  | Add the asset from **Dashboard → Distribution Wallet → Configured assets**  |
+| `FUND_RATE_LIMIT_EXCEEDED`          | 429    | User has exceeded the configured funding rate limit                     | Configured in **Dashboard → Distribution Wallet → Rate limits**             |
 
 ---
 

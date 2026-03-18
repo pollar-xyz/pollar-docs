@@ -2,6 +2,8 @@
 title: "API Keys"
 ---
 
+---
+
 Pollar issues two types of keys per environment. Understanding the difference is important before writing any code.
 
 ---
@@ -24,11 +26,13 @@ The **publishable key** is passed to `@pollar/core` or `@pollar/react` in your f
 ## Generating a key
 
 1. Go to [dashboard.pollar.xyz](https://dashboard.pollar.xyz) and sign in with Google, GitHub, or email OTP
-2. Navigate to **Settings → API Keys → Generate**
+2. Navigate to **Configuration → API Keys → Generate**
 3. Select the key type and network
 4. Copy and store it securely — secret keys are only shown once
 
 Start with `pub_testnet_` for development. Switch to `pub_mainnet_` when ready for production.
+
+> **Testnet rate limit:** Testnet keys are limited to 1,000 requests per day. This is enough for active development — if you hit the limit, wait until the next UTC day or [contact us](mailto:hello@pollar.xyz) for a temporary increase.
 
 ---
 
@@ -66,4 +70,4 @@ POLLAR_SECRET_KEY=sec_testnet_xxxxxxxxxxxxxxxxxxxx
 
 - For mainnet, use build-time environment injection or a backend proxy — never hardcode `pub_mainnet_` in source
 
-- Rotate a compromised key immediately from **Dashboard → Settings → API Keys**
+- Rotate a compromised key immediately from **Dashboard → Configuration → API Keys**

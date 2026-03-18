@@ -6,6 +6,8 @@ Get from zero to a working Stellar wallet with USDC payments in under 10 minutes
 
 **Requirements:** Node.js 18+ · React 18+ · A publishable key from [dashboard.pollar.xyz](https://dashboard.pollar.xyz)
 
+> Testnet keys are rate-limited to 1,000 requests/day — plenty for development.
+
 ---
 
 ## 1. Install
@@ -31,7 +33,7 @@ import { PollarProvider } from '@pollar/react';
 
 export default function Root() {
   return (
-    <PollarProvider publishableKey={process.env.POLLAR_PUBLISHABLE_KEY}>
+    <PollarProvider publishableKey={process.env.NEXT_PUBLIC_POLLAR_PUBLISHABLE_KEY}>
       <App />
     </PollarProvider>
   );
@@ -53,7 +55,7 @@ export default function Root() {
 import { PollarClient } from '@pollar/core';
 
 const pollar = new PollarClient({
-  publishableKey: process.env.POLLAR_PUBLISHABLE_KEY,
+  publishableKey: process.env.NEXT_PUBLIC_POLLAR_PUBLISHABLE_KEY,
   network: 'testnet',
 });
 ```
@@ -192,7 +194,7 @@ function WalletDemo() {
 
 export default function App() {
   return (
-    <PollarProvider publishableKey={process.env.POLLAR_PUBLISHABLE_KEY}>
+    <PollarProvider publishableKey={process.env.NEXT_PUBLIC_POLLAR_PUBLISHABLE_KEY}>
       <WalletDemo />
     </PollarProvider>
   );
