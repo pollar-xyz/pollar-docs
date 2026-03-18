@@ -58,7 +58,7 @@ Users authenticate with biometrics to sign transactions. Pollar has zero custody
 | Layer | Mechanism | Covers |
 |---|---|---|
 | 1 | Native cloud sync (iCloud Keychain / Google Password Manager) | ~80% of cases |
-| 2 | Secondary Passkey on a backup device | Multi-device users |
+| 2 | Secondary Passkey registered on a backup device | Multi-device users |
 | 3 | Social re-keying via OAuth re-auth + Stellar `setOptions` | Total device loss |
 
 ---
@@ -85,8 +85,18 @@ The Pollar Server is designed with minimum privileges:
 |---|---|
 | Sign fee-bump transactions | Yes — to cover fees on behalf of users |
 | Execute account sponsorship sequences | Yes — to fund new wallets |
-| Move user funds independently | **No** |
+| Move a user's own funds independently | **No** |
 | Access user private keys without KMS | **No** — all keys are encrypted at rest |
+
+### Why the Pollar Server cannot move a user's own funds — technically
+
+A fee-bump transaction has two layers: an inner transaction (signed by the user's key) and an outer wrapper (signed by the Pollar sponsor). The outer signature only authorizes paying the fee — it has no authority over the inner transaction's operations. Moving a user's funds requires a `payment` or `pathPayment` operation inside the inner transaction, which must be signed by the user's own private key. The sponsor keypair Pollar holds can never produce that signature.
+
+In other words: Pollar's sponsor key is structurally limited to "I'll pay the fee for this transaction" — the contents of the transaction are entirely controlled by the user's key, which Pollar only accesses via KMS to sign operations the user initiates.
+
+### Operator wallets (funding, gas, distribution)
+
+These wallets are also managed via AWS KMS — Pollar holds the encrypted keys and signs on their behalf. The distinction from user wallets is that these are *your* wallets, funded by you, and exist specifically so Pollar can operate them for a defined set of tasks: funding XLM reserves, paying transaction fees, and distributing assets via `fund()`. Every signing operation is logged to AWS CloudTrail. Pollar cannot use these wallets outside of those operations, and no action goes unrecorded.
 
 ### Fee-bump policy enforcement
 
