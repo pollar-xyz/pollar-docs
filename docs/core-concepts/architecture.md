@@ -43,18 +43,18 @@ flowchart TD
 | **Dashboard**                             | Hosted by Pollar at `dashboard.pollar.xyz` | Configure your app settings, funding mode, and sponsorship wallets |
 
 ---
-
 ## Networks
 
-| Network     | Pollar key prefix              | Notes                                               |
-| ----------- | ------------------------------ | --------------------------------------------------- |
-| **Testnet** | `pub_testnet_`, `sec_testnet_` | Development and testing. Free, resets periodically. |
-| **Mainnet** | `pub_mainnet_`, `sec_mainnet_` | Production. Real XLM required.                      |
+| Network     | Notes                                               |
+| ----------- | --------------------------------------------------- |
+| **Testnet** | Development and testing. Free, resets periodically. |
+| **Mainnet** | Production. Real XLM required.                      |
 
 Futurenet is not supported by default. If your project requires it, [contact us](mailto:hello@pollar.xyz).
 
-> Full details on Stellar networks at [developers.stellar.org/docs/networks](https://developers.stellar.org/docs/networks).
+Each network has its own set of API keys — see [API Keys](../getting-started/api-keys) for prefixes and usage rules.
 
+> Full details on Stellar networks at [developers.stellar.org/docs/networks](https://developers.stellar.org/docs/networks).
 ---
 
 ## App wallets
