@@ -10,7 +10,7 @@ title: "Pollar Documentation"
 
 - [github.com/pollar-xyz/pollar](https://github.com/pollar-xyz/pollar) — Open source SDK
 
-- [Discord](https://pollar.xyz/discord) — Developer community
+- [Telegram](https://t.me/+R76f1BarXSUxMTQx) — Pollar community
 
 ## Getting Started
 
