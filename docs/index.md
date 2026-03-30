@@ -6,8 +6,6 @@ title: "Pollar Documentation"
 
 - [dashboard.pollar.xyz](https://dashboard.pollar.xyz) — Create an app and get your API keys
 
-- [github.com/pollar-xyz/template-nextjs](https://github.com/pollar-xyz/template-nextjs) — Next.js starter template
-
 - [github.com/pollar-xyz/pollar](https://github.com/pollar-xyz/pollar) — Open source SDK
 
 - [Telegram](https://t.me/+R76f1BarXSUxMTQx) — Pollar community
