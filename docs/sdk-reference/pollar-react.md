@@ -10,169 +10,185 @@ npm install @pollar/react
 
 ---
 
+## `<PollarProvider>`
+
+Wraps your application root. Required for all hooks and components to work. Internally renders the login, transaction, KYC, ramp, tx history, and wallet balance modals — you do not need to mount them manually.
+
+```tsx
+import { PollarProvider } from '@pollar/react';
+
+<PollarProvider
+  config={{ apiKey: 'pub_testnet_xxxxxxxxxxxxxxxxxxxx' }}
+>
+  <App />
+</PollarProvider>
+```
+
+**Props:**
+
+| Prop     | Type                 | Required | Description                                                         |
+|----------|----------------------|----------|---------------------------------------------------------------------|
+| `config` | `PollarClientConfig` | Yes      | Client configuration. See `@pollar/core` for all available options. |
+| `styles` | `PollarStyles`       | No       | Style overrides applied on top of the remote configuration.         |
+
+**`PollarClientConfig`:**
+
+| Option           | Type             | Default                        | Description                                 |
+|------------------|------------------|--------------------------------|---------------------------------------------|
+| `apiKey`         | `string`         | —                              | **Required.** Your Pollar API key.          |
+| `stellarNetwork` | `StellarNetwork` | `'testnet'`                    | Target network: `'testnet'` or `'mainnet'`. |
+| `baseUrl`        | `string`         | `'https://sdk.api.pollar.xyz'` | Override the Pollar API base URL.           |
+
+---
+
 ## `usePollar()`
 
-The primary hook. Returns a single object with namespaced access to all Pollar functionality. Use this if you prefer working with one import.
+The primary hook. Provides access to all Pollar functionality from a single import. Must be used inside `<PollarProvider>`.
 
 ```tsx
 'use client';
 import { usePollar } from '@pollar/react';
 
 function MyComponent() {
-  const { auth, wallet, payments, history } = usePollar();
-
-  // Auth
-  const { login, logout, user, loading } = auth;
-
-  // Wallet
-  const { wallet: walletData, fund } = wallet;
-
-  // Payments
-  const { sendPayment } = payments;
-
-  // History
-  const { txHistory, loadingHistory, fetchMoreHistory, hasMore } = history;
+  const {
+    isAuthenticated,
+    walletAddress,
+    login,
+    logout,
+    buildTx,
+    signAndSubmitTx,
+    transaction,
+    txHistory,
+    network,
+    setNetwork,
+    getBalance,
+    getClient,
+    openLoginModal,
+    openTransactionModal,
+    openKycModal,
+    openRampWidget,
+    openTxHistoryModal,
+    openWalletBalanceModal,
+    config,
+    styles,
+  } = usePollar();
 }
 ```
 
-Each namespace returns exactly what the corresponding individual hook returns. See the individual hooks below for the full API of each.
+---
+
+### Authentication
+
+| Property          | Type                                    | Description                                                               |
+|-------------------|-----------------------------------------|---------------------------------------------------------------------------|
+| `isAuthenticated` | `boolean`                               | Whether the user has an active session.                                   |
+| `walletAddress`   | `string`                                | Public key of the authenticated wallet. Empty string if not authenticated. |
+| `login`           | `(options: PollarLoginOptions) => void` | Initiates an authentication flow.                                         |
+| `logout`          | `() => void`                            | Signs out the current user and clears the session.                        |
+
+**`PollarLoginOptions`:**
+
+| Value                                      | Description                                       |
+|--------------------------------------------|---------------------------------------------------|
+| `{ provider: 'google' }`                   | Opens Google OAuth flow.                          |
+| `{ provider: 'github' }`                   | Opens GitHub OAuth flow.                          |
+| `{ provider: 'email', email: string }`     | Sends an OTP code to the provided email address.  |
+| `{ provider: 'wallet', type: WalletType }` | Connects a Stellar wallet (Freighter or Albedo).  |
 
 ---
 
-## Individual hooks
+### Transactions
 
-### `usePollarAuth()`
+| Property               | Type                                             | Description                                   |
+|------------------------|--------------------------------------------------|-----------------------------------------------|
+| `transaction`          | `TransactionState`                               | Current transaction state (reactive).         |
+| `buildTx`              | `(operation, params, options?) => Promise<void>` | Builds an unsigned Stellar transaction.       |
+| `signAndSubmitTx`      | `(unsignedXdr: string) => Promise<void>`         | Signs and submits the built transaction.      |
+| `openTransactionModal` | `() => void`                                     | Opens the transaction modal programmatically. |
 
-```tsx
-'use client';
-import { usePollarAuth } from '@pollar/react';
-
-const { login, logout, user, loading } = usePollarAuth();
-```
-
-| Property | Type | Description |
-|---|---|---|
-| `login` | `(options: LoginOptions) => Promise<void>` | Initiates OAuth or email OTP flow |
-| `logout` | `() => Promise<void>` | Signs out the current user |
-| `user` | `PollarUser \| null` | Authenticated user object |
-| `loading` | `boolean` | Auth state is being resolved |
-
-**`LoginOptions`:**
-
-| Property | Type | Description |
-|---|---|---|
-| `provider` | `'google' \| 'github' \| 'discord' \| 'email'` | Auth provider |
-| `email` | `string` | Required when `provider` is `'email'` (triggers OTP flow) |
+The transaction modal opens automatically when `buildTx` is called. See `@pollar/core` for `TransactionState` step details.
 
 ---
 
-### `usePollarWallet()`
+### Network
 
-```tsx
-'use client';
-import { usePollarWallet } from '@pollar/react';
-
-const { wallet, fund, loading } = usePollarWallet();
-```
-
-| Property | Type | Description |
-|---|---|---|
-| `wallet` | `Wallet \| null` | Current user's wallet |
-| `fund` | `(options?: FundOptions) => Promise<void>` | Requests assets from the distribution wallet. Defaults to XLM. |
-| `loading` | `boolean` | Wallet state is being resolved |
-
-> Wallet activation in Deferred mode is triggered from your backend via `POST /wallets/activate` — not from the client. See [Deferred Flow Guide](../guides/deferred-flow-guide) for the full setup.
-
-**`Wallet`:**
-
-| Property | Type | Description |
-|---|---|---|
-| `id` | `string` | Pollar wallet ID (`wal_...`) |
-| `address` | `string` | Stellar G-address |
-| `status` | `'pending' \| 'active'` | `pending` = unfunded (Deferred mode) |
-| `balances` | `Balance[]` | Array of asset balances |
-
-**`FundOptions`:**
-
-| Property | Type | Default | Description |
-|---|---|---|---|
-| `asset` | `string` | `'XLM'` | Asset to fund with. Must be configured in Dashboard. Throws if asset is not configured or distribution wallet has insufficient balance. |
+| Property     | Type                               | Description                           |
+|--------------|------------------------------------|---------------------------------------|
+| `network`    | `StellarNetwork`                   | Currently active network.             |
+| `setNetwork` | `(network: StellarNetwork) => void` | Switches the active Stellar network. |
 
 ---
 
-### `usePollarPayments()`
+### Wallet Balance
 
-```tsx
-'use client';
-import { usePollarPayments } from '@pollar/react';
-
-const { sendPayment } = usePollarPayments();
-```
-
-| Property | Type | Description |
-|---|---|---|
-| `sendPayment` | `(options: PaymentOptions) => Promise<PaymentResult>` | Sends an asset to a Stellar address |
-
-**`PaymentOptions`:**
-
-| Property | Type | Required | Description |
-|---|---|---|---|
-| `to` | `string` | Yes | Recipient Stellar G-address |
-| `amount` | `string` | Yes | Decimal string, e.g. `'10.00'` |
-| `asset` | `string` | Yes | Asset code, e.g. `'USDC'` |
-| `memo` | `string` | No | Transaction memo |
-
-**`PaymentResult`:**
-
-| Property | Type | Description |
-|---|---|---|
-| `txHash` | `string` | Stellar transaction hash |
-| `ledger` | `number` | Ledger number where tx was confirmed |
+| Property                 | Type                                                       | Description                                                                         |
+|--------------------------|------------------------------------------------------------|-------------------------------------------------------------------------------------|
+| `getBalance`             | `(publicKey?: string) => Promise<WalletBalanceContent \| null>` | Fetches balances for the given public key. Uses the authenticated wallet if omitted. |
+| `openWalletBalanceModal` | `() => void`                                               | Opens the wallet balance modal.                                                     |
 
 ---
 
-### `usePollarHistory()`
+### Transaction History
 
-```tsx
-'use client';
-import { usePollarHistory } from '@pollar/react';
+| Property            | Type             | Description                          |
+|---------------------|------------------|--------------------------------------|
+| `txHistory`         | `TxHistoryState` | Current tx history state (reactive). |
+| `openTxHistoryModal` | `() => void`    | Opens the transaction history modal. |
 
-const { txHistory, loadingHistory, fetchMoreHistory, hasMore } = usePollarHistory();
-```
+---
 
-| Property | Type | Description |
-|---|---|---|
-| `txHistory` | `TxRecord[]` | Array of transaction records |
-| `loadingHistory` | `boolean` | History is being fetched |
-| `fetchMoreHistory` | `() => Promise<void>` | Loads the next page |
-| `hasMore` | `boolean` | More pages available |
+### KYC
+
+| Property       | Type                                                                                  | Description                       |
+|----------------|---------------------------------------------------------------------------------------|-----------------------------------|
+| `openKycModal` | `(options?: { country?: string; level?: KycLevel; onApproved?: () => void }) => void` | Opens the KYC verification modal. |
+
+| Option       | Type         | Default   | Description                                                           |
+|--------------|--------------|-----------|-----------------------------------------------------------------------|
+| `country`    | `string`     | `'MX'`    | ISO 3166-1 alpha-2 country code to filter providers.                  |
+| `level`      | `KycLevel`   | `'basic'` | Required KYC level: `'basic'`, `'intermediate'`, or `'enhanced'`.    |
+| `onApproved` | `() => void` | —         | Callback invoked when the KYC verification is successfully approved.  |
+
+---
+
+### Ramps
+
+| Property         | Type         | Description                        |
+|------------------|--------------|------------------------------------|
+| `openRampWidget` | `() => void` | Opens the fiat on/off-ramp widget. |
+
+---
+
+### Utilities
+
+| Property    | Type                 | Description                                                            |
+|-------------|----------------------|------------------------------------------------------------------------|
+| `getClient` | `() => PollarClient` | Returns the underlying `PollarClient` instance for direct API access.  |
+| `config`    | `PollarConfig`       | Application configuration fetched from the Pollar Dashboard.          |
+| `styles`    | `PollarStyles`       | Resolved styles, merging remote config with any local overrides.       |
+
+---
+
+### Modal entry points
+
+All Pollar modals are mounted inside `<PollarProvider>` and controlled programmatically:
+
+| Function                  | Description                             |
+|---------------------------|-----------------------------------------|
+| `openLoginModal()`        | Opens the login modal.                  |
+| `openTransactionModal()`  | Opens the transaction modal.            |
+| `openKycModal(options?)`  | Opens the KYC modal.                    |
+| `openRampWidget()`        | Opens the ramp widget.                  |
+| `openTxHistoryModal()`    | Opens the transaction history modal.    |
+| `openWalletBalanceModal()` | Opens the wallet balance modal.        |
 
 ---
 
 ## Components
 
-### `<PollarProvider>`
-
-Wraps your app root. Required for all hooks to work.
-
-```tsx
-import { PollarProvider } from '@pollar/react';
-
-<PollarProvider publishableKey="pub_testnet_...">
-  <App />
-</PollarProvider>
-```
-
-| Prop | Type | Default | Description |
-|---|---|---|---|
-| `publishableKey` | `string` | — | **Required.** Your Pollar publishable key. |
-| `onError` | `(error: PollarError) => void` | — | Global error handler. |
-
----
-
 ### `<WalletButton>`
 
-Pre-built button that handles the complete login flow. Opens a modal with Google, GitHub, Discord, and email OTP options.
+Pre-built button that handles the complete authentication flow. When logged out, opens the login modal. When logged in, shows the wallet address with a dropdown for balance, transaction history, and logout.
 
 ```tsx
 import { WalletButton } from '@pollar/react';
@@ -180,39 +196,101 @@ import { WalletButton } from '@pollar/react';
 <WalletButton />
 ```
 
-When logged out, opens the login modal. When logged in, shows a wallet summary with address and balance.
-
-The button and modal styles are customizable from **Dashboard → Configuration → Branding & UI** — no code changes needed.
+No props required. Appearance is controlled by the `styles` configuration passed to `<PollarProvider>`.
 
 ---
 
-### `<SendPayment>` `coming soon`
+### `<KycModal>`
 
-Embeddable send flow with asset selector, address input, and amount field.
+Pre-built KYC verification modal. Can be rendered directly when you need more control than `openKycModal()` provides.
 
-### `<ReceivePayment>` `coming soon`
+```tsx
+import { KycModal } from '@pollar/react';
 
-QR code and shareable payment link for the current wallet. SEP-7 support included when available.
+<KycModal
+  onClose={() => setOpen(false)}
+  country="US"
+  level="basic"
+  onApproved={() => console.log('KYC approved')}
+/>
+```
 
-### `<PaymentHistory>` `coming soon`
+| Prop         | Type         | Default   | Description                                             |
+|--------------|--------------|-----------|---------------------------------------------------------|
+| `onClose`    | `() => void` | —         | **Required.** Called when the user dismisses the modal. |
+| `country`    | `string`     | `'MX'`    | ISO 3166-1 alpha-2 country code to filter providers.    |
+| `level`      | `KycLevel`   | `'basic'` | Required KYC level.                                     |
+| `onApproved` | `() => void` | —         | Called when KYC is successfully approved.               |
 
-Paginated transaction history list, embeddable in any layout.
+---
 
-### `<AssetBalance>` `coming soon`
+### `<KycStatus>`
 
-Displays the balance of a specific asset for the current wallet.
+Displays the current KYC status for the authenticated user.
 
-### `<FundButton>` `coming soon`
+```tsx
+import { KycStatus } from '@pollar/react';
 
-Testnet funding button that calls `fund()` — requests assets from the distribution wallet.
+<KycStatus />
+```
 
-### `<PasskeySetup>` `coming soon`
+---
 
-Biometric authentication setup — moves the private key from KMS to the device Secure Enclave.
+### `<RampWidget>`
 
-### `<FiatRamp>` `coming soon`
+Pre-built fiat on/off-ramp widget with support for on-ramp (fiat → crypto) and off-ramp (crypto → fiat) flows.
 
-Embeddable SEP-24 deposit and withdrawal modal.
+```tsx
+import { RampWidget } from '@pollar/react';
+
+<RampWidget onClose={() => setOpen(false)} />
+```
+
+| Prop      | Type         | Description                                              |
+|-----------|--------------|----------------------------------------------------------|
+| `onClose` | `() => void` | **Required.** Called when the user dismisses the widget. |
+
+---
+
+### `<WalletBalanceModal>`
+
+Displays the token balances of the authenticated wallet with a manual refresh option.
+
+```tsx
+import { WalletBalanceModal } from '@pollar/react';
+
+<WalletBalanceModal onClose={() => setOpen(false)} />
+```
+
+| Prop      | Type         | Description                                             |
+|-----------|--------------|---------------------------------------------------------|
+| `onClose` | `() => void` | **Required.** Called when the user dismisses the modal. |
+
+---
+
+## Template components
+
+Template components handle rendering only — they receive all data and callbacks as props and contain no internal logic. Use them to build fully custom UI while reusing Pollar's layout and visual structure.
+
+| Component                      | Description                                                  |
+|--------------------------------|--------------------------------------------------------------|
+| `<LoginModalTemplate>`         | Login provider selection and email OTP screens.              |
+| `<KycModalTemplate>`           | KYC provider selection and verification screens.             |
+| `<RampWidgetTemplate>`         | Ramp input, quote selection, and payment instruction screens.|
+| `<TransactionModalTemplate>`   | Transaction details, signing, and result screens.            |
+| `<TxHistoryModalTemplate>`     | Transaction history list screen.                             |
+| `<WalletBalanceModalTemplate>` | Wallet balance screen.                                       |
+
+Import the corresponding `*Props` type for full type safety:
+
+```tsx
+import {
+  TransactionModalTemplate,
+  type TransactionModalTemplateProps,
+  WalletBalanceModalTemplate,
+  type WalletBalanceModalTemplateProps,
+} from '@pollar/react';
+```
 
 ---
 
@@ -220,15 +298,17 @@ Embeddable SEP-24 deposit and withdrawal modal.
 
 ```typescript
 import type {
-  Wallet,
-  Balance,
-  TxRecord,
-  PaymentOptions,
-  PaymentResult,
-  FundOptions,
-  LoginOptions,
-  PollarUser,
-  PollarError,
-  UsePollarReturn,
+  PollarConfig,
+  PollarStyles,
+  AuthProviderProps,
+  AuthContextValue,
+  LoginButtonProps,
+  AuthModalProps,
+  KycStep,
+  RampStep,
+  TransactionModalTemplateProps,
+  WalletBalanceModalTemplateProps,
 } from '@pollar/react';
 ```
+
+Core types such as `TransactionState`, `TxHistoryState`, `WalletBalanceContent`, `PollarLoginOptions`, `StellarNetwork`, and `WalletType` are imported directly from `@pollar/core`.
