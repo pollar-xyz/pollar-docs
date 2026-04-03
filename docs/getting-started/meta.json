@@ -1,5 +1,6 @@
 {
   "title": "Getting Started",
+  "description": "Install Pollar, get your API keys, and send your first payment.",
   "pages": [
     "overview",
     "api-keys",

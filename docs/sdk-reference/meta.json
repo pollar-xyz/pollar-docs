@@ -1,5 +1,6 @@
 {
-  "title": "Sdk Reference",
+  "title": "SDK Reference",
+  "description": "Full reference for @pollar/react, @pollar/core, the Server API, webhooks, and error codes.",
   "pages": [
     "pollar-react",
     "pollar-core",

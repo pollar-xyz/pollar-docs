@@ -1,5 +1,6 @@
 {
   "title": "Operator Guide",
+  "description": "Dashboard configuration, wallet infrastructure, user management, and observability.",
   "pages": [
     "dashboard-overview",
     "configuration",
