@@ -1,5 +1,6 @@
 {
   "title": "Configuration",
+  "description": "",
   "pages": [
     "app-settings",
     "app-wallets",

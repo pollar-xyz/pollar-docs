@@ -1,10 +1,12 @@
 {
   "title": "Pollar V0",
+  "description": "",
   "pages": [
     "getting-started",
     "core-concepts",
     "sdk-reference",
     "operator-guide",
-    "guides"
+    "guides",
+    "smart-wallets-upcoming"
   ]
 }
