@@ -4,9 +4,9 @@ title: "Quickstart"
 
 Get from zero to a working Stellar wallet with USDC payments in under 10 minutes.
 
-**Requirements:** Node.js 18+ · React 18+ · A publishable key from [dashboard.pollar.xyz](https://dashboard.pollar.xyz)
+**Requirements:** Node.js 20+ · React 18+ · A publishable key from [dashboard.pollar.xyz](https://dashboard.pollar.xyz)
 
-> Testnet keys are rate-limited to 1,000 requests/day — plenty for development.
+> SDK requests are rate-limited per API key — plenty of headroom for development. See [API Keys](https://docs.pollar.xyz/docs/getting-started/api-keys).
 
 ---
 
@@ -33,7 +33,7 @@ import { PollarProvider } from '@pollar/react';
 
 export default function Root() {
   return (
-    <PollarProvider publishableKey={process.env.NEXT_PUBLIC_POLLAR_PUBLISHABLE_KEY}>
+    <PollarProvider client={{ apiKey: process.env.NEXT_PUBLIC_POLLAR_PUBLISHABLE_KEY! }}>
       <App />
     </PollarProvider>
   );
@@ -44,10 +44,14 @@ export default function Root() {
 
 #### Options
 
-| Prop             | Type                           | Default | Description                                |
-| ---------------- | ------------------------------ | ------- | ------------------------------------------ |
-| `publishableKey` | `string`                       | —       | **Required.** Your Pollar publishable key. |
-| `onError`        | `(error: PollarError) => void` | —       | Global error handler.                      |
+The `client` prop accepts either a `PollarClientConfig` (the provider builds the client for you) or a pre-built `PollarClient` instance.
+
+| Prop       | Type                              | Default | Description                                              |
+| ---------- | --------------------------------- | ------- | ------------------------------------------------------- |
+| `client`   | `PollarClientConfig \| PollarClient` | —    | **Required.** Client config (`{ apiKey }`) or instance. |
+| `appConfig` | `PollarConfig`                   | —       | Local override of the remote dashboard config/styles.   |
+
+See [`@pollar/react`](https://docs.pollar.xyz/docs/sdk-reference/pollar-react) for the full prop list (`appConfig`, `adapters`, `onStorageDegrade`).
 
 #### Not using React?
 
@@ -55,8 +59,8 @@ export default function Root() {
 import { PollarClient } from '@pollar/core';
 
 const pollar = new PollarClient({
-  publishableKey: process.env.NEXT_PUBLIC_POLLAR_PUBLISHABLE_KEY,
-  network: 'testnet',
+  apiKey: process.env.NEXT_PUBLIC_POLLAR_PUBLISHABLE_KEY!,
+  stellarNetwork: 'testnet',
 });
 ```
 
@@ -70,10 +74,9 @@ const pollar = new PollarClient({
 import { usePollar } from '@pollar/react';
 
 export function LoginButton() {
-  const { login, wallet, loading } = usePollar();
+  const { isAuthenticated, wallet, login } = usePollar();
 
-  if (loading) return <p>Loading...</p>;
-  if (wallet) return <p>✓ Wallet ready</p>;
+  if (isAuthenticated) return <p>✓ Wallet ready — {wallet?.address}</p>;
 
   return (
     <button onClick={() => login({ provider: 'google' })}>
@@ -85,11 +88,11 @@ export function LoginButton() {
 
 When `login()` is called, Pollar:
 
-1. Authenticates the user via OAuth (Google, GitHub, Discord) or email OTP
+1. Authenticates the user via OAuth (Google or GitHub) or email OTP
 2. Creates a Stellar G-address on-chain
 3. Encrypts the private key with AWS KMS
 4. Enables trustlines for all assets configured in your Dashboard (if none configured, no trustlines are set up)
-5. Funds the wallet based on your configured [funding mode](../core-concepts/funding-modes)
+5. Funds the wallet based on your configured [funding mode](https://docs.pollar.xyz/docs/core-concepts/funding-modes)
 
 The user never sees a seed phrase, a wallet address, or a trustline prompt.
 
@@ -103,15 +106,15 @@ The user never sees a seed phrase, a wallet address, or a trustline prompt.
 import { usePollar } from '@pollar/react';
 
 export function SendButton() {
-  const { sendPayment } = usePollar();
+  const { runTx } = usePollar();
 
   return (
     <button
       onClick={() =>
-        sendPayment({
-          to: 'GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+        runTx('payment', {
+          destination: 'GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
           amount: '10.00',
-          asset: 'USDC',
+          asset: { type: 'credit_alphanum4', code: 'USDC', issuer: 'GA5Z...' },
         })
       }
     >
@@ -120,6 +123,8 @@ export function SendButton() {
   );
 }
 ```
+
+`runTx(operation, params)` is the one-shot helper that builds, signs, and submits in a single call (alias of `buildAndSignAndSubmitTx`). For step-by-step control — and to drive the transaction modal UI — use `buildTx()` then `signAndSubmitTx()`; see [`@pollar/core`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core). For a native XLM payment use `asset: { type: 'native' }`.
 
 Transaction fees are paid from your app's sponsorship wallet configured in the Dashboard. Users pay zero XLM.
 
@@ -132,22 +137,31 @@ Transaction fees are paid from your app's sponsorship wallet configured in the D
 
 import { usePollar } from '@pollar/react';
 
-export function History() {
-  const { txHistory, loadingHistory } = usePollar();
+import { useEffect } from 'react';
 
-  if (loadingHistory) return <p>Loading...</p>;
+export function History() {
+  const { txHistory, getClient } = usePollar();
+
+  // `txHistory` is a state machine; trigger a fetch on the underlying client.
+  useEffect(() => {
+    getClient().fetchTxHistory({ limit: 20 });
+  }, [getClient]);
+
+  if (txHistory.step !== 'loaded') return <p>Loading...</p>;
 
   return (
     <ul>
-      {txHistory.map((tx) => (
-        <li key={tx.hash}>
-          {tx.type === 'send' ? '↑' : '↓'} {tx.amount} {tx.asset}
+      {txHistory.data.records.map((tx) => (
+        <li key={tx.id}>
+          {tx.summary} · {tx.status}
         </li>
       ))}
     </ul>
   );
 }
 ```
+
+> The simplest path is the built-in modal: call `openTxHistoryModal()` from `usePollar()` and Pollar renders the list for you — no state wiring needed.
 
 ---
 
@@ -159,11 +173,9 @@ export function History() {
 import { PollarProvider, usePollar } from '@pollar/react';
 
 function WalletDemo() {
-  const { login, wallet, sendPayment, txHistory, loading } = usePollar();
+  const { isAuthenticated, wallet, login, runTx, openTxHistoryModal } = usePollar();
 
-  if (loading) return <p>Loading...</p>;
-
-  if (!wallet) {
+  if (!isAuthenticated) {
     return (
       <button onClick={() => login({ provider: 'google' })}>
         Continue with Google
@@ -173,28 +185,26 @@ function WalletDemo() {
 
   return (
     <div>
-      <p>✓ Wallet active</p>
+      <p>✓ Wallet active — {wallet?.address}</p>
       <button
         onClick={() =>
-          sendPayment({ to: 'GXXX...', amount: '5.00', asset: 'USDC' })
+          runTx('payment', {
+            destination: 'GXXX...',
+            amount: '5.00',
+            asset: { type: 'credit_alphanum4', code: 'USDC', issuer: 'GA5Z...' },
+          })
         }
       >
         Send 5 USDC
       </button>
-      <ul>
-        {txHistory.map((tx) => (
-          <li key={tx.hash}>
-            {tx.amount} {tx.asset} · {tx.type}
-          </li>
-        ))}
-      </ul>
+      <button onClick={openTxHistoryModal}>History</button>
     </div>
   );
 }
 
 export default function App() {
   return (
-    <PollarProvider publishableKey={process.env.NEXT_PUBLIC_POLLAR_PUBLISHABLE_KEY}>
+    <PollarProvider client={{ apiKey: process.env.NEXT_PUBLIC_POLLAR_PUBLISHABLE_KEY! }}>
       <WalletDemo />
     </PollarProvider>
   );

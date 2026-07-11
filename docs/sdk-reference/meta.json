@@ -4,8 +4,10 @@
   "pages": [
     "pollar-react",
     "pollar-core",
+    "wallet-adapters",
     "server-api",
     "webhooks",
-    "error-codes"
+    "error-codes",
+    "mcp-gateway"
   ]
 }

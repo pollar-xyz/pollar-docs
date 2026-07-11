@@ -6,13 +6,17 @@ Pollar uses webhooks in two directions:
 
 - **Inbound** — your backend receives a call from Pollar when an event occurs
 
-- **Outbound** — your backend calls Pollar to trigger an action (e.g. `POST /wallets/activate`)
+- **Outbound** — your backend calls Pollar to trigger an action (e.g. `POST /v1/wallets/activate`)
 
 ---
 
-## Inbound webhooks `coming soon`
+## Inbound webhooks `upcoming`
 
-Configure a webhook URL in **Dashboard → Configuration → Webhooks**. Pollar sends a `POST` request to your URL when an event occurs.
+> 🚧 **Not yet available.** Inbound event webhooks are on the roadmap and **not implemented in production yet**. The dashboard configuration page is gated behind a "coming soon" state, and the semantic events, signature convention, and retry schedule documented below describe the **planned** design so you can prepare your integration — they are not live.
+>
+> What exists today is an internal, generic on-chain delivery: a single `stellar.tx` event carrying raw Stellar operation data, posted once (no retry/backoff) with an `X-Pollar-Signature: sha256=<hmac>` header. The structured `wallet.*` / `payment.*` events below are not emitted yet.
+
+When available, you'll configure a webhook URL in **Build → Webhooks**. Pollar sends a `POST` request to your URL when an event occurs.
 
 ### Authentication
 
@@ -45,7 +49,9 @@ export async function POST(req: NextRequest) {
 
 Always respond with `200` as quickly as possible. If your endpoint returns a non-2xx status or times out, Pollar retries with exponential backoff.
 
-### Retry policy
+### Retry policy `upcoming`
+
+> Planned design — there is **no retry/backoff implemented today**. The current internal delivery posts once and logs failures.
 
 | Attempt | Delay      |
 | ------- | ---------- |
@@ -55,11 +61,13 @@ Always respond with `200` as quickly as possible. If your endpoint returns a non
 | 4       | 1 hour     |
 | 5       | 24 hours   |
 
-After 5 failed attempts the event is marked as failed and visible in **Dashboard → Settings → Webhooks → Event log**.
+After 5 failed attempts the event is marked as failed and visible in **Build → Webhooks → Event log**.
 
 ---
 
-## Events
+## Events `upcoming`
+
+> These semantic event types are **planned, not yet emitted**. The server currently only delivers a generic `stellar.tx` payload with raw operation data.
 
 ### `wallet.created`
 
@@ -189,4 +197,4 @@ Fired when any sponsorship wallet drops below its configured minimum threshold.
 
 Your backend calls Pollar to trigger actions. Currently:
 
-- `POST /wallets/activate` — see [Server API](./server-api)
+- `POST /v1/wallets/activate` — see [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api)

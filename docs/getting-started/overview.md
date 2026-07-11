@@ -30,9 +30,9 @@ Pollar handles all of this so you can skip straight to building your product.
 import { PollarProvider, usePollar } from '@pollar/react';
 
 function App() {
-  const { login, wallet, sendPayment } = usePollar();
+  const { isAuthenticated, login, runTx } = usePollar();
 
-  if (!wallet) {
+  if (!isAuthenticated) {
     return (
       <button onClick={() => login({ provider: 'google' })}>
         Continue with Google
@@ -41,7 +41,15 @@ function App() {
   }
 
   return (
-    <button onClick={() => sendPayment({ to: 'GXXX...', amount: '10', asset: 'USDC' })}>
+    <button
+      onClick={() =>
+        runTx('payment', {
+          destination: 'GXXX...',
+          amount: '10',
+          asset: { type: 'credit_alphanum4', code: 'USDC', issuer: 'GA5Z...' },
+        })
+      }
+    >
       Send 10 USDC
     </button>
   );
@@ -49,14 +57,14 @@ function App() {
 
 export default function Root() {
   return (
-    <PollarProvider publishableKey="pub_testnet_...">
+    <PollarProvider client={{ apiKey: 'pub_testnet_...' }}>
       <App />
     </PollarProvider>
   );
 }
 ```
 
-In 20 lines: OAuth authentication, a funded Stellar wallet, and USDC payments. No seed phrases. No fee prompts. No trustline configuration.
+In a handful of lines: OAuth authentication, a funded Stellar wallet, and USDC payments. No seed phrases. No fee prompts. No trustline configuration. (`runTx` is the one-shot build → sign → submit helper; see the [SDK Reference](https://docs.pollar.xyz/docs/sdk-reference/pollar-react) for the split `buildTx` / `signAndSubmitTx` flow.)
 
 ---
 
@@ -69,3 +77,5 @@ In 20 lines: OAuth authentication, a funded Stellar wallet, and USDC payments. N
 | Fee-bump native       | No              | N/A   | N/A     | No                   | **Yes**          |
 | Built for startups    | No (enterprise) | Yes   | Yes     | Partial              | **Yes**          |
 | Full onboarding stack | No              | No    | No      | No                   | **Yes**          |
+
+> Pollar also **integrates** with several of these: first-party adapters let you use Privy embedded wallets or any Stellar Wallets Kit wallet as a login method on top of Pollar's stack. See [Wallet Adapters](https://docs.pollar.xyz/docs/sdk-reference/wallet-adapters).

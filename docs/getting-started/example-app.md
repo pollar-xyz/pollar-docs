@@ -14,11 +14,11 @@ A fully working Next.js demo that shows Pollar's complete onboarding-to-payment 
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------ | ------------- |
 | Social login                   | Google, GitHub, and email OTP via `usePollar().login()`                                                                  | ✓             |
 | Wallet creation                | Stellar G-address created and encrypted with AWS KMS on login                                                            | ✓             |
-| Deferred mode — KYC simulation | A button triggers a Next.js API route that calls `POST /activate` with the secret key, simulating a backend KYC approval | ✓             |
+| Deferred mode — KYC simulation | A button triggers a Next.js API route that calls `POST /v1/wallets/activate` with the secret key, simulating a backend KYC approval | ✓             |
 | Send USDC                      | Transfer USDC to any Stellar address with zero fee UX                                                                    | ✓             |
 | Receive                        | QR code (SEP-7 format) and shareable payment link                                                                        | `coming soon` |
 | Transaction history            | Full paginated history via `txHistory` hook                                                                              | ✓             |
-| Testnet funding                | `fund()` hook requests configured assets from the distribution wallet                                                    | `coming soon` |
+| Testnet funding                | Claimable distribution rules from the distribution wallet                                                    | `coming soon` |
 | Passkeys                       | Biometric auth with Face ID / Touch ID                                                                                   | `coming soon` |
 | SEP-24 fiat deposit            | Fiat on-ramp via Anclap testnet                                                                                          | `coming soon` |
 
@@ -72,7 +72,7 @@ template-nextjs/
 │   └── components/
 │       ├── LoginButton.tsx     # OAuth + email OTP
 │       ├── WalletCard.tsx      # Balance and address display
-│       ├── SendPaymentForm.tsx # sendPayment()
+│       ├── SendPaymentForm.tsx # runTx('payment', ...)
 │       ├── ReceiveView.tsx     # QR code + shareable link
 │       ├── TxHistoryList.tsx   # txHistory hook
 │       └── KycGate.tsx         # Calls /api/activate to simulate KYC approval
@@ -95,7 +95,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html>
       <body>
-        <PollarProvider publishableKey={process.env.NEXT_PUBLIC_POLLAR_PUBLISHABLE_KEY!}>
+        <PollarProvider client={{ apiKey: process.env.NEXT_PUBLIC_POLLAR_PUBLISHABLE_KEY! }}>
           {children}
         </PollarProvider>
       </body>
@@ -106,22 +106,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 ### Deferred mode — KYC simulation
 
-The demo includes a Next.js API route that simulates a KYC provider calling your backend after a user is verified. The frontend calls this route — the route calls Pollar's `POST /activate` using the secret key server-side.
+The demo includes a Next.js API route that simulates a KYC provider calling your backend after a user is verified. The frontend calls this route — the route calls Pollar's `POST /v1/wallets/activate` using the secret key server-side. The endpoint authenticates with the `x-pollar-api-key` header and takes the wallet's `publicKey` (its `G…` address).
 
 ```ts
 // app/api/activate/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
-  const { walletId } = await req.json();
+  const { publicKey } = await req.json();
 
-  const response = await fetch('https://api.pollar.xyz/wallets/activate', {
+  const response = await fetch('https://api.pollar.xyz/v1/wallets/activate', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${process.env.POLLAR_SECRET_KEY}`,
+      'x-pollar-api-key': process.env.POLLAR_SECRET_KEY!,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ walletId }),
+    body: JSON.stringify({ publicKey }),
   });
 
   if (!response.ok) {
@@ -141,15 +141,15 @@ The frontend `KycGate` component calls this route — the secret key never leave
 import { usePollar } from '@pollar/react';
 
 export function KycGate() {
-  const { wallet } = usePollar();
+  const { isAuthenticated, wallet } = usePollar();
 
-  if (wallet?.status !== 'pending') return null;
+  if (!isAuthenticated) return null;
 
   async function handleActivate() {
     await fetch('/api/activate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ walletId: wallet!.id }),
+      body: JSON.stringify({ publicKey: wallet?.address }),
     });
   }
 
@@ -164,52 +164,30 @@ export function KycGate() {
 }
 ```
 
-In a real app, `/api/activate` would be called by your KYC provider's webhook — not by a button in the UI. See [Deferred Flow Guide](../guides/deferred-flow-guide) for the full production setup.
+In a real app, `/api/activate` would be called by your KYC provider's webhook — not by a button in the UI. See [Deferred Flow Guide](https://docs.pollar.xyz/docs/guides/deferred-flow-guide) for the full production setup.
 
-### Testnet funding with `fund()`
+### Distribution — claiming assets `coming soon`
 
-The demo exposes a **Fund wallet** button that calls `fund()` from the `usePollar()` hook. This requests assets from your app's distribution wallet — a separate wallet configured in the Dashboard for this purpose.
+> An app-initiated push helper (`fund()`) is **not available yet**. Today, distribution works through **claimable rules**: you configure rules under **Treasury → Token Distribution**, and users claim them from the SDK.
+
+The available flow uses the distribution-rules modal and client methods exposed by `usePollar()` / `@pollar/core`:
 
 ```tsx
 'use client';
 import { usePollar } from '@pollar/react';
 
-export function FundButton() {
-  const { fund } = usePollar();
+export function ClaimButton() {
+  const { openDistributionRulesModal } = usePollar();
 
   return (
-    <div>
-      {/* Fund with XLM (default) */}
-      <button onClick={() => fund()}>
-        Fund with XLM
-      </button>
-
-      {/* Fund with a specific asset */}
-      <button onClick={() => fund({ asset: 'USDC' })}>
-        Fund with USDC
-      </button>
-    </div>
+    <button onClick={openDistributionRulesModal}>
+      Claim tokens
+    </button>
   );
 }
 ```
 
-`fund()` behavior:
-
-- Called without arguments, funds with XLM by default
-
-- Pass `{ asset: 'USDC' }` (or any configured asset) to fund with a specific token
-
-- Only assets configured in **Dashboard → Distribution Wallet** are accepted — throws an error otherwise
-
-- Works on testnet by default
-
-- Requires mainnet to be explicitly enabled in **Dashboard → Distribution Wallet → Allow fund() on mainnet**
-
-- Throws an error if called on mainnet without that setting enabled
-
-- Amount and rate limits (daily / weekly / monthly) are configured per asset in the Dashboard
-
-- Debits the app's **distribution wallet** — separate from the funding and gas wallets
+For headless control, use `getClient().listDistributionRules()` and `getClient().claimDistributionRule(...)`. Configured assets, amounts, and rate limits (per claim / period) are set per asset under **Treasury → Token Distribution**, which debits the app's **distribution wallet** — separate from the funding and gas wallets.
 
 ### Receive — QR code and shareable link
 
@@ -236,19 +214,20 @@ export function ReceiveView() {
 }
 ```
 
-The QR code currently encodes the user's G-address as a payment link. SEP-7 support (which allows pre-filling asset, amount, and memo in any compatible Stellar wallet) is coming soon.
+The QR code currently encodes the user's G-address as a payment link. SEP-7 support (which allows pre-filling asset, amount, and memo in any compatible Stellar wallet) is coming soon. The simplest path is the built-in `openReceiveModal()`.
 
 ---
 
 ## Funding modes in the demo
 
-Switch from **Dashboard → Settings → Funding Mode** — no code changes needed.
+Switch from **Dashboard → Treasury → Funding Mode** — no code changes needed.
 
 | Mode          | Behavior in the demo                                      |
 | ------------- | --------------------------------------------------------- |
 | **Immediate** | Wallet funded on login. KYC gate hidden.                  |
 | **Deferred**  | Wallet unfunded until "Simulate KYC approval" is clicked. |
-| **Manual**    | Wallet unfunded. Activate from the Dashboard.             |
+
+> A wallet in either mode can always be funded manually from **Users → Wallets** (the **Fund 2 XLM** action on not-yet-funded wallets).
 
 ---
 

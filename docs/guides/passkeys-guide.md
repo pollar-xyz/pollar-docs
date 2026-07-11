@@ -37,6 +37,8 @@ This means Pollar has zero custody of the key after Passkey setup. No KMS call, 
 
 ## Implementation `coming soon`
 
+> Partial support has already landed: `@pollar/core` exposes `PollarClient.loginSmartWallet()` and a `passkey` config slot (on web the provider injects a browser passkey ceremony automatically), and `@pollar/react` now depends on `@simplewebauthn/browser`. The high-level `usePollarPasskey()` hook shown below is still the planned ergonomic wrapper and is **not exported yet**.
+
 ```tsx
 'use client';
 import { usePollarPasskey } from '@pollar/react';
@@ -103,4 +105,4 @@ WebAuthn (the underlying standard) is supported on:
 
 ## Enabling Passkeys for your app
 
-When available, Passkeys can be enabled per-app from **Dashboard → Configuration → App Settings → Key Management**. The feature is opt-in — existing users are not affected until they set up a Passkey themselves.
+When available, Passkeys can be enabled per-app from **Dashboard → Build → Settings → Key Management**. The feature is opt-in — existing users are not affected until they set up a Passkey themselves.

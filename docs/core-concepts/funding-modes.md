@@ -4,7 +4,7 @@ title: "Funding Modes"
 
 Every Stellar account requires a minimum XLM reserve to exist on-chain. Pollar gives you two modes to control exactly when that reserve is funded — so you only pay for users who matter to your app.
 
-Configure the funding mode from **Dashboard → Configuration → Funding Mode**. No code changes required.
+Configure the funding mode from **Dashboard → Treasury → Funding Mode**. No code changes required.
 
 ---
 
@@ -18,7 +18,7 @@ flowchart TD
     B -->|"Deferred"| D("G-address created, no reserve\nActivated via webhook from your backend"):::deferred
     C --> E("Wallet ready"):::ready
     D --> F("Wallet pending"):::pending
-    F -->|"POST /activate\nor Dashboard button"| E
+    F -->|"POST /v1/wallets/activate\nor Dashboard Fund button"| E
 
     classDef neutral fill:#f1efe8,stroke:#b4b2a9,color:#444441
     classDef decision fill:#faeeda,stroke:#ba7517,color:#633806
@@ -33,7 +33,7 @@ flowchart TD
 | **Immediate** | \~2 XLM per registration    | Automatic on login        | Apps without compliance requirements          |
 | **Deferred**  | \~2 XLM per activation only | Webhook from your backend | Neobanks, remittance apps, KYC-gated products |
 
-In both modes, any individual wallet can also be activated manually from **Dashboard → Wallet Infrastructure → Wallets → Activate**. This is useful as a fallback or for support workflows.
+In both modes, any individual wallet can also be activated manually from **Dashboard → Users → Wallets (Fund 2 XLM)**. This is useful as a fallback or for support workflows.
 
 > **How the \~2 XLM is calculated:** Every Stellar account requires a base reserve of **1 XLM**. Each trustline (asset) you configure in the Dashboard adds **0.5 XLM**:
 >
@@ -59,9 +59,9 @@ The wallet is funded atomically at the moment the user logs in. Ready in under 3
 **Cost:** \~2 XLM per registration, including users who abandon onboarding.
 
 ```tsx
-const { login, wallet } = usePollar();
+const { login, isAuthenticated } = usePollar();
 await login({ provider: 'google' });
-// wallet is funded and ready immediately
+// once isAuthenticated is true, the wallet is funded and ready immediately
 ```
 
 ---
@@ -76,48 +76,45 @@ This mode solves a problem unique to Stellar: every account needs a minimum XLM 
 
 ### Activating via webhook
 
-Your backend calls `POST /activate` when a business event occurs — KYC approved, first deposit, email verified, or any trigger you define.
+Your backend calls `POST /v1/wallets/activate` when a business event occurs — KYC approved, first deposit, email verified, or any trigger you define.
 
 ```bash
-POST https://api.pollar.xyz/wallets/activate
-Authorization: Bearer sec_testnet_xxxxxxxxxxxxxxxxxxxx
+POST https://api.pollar.xyz/v1/wallets/activate
+x-pollar-api-key: sec_testnet_xxxxxxxxxxxxxxxxxxxx
 Content-Type: application/json
 
 {
-  "walletId": "wal_abc123"
+  "publicKey": "GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 }
 ```
 
-The Pollar Server retries until it receives a `200` response.
-
-> Never call `POST /activate` from the client. It requires your secret key and must run on your backend.
+> Never call this endpoint from the client. It requires your secret key and must run on your backend. See the [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api) reference.
 
 **Response codes:**
 
 | Code                      | Meaning                                              |
 | ------------------------- | ---------------------------------------------------- |
 | `200 OK`                  | Wallet activated. XLM reserve funded on-chain.       |
-| `400 Bad Request`         | Missing or malformed `walletId`.                     |
+| `400 Bad Request`         | Missing or malformed `publicKey`.                    |
 | `402 Payment Required`    | Funding wallet has insufficient XLM.                 |
-| `404 Not Found`           | `walletId` does not exist in your app.               |
-| `409 Conflict`            | Wallet is already active. Safe to ignore.            |
-| `503 Service Unavailable` | Stellar network issue. Pollar retries automatically. |
+| `404 Not Found`           | `publicKey` is not a wallet owned by your app.       |
+| `409 Conflict`            | Wallet is already funded. Safe to ignore.            |
+| `503 Service Unavailable` | Stellar network issue.                               |
 
-### Activating manually from the Dashboard
+### Funding manually from the Dashboard
 
-Any wallet in `pending` status can be activated from **Dashboard → Wallet Infrastructure → Wallets → Activate**. This works in both Immediate and Deferred mode and is useful for support workflows or one-off overrides.
+Any not-yet-funded wallet can be funded from **Dashboard → Users → Wallets** with the **Fund 2 XLM** action. This works in both Immediate and Deferred mode and is useful for support workflows or one-off overrides.
 
-### Checking wallet status
+### Checking whether a wallet is funded
+
+The funded state is reflected on-chain. From an authenticated session you can read the wallet's balances — an unfunded wallet has no XLM reserve yet:
 
 ```tsx
-const { wallet } = usePollar();
+const { walletBalance, refreshWalletBalance } = usePollar();
 
-if (wallet?.status === 'pending') {
-  // wallet exists but is not yet funded — show KYC flow
-}
-
-if (wallet?.status === 'active') {
-  // wallet is funded and ready to transact
+await refreshWalletBalance();
+if (walletBalance.step === 'loaded') {
+  // inspect walletBalance.data.balances to see if the reserve / assets are present
 }
 ```
 

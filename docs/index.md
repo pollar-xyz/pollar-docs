@@ -14,10 +14,10 @@ title: "Pollar Documentation"
 
 | <br />                                            | <br />                                          |
 | ------------------------------------------------- | ----------------------------------------------- |
-| [Overview](./docs/getting-started/overview)       | What Pollar is and the problem it solves        |
-| [API Keys](./docs/getting-started/api-keys)       | Publishable vs secret keys, testnet vs mainnet  |
-| [Quickstart](./docs/getting-started/quickstart)   | Install, configure, and send your first payment |
-| [Example App](./docs/getting-started/example-app) | Clone and run a full working integration        |
+| [Overview](https://docs.pollar.xyz/docs/getting-started/overview)       | What Pollar is and the problem it solves        |
+| [API Keys](https://docs.pollar.xyz/docs/getting-started/api-keys)       | Publishable vs secret keys, testnet vs mainnet  |
+| [Quickstart](https://docs.pollar.xyz/docs/getting-started/quickstart)   | Install, configure, and send your first payment |
+| [Example App](https://docs.pollar.xyz/docs/getting-started/example-app) | Clone and run a full working integration        |
 
 ---
 
@@ -25,11 +25,11 @@ title: "Pollar Documentation"
 
 | <br />                                                          | <br />                                                  |
 | --------------------------------------------------------------- | ------------------------------------------------------- |
-| [Architecture](./docs/core-concepts/architecture)               | How the SDK, Pollar Server, and Dashboard work together |
-| [Funding Modes](./docs/core-concepts/funding-modes)             | Immediate, Deferred, and Manual wallet activation       |
-| [Stellar Primitives](./docs/core-concepts/stellar-primitives)   | Fee-bumps, reserves, trustlines, SEP-10, SEP-24         |
-| [Security Model](./docs/core-concepts/security-model)           | AWS KMS, Passkeys, BYOK, and MPC                        |
-| [Transaction History](./docs/core-concepts/transaction-history) | Two-layer history architecture and pagination           |
+| [Architecture](https://docs.pollar.xyz/docs/core-concepts/architecture)               | How the SDK, Pollar Server, and Dashboard work together |
+| [Funding Modes](https://docs.pollar.xyz/docs/core-concepts/funding-modes)             | Immediate and Deferred wallet activation                |
+| [Stellar Primitives](https://docs.pollar.xyz/docs/core-concepts/stellar-primitives)   | Fee-bumps, reserves, trustlines, SEP-10, SEP-24         |
+| [Security Model](https://docs.pollar.xyz/docs/core-concepts/security-model)           | AWS KMS, Passkeys, BYOK, and MPC                        |
+| [Transaction History](https://docs.pollar.xyz/docs/core-concepts/transaction-history) | Two-layer history architecture and pagination           |
 
 ---
 
@@ -37,36 +37,81 @@ title: "Pollar Documentation"
 
 | <br />                                               | <br />                                          |
 | ---------------------------------------------------- | ----------------------------------------------- |
-| [@pollar/react](./docs/sdk-reference/pollar-react)   | Hooks and pre-built UI components               |
-| [@pollar/core](./docs/sdk-reference/pollar-core)     | Full TypeScript client API                      |
-| [Pollar Server API](./docs/sdk-reference/server-api) | REST endpoints for backend use                  |
-| [Webhooks](./docs/sdk-reference/webhooks)            | Events, HMAC authentication, and retry behavior |
-| [Error Codes](./docs/sdk-reference/error-codes)      | All error codes with causes and fixes           |
+| [@pollar/react](https://docs.pollar.xyz/docs/sdk-reference/pollar-react)   | Hooks and pre-built UI components               |
+| [@pollar/core](https://docs.pollar.xyz/docs/sdk-reference/pollar-core)     | Full TypeScript client API                      |
+| [Wallet Adapters](https://docs.pollar.xyz/docs/sdk-reference/wallet-adapters) | External + embedded wallet login (Stellar Wallets Kit, Privy) |
+| [Pollar Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api) | REST endpoints for backend use                  |
+| [Webhooks](https://docs.pollar.xyz/docs/sdk-reference/webhooks)            | Events, HMAC authentication, and retry behavior |
+| [Error Codes](https://docs.pollar.xyz/docs/sdk-reference/error-codes)      | All error codes with causes and fixes           |
+| [MCP Gateway](https://docs.pollar.xyz/docs/sdk-reference/mcp-gateway)      | MCP / AI-agent access via Personal Access Tokens |
 
 ---
 
 ## Operator Guide
 
-| <br />                                                                                 | <br />                                                |
-| -------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| [Dashboard Overview](./docs/operator-guide/dashboard-overview)                         | Navigation, get started checklist, testnet vs mainnet |
-| [App Settings](./docs/operator-guide/configuration/app-settings)                       | App name, allowed origins, network                    |
-| [App Wallets](./docs/operator-guide/configuration/app-wallets)                         | Funding, gas, and distribution wallets                |
-| [Funding Mode](./docs/operator-guide/configuration/funding-mode)                       | Immediate, Deferred, and Manual                       |
-| [API Keys](./docs/operator-guide/configuration/api-keys)                               | Generate, rotate, and manage keys                     |
-| [Domains](./docs/operator-guide/configuration/domains)                                 | Allowed origins for SDK requests                      |
-| [Branding & UI](./docs/operator-guide/configuration/branding-ui)                       | Customize the WalletButton modal                      |
-| [Webhooks](./docs/operator-guide/configuration/webhooks)                               | Configure event delivery endpoints                    |
-| [Alerts](./docs/operator-guide/configuration/alerts)                                   | Low-balance notifications                             |
-| [Integrations](./docs/operator-guide/configuration/integrations)                       | SEP-24 fiat ramps and anchors                         |
-| [Wallets](./docs/operator-guide/wallet-infrastructure/wallets)                         | Browse and manage user wallets                        |
-| [Tokens / Trustlines](./docs/operator-guide/wallet-infrastructure/tokens-trustlines)   | Configure assets for user wallets                     |
-| [Gas Sponsorship](./docs/operator-guide/wallet-infrastructure/gas-sponsorship)         | Transaction sponsorship rules                         |
-| [Distribution Wallet](./docs/operator-guide/wallet-infrastructure/distribution-wallet) | Configure fund() behavior                             |
-| [Users](./docs/operator-guide/user-management/users)                                   | Browse and manage app users                           |
-| [Authentication](./docs/operator-guide/user-management/authentication)                 | OAuth providers and email OTP                         |
-| [Transactions](./docs/operator-guide/observability/transactions)                       | On-chain transaction log                              |
-| [Logs](./docs/operator-guide/observability/logs)                                       | API request and webhook delivery logs                 |
+The sections below mirror the Dashboard sidebar: **Overview · Build · Users · Treasury · Integrations · Monitor · Danger Zone**. Start with the [Dashboard Overview](https://docs.pollar.xyz/docs/operator-guide/dashboard-overview).
+
+**Overview**
+
+| <br /> | <br /> |
+| ------ | ------ |
+| [Home](https://docs.pollar.xyz/docs/operator-guide/overview/home)                 | Your app at a glance                  |
+| [Get started](https://docs.pollar.xyz/docs/operator-guide/overview/get-started)   | Onboarding checklist                  |
+
+**Build**
+
+| <br /> | <br /> |
+| ------ | ------ |
+| [Settings](https://docs.pollar.xyz/docs/operator-guide/build/settings)   | App name and general configuration    |
+| [API Keys](https://docs.pollar.xyz/docs/operator-guide/build/api-keys)   | Generate and manage keys              |
+| [Domains](https://docs.pollar.xyz/docs/operator-guide/build/domains)     | Allowed origins for SDK requests      |
+| [Webhooks](https://docs.pollar.xyz/docs/operator-guide/build/webhooks)   | Event delivery endpoints (upcoming)   |
+| [Branding](https://docs.pollar.xyz/docs/operator-guide/build/branding)   | Customize the Pollar modals           |
+| [Members](https://docs.pollar.xyz/docs/operator-guide/build/members)     | Team access (owner only)              |
+
+**Users**
+
+| <br /> | <br /> |
+| ------ | ------ |
+| [Accounts](https://docs.pollar.xyz/docs/operator-guide/users/accounts)   | Browse and manage app users           |
+| [Wallets](https://docs.pollar.xyz/docs/operator-guide/users/wallets)     | Browse and manage user wallets        |
+
+**Treasury**
+
+| <br /> | <br /> |
+| ------ | ------ |
+| [Tokens & Trustlines](https://docs.pollar.xyz/docs/operator-guide/treasury/tokens-trustlines) | Configure assets for user wallets |
+| [Funding Mode](https://docs.pollar.xyz/docs/operator-guide/treasury/funding-mode)             | Immediate and Deferred (set on Account Funding) |
+| [Account Funding](https://docs.pollar.xyz/docs/operator-guide/treasury/account-funding)       | Your funding (reserve) wallet     |
+| [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/treasury/sponsorship)               | Transaction fee sponsorship       |
+| [Transaction Policy](https://docs.pollar.xyz/docs/operator-guide/treasury/transaction-policy) | Restrict sensitive operations (account merge, max fee) |
+| [Auth Policy](https://docs.pollar.xyz/docs/operator-guide/treasury/auth-policy)               | Soroban authorization allowlist   |
+| [Swap](https://docs.pollar.xyz/docs/operator-guide/treasury/swap)                             | Swap venues exposed to users      |
+| [Earn](https://docs.pollar.xyz/docs/operator-guide/treasury/earn)                             | Yield providers (DeFindex, Blend) |
+| [Token Distribution](https://docs.pollar.xyz/docs/operator-guide/treasury/token-distribution) | Claimable distribution rules      |
+
+**Integrations**
+
+| <br /> | <br /> |
+| ------ | ------ |
+| [Authentication](https://docs.pollar.xyz/docs/operator-guide/integrations/authentication) | OAuth providers and email OTP (upcoming) |
+| [KYC](https://docs.pollar.xyz/docs/operator-guide/integrations/kyc)                        | Identity-verification providers (upcoming) |
+| [Ramps](https://docs.pollar.xyz/docs/operator-guide/integrations/ramps)                    | Fiat on/off-ramp providers        |
+| [Pollar Pay](https://docs.pollar.xyz/docs/operator-guide/integrations/pollar-pay)          | Pollar Pay integration            |
+
+**Monitor**
+
+| <br /> | <br /> |
+| ------ | ------ |
+| [Transactions](https://docs.pollar.xyz/docs/operator-guide/monitor/transactions) | On-chain transaction log             |
+| [Logs](https://docs.pollar.xyz/docs/operator-guide/monitor/logs)                 | API request and delivery logs        |
+| [Alerts](https://docs.pollar.xyz/docs/operator-guide/monitor/alerts)             | Low-balance notifications (upcoming) |
+
+**Danger Zone**
+
+| <br /> | <br /> |
+| ------ | ------ |
+| [Archive app](https://docs.pollar.xyz/docs/operator-guide/danger-zone/archive-app) | Archive / unarchive the app (owner only) |
 
 ---
 
@@ -74,7 +119,7 @@ title: "Pollar Documentation"
 
 | <br />                                                   | <br />                                    |
 | -------------------------------------------------------- | ----------------------------------------- |
-| [Deferred Flow Guide](./docs/guides/deferred-flow-guide) | KYC-gated wallet activation with webhooks |
-| [Passkeys Guide](./docs/guides/passkeys-guide)           | Biometric auth with Face ID and Touch ID  |
-| [Payments UI](./docs/guides/payments-ui)                 | Send, receive, and history components     |
-| [Mainnet Checklist](./docs/guides/mainnet-checklist)     | Everything to verify before going live    |
+| [Deferred Flow Guide](https://docs.pollar.xyz/docs/guides/deferred-flow-guide) | KYC-gated wallet activation with webhooks |
+| [Passkeys Guide](https://docs.pollar.xyz/docs/guides/passkeys-guide)           | Biometric auth with Face ID and Touch ID  |
+| [Payments UI](https://docs.pollar.xyz/docs/guides/payments-ui)                 | Send, receive, and history components     |
+| [Mainnet Checklist](https://docs.pollar.xyz/docs/guides/mainnet-checklist)     | Everything to verify before going live    |

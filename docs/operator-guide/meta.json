@@ -1,11 +1,14 @@
 {
   "title": "Operator Guide",
-  "description": "Dashboard configuration, wallet infrastructure, user management, and observability.",
+  "description": "Configure and monitor your app from the Pollar Dashboard: Build, Users, Treasury, Integrations, and Monitor.",
   "pages": [
     "dashboard-overview",
-    "configuration",
-    "wallet-infrastructure",
-    "user-management",
-    "observability"
+    "overview",
+    "build",
+    "users",
+    "treasury",
+    "integrations",
+    "monitor",
+    "danger-zone"
   ]
 }

@@ -52,7 +52,7 @@ flowchart TD
 
 Futurenet is not supported by default. If your project requires it, [contact us](mailto:hello@pollar.xyz).
 
-Each network has its own set of API keys — see [API Keys](../getting-started/api-keys) for prefixes and usage rules.
+Each network has its own set of API keys — see [API Keys](https://docs.pollar.xyz/docs/getting-started/api-keys) for prefixes and usage rules.
 
 > Full details on Stellar networks at [developers.stellar.org/docs/networks](https://developers.stellar.org/docs/networks).
 ---
@@ -67,7 +67,7 @@ costs of running wallets on Stellar. There are three distinct roles:
 | ----------------------- | -------------------------------------------- | -------------------------- |
 | **Funding wallet**      | XLM reserve for new user wallets             | Once per wallet activation |
 | **Gas wallet**          | Transaction fees for all on-chain operations | Every transaction          |
-| **Distribution wallet** | Assets sent via `fund()`                     | Every `fund()` call        |
+| **Distribution wallet** | Assets sent via distribution rules           | Every claim                |
 
 By default a single wallet is created when you create your app and covers all three
 roles. This is fine for development and early-stage apps.
@@ -79,7 +79,7 @@ your funding wallet is replenished in larger batches tied to user growth. Mixing
 in a single wallet makes it harder to monitor and plan each cost independently.
 
 For configuration and recommended minimum balances see
-[Operator guide/Configuration/App Wallets](../operator-guide/configuration/app-wallets).
+[Operator guide/Configuration/App Wallets](https://docs.pollar.xyz/docs/operator-guide/treasury/account-funding).
 
 ---
 
@@ -106,7 +106,7 @@ sequenceDiagram
     SDK-->>App: wallet available in usePollar()
 ```
 
-For the deferred funding flow see [Funding Modes](./funding-modes.md).
+For the deferred funding flow see [Funding Modes](https://docs.pollar.xyz/docs/core-concepts/funding-modes).
 
 ---
 
@@ -124,7 +124,7 @@ By design, the Pollar Server can only:
 
 The Pollar Server cannot move user funds — the sponsorship wallet only covers fees and XLM reserves and has no authority to transfer a user's assets.
 
-For the full security model see [Security Model](./security-model).
+For the full security model see [Security Model](https://docs.pollar.xyz/docs/core-concepts/security-model).
 
 ---
 
@@ -139,4 +139,4 @@ For the full security model see [Security Model](./security-model).
 
 The Pollar Server intercepts every fee-bump transaction it signs and persists it to PostgreSQL. Because Pollar processes all fee-bumps for your app, it has full visibility into your transaction history without indexing the entire blockchain.
 
-For details on querying history see [Transaction History](./transaction-history).
+For details on querying history see [Transaction History](https://docs.pollar.xyz/docs/core-concepts/transaction-history).

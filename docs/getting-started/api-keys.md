@@ -17,7 +17,7 @@ Pollar issues two types of keys per environment. Understanding the difference is
 | Secret      | `sec_testnet_` | Testnet | Backend only (never expose client-side) |
 | Secret      | `sec_mainnet_` | Mainnet | Backend only (never expose client-side) |
 
-The **publishable key** is passed to `@pollar/core` or `@pollar/react` in your frontend. The **secret key** stays on your backend and is used for privileged operations like triggering wallet activation via `POST /activate`.
+The **publishable key** is passed to `@pollar/core` or `@pollar/react` in your frontend. The **secret key** stays on your backend and is used for privileged operations like triggering wallet activation via `POST /v1/wallets/activate`.
 
 > For details on Stellar networks (Testnet vs Mainnet) see the [Stellar Networks docs](https://developers.stellar.org/docs/networks).
 
@@ -26,7 +26,7 @@ The **publishable key** is passed to `@pollar/core` or `@pollar/react` in your f
 ## Generating a key
 
 1. Go to [dashboard.pollar.xyz](https://dashboard.pollar.xyz) and sign in with Google, GitHub, or email OTP
-2. Navigate to **Configuration → API Keys → Generate**
+2. Navigate to **Build → API Keys → Generate**
 3. Select the key type and network
 4. Copy and store it securely — secret keys are only shown once
 
@@ -70,4 +70,4 @@ POLLAR_SECRET_KEY=sec_testnet_xxxxxxxxxxxxxxxxxxxx
 
 - For mainnet, use build-time environment injection or a backend proxy — never hardcode `pub_mainnet_` in source
 
-- Rotate a compromised key immediately from **Dashboard → Configuration → API Keys**
+- Rotate a compromised key immediately from **Dashboard → Build → API Keys**

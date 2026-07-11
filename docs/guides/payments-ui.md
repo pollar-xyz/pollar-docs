@@ -6,27 +6,30 @@ This guide covers how to implement send, receive, and transaction history flows 
 
 ---
 
+All payment functionality is exposed through the single `usePollar()` hook.
+
 ## Send
 
-### Using `sendPayment()`
+### Using `runTx('payment', ...)`
+
+`runTx` is the one-shot helper (build → sign → submit). The returned `SubmitOutcome` has a `status` of `'success'`, `'pending'`, or `'error'`.
 
 ```tsx
 'use client';
-import { usePollarPayments } from '@pollar/react';
+import { usePollar } from '@pollar/react';
 import { useState } from 'react';
 
+const USDC = { type: 'credit_alphanum4', code: 'USDC', issuer: 'GA5Z...' } as const;
+
 export function SendForm() {
-  const { sendPayment, sending } = usePollarPayments();
+  const { runTx, tx } = usePollar();
   const [to, setTo] = useState('');
   const [amount, setAmount] = useState('');
+  const sending = tx.step !== 'idle' && tx.step !== 'success' && tx.step !== 'error';
 
   async function handleSend() {
-    const result = await sendPayment({
-      to,
-      amount,
-      asset: 'USDC',
-    });
-    console.log('Confirmed:', result.txHash);
+    const result = await runTx('payment', { destination: to, amount, asset: USDC });
+    if (result.status === 'success') console.log('Confirmed:', result.hash);
   }
 
   return (
@@ -50,22 +53,29 @@ export function SendForm() {
 }
 ```
 
+For a native XLM payment, use `asset: { type: 'native' }`. For step-by-step control over building and signing, use `buildTx()` then `signAndSubmitTx()` — see [`@pollar/core`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core).
+
 ### With memo
 
-Memos are useful for identifying payments on the recipient's side — common in remittance and payroll apps.
+Memos are useful for identifying payments on the recipient's side — common in remittance and payroll apps. Pass a `memo` in the third `options` argument:
 
 ```tsx
-await sendPayment({
-  to: 'GXXX...',
-  amount: '100.00',
-  asset: 'USDC',
-  memo: 'Payroll March 2026',
-});
+await runTx(
+  'payment',
+  { destination: 'GXXX...', amount: '100.00', asset: USDC },
+  { memo: { type: 'text', value: 'Payroll March 2026' } },
+);
 ```
 
-### Pre-built `<SendPayment />` component `coming soon`
+### Pre-built send modal
 
-A pre-built component with address input, asset selector, amount field, and confirmation step. Customizable from **Dashboard → Configuration → Branding & UI**.
+Pollar ships a ready-made send flow (address input, asset selector, amount field, confirmation). Open it programmatically — appearance is customizable from **Build → Branding**:
+
+```tsx
+const { openSendModal } = usePollar();
+// ...
+<button onClick={openSendModal}>Send</button>
+```
 
 ---
 
@@ -73,15 +83,17 @@ A pre-built component with address input, asset selector, amount field, and conf
 
 ### Showing the user's address
 
+The authenticated wallet is exposed as `wallet` — read its on-chain address from `wallet.address`:
+
 ```tsx
 'use client';
-import { usePollarWallet } from '@pollar/react';
+import { usePollar } from '@pollar/react';
 
 export function ReceiveView() {
-  const { wallet } = usePollarWallet();
+  const { wallet } = usePollar();
 
   async function copyAddress() {
-    await navigator.clipboard.writeText(wallet!.address);
+    if (wallet) await navigator.clipboard.writeText(wallet.address);
   }
 
   return (
@@ -99,13 +111,24 @@ Generate a QR code from the wallet address using any QR library:
 
 ```tsx
 import QRCode from 'qrcode.react';
-import { usePollarWallet } from '@pollar/react';
+import { usePollar } from '@pollar/react';
 
 export function ReceiveQR() {
-  const { wallet } = usePollarWallet();
+  const { wallet } = usePollar();
 
-  return <QRCode value={wallet?.address ?? ''} size={200} />;
+  if (!wallet) return null;
+  return <QRCode value={wallet.address} size={200} />;
 }
+```
+
+### Pre-built receive modal
+
+Pollar ships a ready-made receive view (QR + copyable address). Open it with `openReceiveModal()`:
+
+```tsx
+const { openReceiveModal } = usePollar();
+// ...
+<button onClick={openReceiveModal}>Receive</button>
 ```
 
 ### SEP-7 payment request URI `coming soon`
@@ -116,83 +139,35 @@ SEP-7 encodes destination, asset, amount, and memo into a single URI that any co
 web+stellar:pay?destination=GXXX&asset_code=USDC&asset_issuer=GXXX&amount=10
 ```
 
-When available, Pollar will generate SEP-7 URIs automatically via `wallet.paymentRequestUri()`.
-
-### Pre-built `<ReceivePayment />` component `coming soon`
-
-A pre-built component with QR code display, copyable address, and shareable payment link.
-
 ---
 
 ## Transaction history
 
-### Using `usePollarHistory()`
+### Using the `txHistory` state
+
+`txHistory` is a reactive state machine. Trigger a load through the underlying client and render `txHistory.data.records` once it reaches `loaded`:
 
 ```tsx
 'use client';
-import { usePollarHistory } from '@pollar/react';
+import { useEffect } from 'react';
+import { usePollar } from '@pollar/react';
 
 export function TxHistory() {
-  const { txHistory, loadingHistory, fetchMoreHistory, hasMore } = usePollarHistory();
+  const { txHistory, getClient } = usePollar();
 
-  if (loadingHistory && txHistory.length === 0) return <p>Loading...</p>;
+  useEffect(() => {
+    getClient().fetchTxHistory({ limit: 20, offset: 0 });
+  }, [getClient]);
 
-  return (
-    <div>
-      <ul>
-        {txHistory.map(tx => (
-          <li key={tx.hash}>
-            <span>{tx.type === 'send' ? '↑' : '↓'}</span>
-            <span>{tx.amount} {tx.asset}</span>
-            <span>{new Date(tx.timestamp).toLocaleDateString()}</span>
-          </li>
-        ))}
-      </ul>
-
-      {hasMore && (
-        <button onClick={fetchMoreHistory} disabled={loadingHistory}>
-          {loadingHistory ? 'Loading...' : 'Load more'}
-        </button>
-      )}
-    </div>
-  );
-}
-```
-
-### Filtering by type or asset
-
-```tsx
-// Only payments
-const payments = txHistory.filter(tx => tx.type === 'payment');
-
-// Only USDC
-const usdcTxs = txHistory.filter(tx => tx.asset === 'USDC');
-```
-
-For server-side filtering with date ranges, use the REST API directly — see [Transaction History](../core-concepts/transaction-history).
-
-### Pre-built `<PaymentHistory />` component `coming soon`
-
-A pre-built paginated history component with type icons, asset labels, and date grouping.
-
----
-
-## Asset balances
-
-### Reading balances from the wallet
-
-```tsx
-'use client';
-import { usePollarWallet } from '@pollar/react';
-
-export function Balances() {
-  const { wallet } = usePollarWallet();
+  if (txHistory.step !== 'loaded') return <p>Loading...</p>;
 
   return (
     <ul>
-      {wallet?.balances.map(b => (
-        <li key={b.asset}>
-          {b.amount} {b.asset}
+      {txHistory.data.records.map(tx => (
+        <li key={tx.id}>
+          <span>{tx.summary}</span>
+          <span>{tx.status}</span>
+          <span>{new Date(tx.createdAt).toLocaleDateString()}</span>
         </li>
       ))}
     </ul>
@@ -200,39 +175,71 @@ export function Balances() {
 }
 ```
 
-### Pre-built `<AssetBalance />` component `coming soon`
+See [Transaction History](https://docs.pollar.xyz/docs/core-concepts/transaction-history) for the record fields and offset-based pagination.
 
-A pre-built component for displaying a single asset balance with formatting and asset icon.
+### Pre-built history modal
+
+`openTxHistoryModal()` renders a ready-made, paginated history list:
 
 ```tsx
-// coming soon
-<AssetBalance asset="USDC" />
+const { openTxHistoryModal } = usePollar();
+// ...
+<button onClick={openTxHistoryModal}>History</button>
 ```
+
+---
+
+## Asset balances
+
+### Reading balances from the wallet
+
+`walletBalance` is a reactive state machine; call `refreshWalletBalance()` to load it. Each balance record exposes `code`, `balance`, `available`, `type`, and `enabledInApp`.
+
+```tsx
+'use client';
+import { useEffect } from 'react';
+import { usePollar } from '@pollar/react';
+
+export function Balances() {
+  const { walletBalance, refreshWalletBalance } = usePollar();
+
+  useEffect(() => { refreshWalletBalance(); }, [refreshWalletBalance]);
+
+  if (walletBalance.step !== 'loaded') return <p>Loading...</p>;
+
+  return (
+    <ul>
+      {walletBalance.data.balances.map(b => (
+        <li key={b.code}>
+          {b.balance} {b.code}
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+### Pre-built balance modal
+
+`openWalletBalanceModal()` renders a ready-made balance view with a manual refresh.
 
 ---
 
 ## Fiat on/off-ramp
 
-Enable SEP-24 in **Dashboard → Configuration → Integrations** to add a deposit/withdrawal button:
+Ramps integrate third-party providers (configure them under **Integrations → Ramps**). Open the pre-built widget with `openRampModal()`:
 
 ```tsx
 'use client';
 import { usePollar } from '@pollar/react';
 
-export function FiatButtons() {
-  const { openFiatRamp } = usePollar();
+export function FiatButton() {
+  const { openRampModal } = usePollar();
 
-  return (
-    <div>
-      <button onClick={() => openFiatRamp({ type: 'deposit', asset: 'USDC' })}>
-        Deposit USD
-      </button>
-      <button onClick={() => openFiatRamp({ type: 'withdrawal', asset: 'USDC' })}>
-        Withdraw USD
-      </button>
-    </div>
-  );
+  return <button onClick={openRampModal}>Deposit / Withdraw</button>;
 }
 ```
 
-See [Fiat Ramps](../operator-guide/configuration/integrations) for setup.
+For headless control over quotes and on/off-ramp creation, use `getClient().getRampsQuote()`, `createOnRamp()`, and `createOffRamp()` from [`@pollar/core`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core).
+
+See [Fiat Ramps](https://docs.pollar.xyz/docs/operator-guide/integrations/ramps) for setup.

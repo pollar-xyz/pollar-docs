@@ -41,84 +41,88 @@ The Pollar Server captures every transaction at fee-bump signing time and persis
 
 ## SDK — React hook
 
+`txHistory` is a reactive state machine (`TxHistoryState`). Trigger a load with `fetchTxHistory()` on the underlying client; the provider keeps `txHistory` in sync.
+
 ```tsx
 'use client';
+import { useEffect } from 'react';
 import { usePollar } from '@pollar/react';
 
 export function TxHistory() {
-  const { txHistory, loadingHistory, fetchMoreHistory, hasMore } = usePollar();
+  const { txHistory, getClient } = usePollar();
+
+  useEffect(() => {
+    getClient().fetchTxHistory({ limit: 20, offset: 0 });
+  }, [getClient]);
+
+  if (txHistory.step !== 'loaded') return <p>Loading...</p>;
 
   return (
-    <div>
-      <ul>
-        {txHistory.map((tx) => (
-          <li key={tx.hash}>
-            {tx.type === 'send' ? '↑' : '↓'} {tx.amount} {tx.asset}
-            <span>{new Date(tx.timestamp).toLocaleDateString()}</span>
-          </li>
-        ))}
-      </ul>
-      {hasMore && (
-        <button onClick={fetchMoreHistory} disabled={loadingHistory}>
-          {loadingHistory ? 'Loading...' : 'Load more'}
-        </button>
-      )}
-    </div>
+    <ul>
+      {txHistory.data.records.map((tx) => (
+        <li key={tx.id}>
+          {tx.summary} · {tx.status} · {new Date(tx.createdAt).toLocaleDateString()}
+        </li>
+      ))}
+    </ul>
   );
 }
 ```
 
+> The simplest path is the built-in modal: call `openTxHistoryModal()` from `usePollar()`.
+
 ## SDK — Core client
 
 ```typescript
-const { transactions, nextCursor, hasMore } = await pollar.getHistory({
-  walletId: 'wal_abc123',
-  limit: 20,        // default: 20, max: 100
-  cursor: undefined, // pass nextCursor from previous response to paginate
-});
+await pollar.fetchTxHistory({ limit: 20, offset: 0 });
+
+const state = pollar.getTxHistoryState();
+if (state.step === 'loaded') {
+  console.log(state.data.records, state.data.total);
+}
 ```
+
+`fetchTxHistory` drives `TxHistoryState` (it does not return the records directly). Subscribe with `onTxHistoryStateChange` for updates.
 
 ---
 
 ## REST API
 
-Available for backend use with your secret key.
+The end-user transaction history is served by the SDK API (publishable key + authenticated end-user session), not by the secret-key Server API:
 
 ```bash
-GET https://api.pollar.xyz/wallets/:walletId/transactions
-Authorization: Bearer sec_testnet_xxxxxxxxxxxxxxxxxxxx
+GET https://sdk.api.pollar.xyz/v1/tx/history?limit=20&offset=0
 ```
+
+> There is currently **no secret-key Server API endpoint** for wallet transaction history. Use the SDK (`fetchTxHistory`) from an authenticated session.
 
 **Query parameters:**
 
-| Parameter | Type     | Default | Description                                   |
-| --------- | -------- | ------- | --------------------------------------------- |
-| `limit`   | `number` | `20`    | Transactions per page. Max `100`.             |
-| `cursor`  | `string` | —       | Pagination cursor from previous response.     |
-| `type`    | `string` | —       | Filter: `payment`, `activation`, `trustline`. |
-| `asset`   | `string` | —       | Filter by asset code, e.g. `USDC`.            |
-| `from`    | ISO 8601 | —       | Start date.                                   |
-| `to`      | ISO 8601 | —       | End date.                                     |
+| Parameter | Type     | Default | Description                          |
+| --------- | -------- | ------- | ------------------------------------ |
+| `limit`   | `number` | —       | Records per page.                    |
+| `offset`  | `number` | `0`     | Offset for pagination.               |
+| `network` | `string` | session | `testnet` or `mainnet`.              |
 
-**Response:**
+**Response (`content`):**
 
 ```json
 {
-  "transactions": [
+  "records": [
     {
+      "id": "tx_abc123",
       "hash": "a1b2c3d4...",
-      "type": "payment",
-      "asset": "USDC",
-      "amount": "10.00",
-      "from": "GABC...",
-      "to": "GXYZ...",
-      "feeSponsored": true,
-      "ledger": 1234567,
-      "timestamp": "2026-03-15T10:30:00Z"
+      "network": "testnet",
+      "status": "SUCCESS",
+      "operation": "payment",
+      "feeXlm": "0.00001",
+      "summary": "Sent 10.00 USDC",
+      "createdAt": "2026-03-15T10:30:00Z"
     }
   ],
-  "cursor": "eyJsZWRnZXIiOjEyMzQ1NjZ9",
-  "hasMore": true
+  "total": 42,
+  "limit": 20,
+  "offset": 0
 }
 ```
 
@@ -126,18 +130,22 @@ Authorization: Bearer sec_testnet_xxxxxxxxxxxxxxxxxxxx
 
 ## Pagination
 
-Pollar uses cursor-based pagination. Cursors are stable — new transactions don't shift existing pages.
+History uses **offset-based** pagination. Increase `offset` by `limit` to page forward; `total` tells you when to stop.
 
 ```typescript
-async function getAllTransactions(walletId: string) {
+async function getAllTransactions() {
   const all = [];
-  let cursor: string | undefined;
+  let offset = 0;
+  const limit = 100;
 
-  do {
-    const page = await pollar.getHistory({ walletId, limit: 100, cursor });
-    all.push(...page.transactions);
-    cursor = page.nextCursor;
-  } while (page.hasMore);
+  for (;;) {
+    await pollar.fetchTxHistory({ limit, offset });
+    const state = pollar.getTxHistoryState();
+    if (state.step !== 'loaded') break;
+    all.push(...state.data.records);
+    offset += limit;
+    if (offset >= state.data.total) break;
+  }
 
   return all;
 }
@@ -145,29 +153,32 @@ async function getAllTransactions(walletId: string) {
 
 ---
 
-## Transaction types
+## Transaction status
 
-| Type         | Description                             |
-| ------------ | --------------------------------------- |
-| `payment`    | Asset transfer between wallets          |
-| `activation` | Wallet funded — XLM reserve established |
-| `trustline`  | Asset trustline enabled                 |
-| `receive`    | Incoming payment from outside Pollar    |
+Each record carries a `status` reflecting its lifecycle:
+
+| Status    | Description                                  |
+| --------- | -------------------------------------------- |
+| `PENDING` | Built/submitted, not yet confirmed on-chain. |
+| `SUCCESS` | Confirmed on-chain.                          |
+| `FAILED`  | Rejected by Stellar.                         |
+
+The human-readable `operation` and `summary` fields describe what the transaction did.
 
 ---
 
-## `TxRecord` type
+## Record type
 
 ```typescript
-type TxRecord = {
+type TxHistoryRecord = {
+  id: string;
   hash: string;
-  type: 'payment' | 'activation' | 'trustline' | 'receive';
-  asset: string;
-  amount: string;
-  from: string;
-  to: string;
-  feeSponsored: boolean;
-  ledger: number;
-  timestamp: string; // ISO 8601
+  network: 'testnet' | 'mainnet';
+  status: 'PENDING' | 'SUCCESS' | 'FAILED';
+  operation: string;
+  feeXlm?: string;
+  resultCode?: string;
+  summary: string;
+  createdAt: string; // ISO 8601
 };
 ```

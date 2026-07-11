@@ -12,7 +12,7 @@ Before switching your app to Mainnet, verify every item in this checklist. There
 
 - [ ] Generated `pub_mainnet_` and `sec_mainnet_` keys
 
-- [ ] Added your production domain(s) in **Dashboard → Configuration → Domains**
+- [ ] Added your production domain(s) in **Dashboard → Build → Domains**
 
 - [ ] Funding mode configured correctly for your use case
 
@@ -32,9 +32,9 @@ Before switching your app to Mainnet, verify every item in this checklist. There
 - [ ] Gas wallet active and funded
   - Recommended minimum: 10 XLM
 
-- [ ] Distribution wallet funded (if using `fund()` on mainnet)
+- [ ] Distribution wallet funded (if distributing tokens)
 
-- [ ] Low-balance alerts configured in **Dashboard → Configuration → Alerts**
+- [ ] Low-balance alerts configured in **Dashboard → Monitor → Alerts**
   - At minimum: email alert for funding wallet below 20 XLM
 
 ---
@@ -53,7 +53,7 @@ Before switching your app to Mainnet, verify every item in this checklist. There
 
 ## Backend (Deferred mode only)
 
-- [ ] `POST /activate` endpoint deployed to production
+- [ ] `POST /v1/wallets/activate` endpoint deployed to production
 
 - [ ] Endpoint uses `sec_mainnet_` secret key
 
@@ -67,15 +67,15 @@ Before switching your app to Mainnet, verify every item in this checklist. There
 
 ## SDK integration
 
-- [ ] `PollarProvider` uses production publishable key
+- [ ] `PollarProvider` uses production publishable key (`client={{ apiKey: 'pub_mainnet_...' }}`)
 
 - [ ] No hardcoded testnet addresses or amounts
 
-- [ ] Error handling implemented for `sendPayment()` failures
+- [ ] Error handling implemented for transaction (`runTx` / `signAndSubmitTx`) failures — inspect the returned `SubmitOutcome.status`
 
-- [ ] Wallet `status: 'pending'` handled in the UI (Deferred / Manual mode)
+- [ ] Unfunded wallets handled in the UI (Deferred mode — wallet exists but not yet activated)
 
-- [ ] `fund()` on mainnet explicitly enabled in Dashboard if used
+- [ ] Token distribution rules configured in Dashboard if used
 
 ---
 
@@ -85,7 +85,7 @@ Before switching your app to Mainnet, verify every item in this checklist. There
 
 - [ ] At least one real USDC payment sent and confirmed
 
-- [ ] Transaction appears in **Dashboard → Observability → Transactions**
+- [ ] Transaction appears in **Dashboard → Monitor → Transactions**
 
 - [ ] Wallet visible on [Stellar Expert](https://stellar.expert)
 
@@ -95,7 +95,7 @@ Before switching your app to Mainnet, verify every item in this checklist. There
 
 ## Observability
 
-- [ ] **Dashboard → Observability → Logs** monitored after first real users
+- [ ] **Dashboard → Monitor → Logs** monitored after first real users
 
 - [ ] Error alerting set up (Sentry, Datadog, or similar) for your backend
 

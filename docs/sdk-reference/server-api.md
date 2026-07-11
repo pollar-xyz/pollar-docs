@@ -4,167 +4,163 @@ title: "Pollar Server API"
 
 REST API for backend operations. All endpoints require your **secret key** — never call these from client-side code.
 
-**Base URL:** `https://api.pollar.xyz`
+**Base URL:** `https://api.pollar.xyz` — all routes are versioned under `/v1`.
 
-**Authentication:**
+**Authentication:** pass your secret key in the `x-pollar-api-key` header (not `Authorization`).
 
 ```bash
-Authorization: Bearer sec_testnet_xxxxxxxxxxxxxxxxxxxx
+x-pollar-api-key: sec_testnet_xxxxxxxxxxxxxxxxxxxx
 ```
+
+Wallets are identified by their on-chain **public key** (`G…` address), not by an opaque id.
+
+**Response envelope.** Every response is wrapped:
+
+- Success: `{ "content": <data>, "code": "<SUCCESS_CODE>", "success": true }`
+- Error: `{ "code": "<ERROR_CODE>", "success": false }` (plus any extra fields). The HTTP status carries the status; there is no `status` field in the body.
 
 ---
 
 ## Wallets
 
-### `POST /wallets/activate`
+### `POST /v1/wallets/activate`
 
 Activates a wallet by funding its XLM reserve on-chain. Used in Deferred mode when a business event occurs (KYC approved, first deposit, etc.).
 
-This endpoint behaves like a webhook receiver — Pollar retries until it receives a `200` response.
-
 ```bash
-POST https://api.pollar.xyz/wallets/activate
-Authorization: Bearer sec_testnet_xxxxxxxxxxxxxxxxxxxx
+POST https://api.pollar.xyz/v1/wallets/activate
+x-pollar-api-key: sec_testnet_xxxxxxxxxxxxxxxxxxxx
 Content-Type: application/json
 
 {
-  "walletId": "wal_abc123"
+  "publicKey": "GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 }
 ```
 
+`publicKey` must be a 56-character Stellar public key starting with `G`.
+
 **Response codes:**
 
-| Code                      | Meaning                                              |
-| ------------------------- | ---------------------------------------------------- |
-| `200 OK`                  | Wallet activated. XLM reserve funded on-chain.       |
-| `400 Bad Request`         | Missing or malformed `walletId`.                     |
-| `402 Payment Required`    | Funding wallet has insufficient XLM.                 |
-| `404 Not Found`           | `walletId` does not exist in your app.               |
-| `409 Conflict`            | Wallet is already active. Safe to ignore.            |
-| `503 Service Unavailable` | Stellar network issue. Pollar retries automatically. |
+| Code                      | Meaning                                                                    |
+| ------------------------- | -------------------------------------------------------------------------- |
+| `200 OK`                  | Wallet activated. XLM reserve funded on-chain.                             |
+| `400 Bad Request`         | Missing or malformed `publicKey` (`VALIDATION_ERROR`).                     |
+| `403 Forbidden`           | `publicKey` belongs to a wallet owned by another app (`FORBIDDEN`).        |
+| `404 Not Found`           | `publicKey` is not a known wallet (`WALLET_NOT_FOUND`).                    |
+| `409 Conflict`            | Wallet is already funded (`WALLET_ALREADY_FUNDED`). Safe to ignore.        |
+| `502 Bad Gateway`         | Funding the XLM reserve failed (`FUND_XLM_FAILED`) — e.g. the funding wallet has insufficient XLM, or a transient Stellar network issue. Retry. |
 
 **Response body (`200`):**
 
 ```json
 {
-  "walletId": "wal_abc123",
-  "address": "GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-  "status": "active",
-  "activatedAt": "2026-03-15T10:30:00Z"
+  "content": {
+    "publicKey": "GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+    "amount": "1.5"
+  },
+  "code": "SERVER_WALLET_ACTIVATED",
+  "success": true
 }
 ```
+
+`amount` is the XLM reserve funded (1 XLM base + 0.5 per configured asset).
 
 ---
 
-### `GET /wallets/:walletId`
+## Trustlines
 
-Returns wallet details and current balances.
+Enable or disable asset trustlines on a user wallet. The wallet must already be funded.
+
+### `POST /v1/wallets/:address/trustlines/default`
+
+Enables trustlines for all of your app's configured (default) assets on the given wallet.
 
 ```bash
-GET https://api.pollar.xyz/wallets/wal_abc123
-Authorization: Bearer sec_testnet_xxxxxxxxxxxxxxxxxxxx
+POST https://api.pollar.xyz/v1/wallets/GXXX.../trustlines/default
+x-pollar-api-key: sec_testnet_xxxxxxxxxxxxxxxxxxxx
 ```
 
-**Response (`200`):**
+### `POST /v1/wallets/:address/trustlines`
 
-```json
+Enables explicit trustlines for the assets in the body.
+
+```bash
+POST https://api.pollar.xyz/v1/wallets/GXXX.../trustlines
+x-pollar-api-key: sec_testnet_xxxxxxxxxxxxxxxxxxxx
+Content-Type: application/json
+
 {
-  "id": "wal_abc123",
-  "address": "GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-  "status": "active",
-  "balances": [
-    { "asset": "XLM", "amount": "2.50" },
-    { "asset": "USDC", "amount": "100.00" }
-  ],
-  "createdAt": "2026-03-15T10:00:00Z",
-  "activatedAt": "2026-03-15T10:30:00Z"
+  "assets": [
+    { "code": "USDC", "issuer": "GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" }
+  ]
 }
 ```
+
+Returns `code: "SERVER_TRUSTLINES_ENABLED"`.
+
+### `DELETE /v1/wallets/:address/trustlines/:asset`
+
+Removes a trustline (the asset must have a zero balance). The `:asset` segment is `CODE:ISSUER` (e.g. `USDC:GA5Z…`). Returns `code: "SERVER_TRUSTLINE_DISABLED"`.
 
 ---
 
-### `GET /wallets/:walletId/transactions`
+## Users
 
-Returns paginated transaction history for a wallet.
+Register an app user (and optionally provision a wallet for them).
+
+### `POST /v1/users`
 
 ```bash
-GET https://api.pollar.xyz/wallets/wal_abc123/transactions?limit=20&type=payment
-Authorization: Bearer sec_testnet_xxxxxxxxxxxxxxxxxxxx
-```
+POST https://api.pollar.xyz/v1/users
+x-pollar-api-key: sec_testnet_xxxxxxxxxxxxxxxxxxxx
+Content-Type: application/json
 
-**Query parameters:**
-
-| Parameter | Type     | Default | Description                                             |
-| --------- | -------- | ------- | ------------------------------------------------------- |
-| `limit`   | `number` | `20`    | Transactions per page. Max `100`.                       |
-| `cursor`  | `string` | —       | Pagination cursor from previous response.               |
-| `type`    | `string` | —       | Filter: `payment`, `activation`, `trustline`, `receive` |
-| `asset`   | `string` | —       | Filter by asset code, e.g. `USDC`                       |
-| `from`    | ISO 8601 | —       | Start date filter                                       |
-| `to`      | ISO 8601 | —       | End date filter                                         |
-
-**Response (`200`):**
-
-```json
 {
-  "transactions": [
-    {
-      "hash": "a1b2c3d4...",
-      "type": "payment",
-      "asset": "USDC",
-      "amount": "10.00",
-      "from": "GABC...",
-      "to": "GXYZ...",
-      "feeSponsored": true,
-      "ledger": 1234567,
-      "timestamp": "2026-03-15T10:30:00Z"
-    }
-  ],
-  "cursor": "eyJsZWRnZXIiOjEyMzQ1NjZ9",
-  "hasMore": true
+  "externalId": "your-user-id",
+  "email": "user@example.com"
 }
 ```
+
+`externalId` (1–255 chars) is required; `email`, `firstName`, `lastName`, and `avatar` are optional. Returns `201` with `code: "SERVER_USER_REGISTERED"`.
+
+### `POST /v1/users/with-wallet`
+
+Same body as above, but also creates a Stellar wallet for the user in one call. Returns `201` with `code: "SERVER_USER_WALLET_CREATED"`.
 
 ---
 
-## Apps
+## Tokens
 
-### `GET /app`
+### `POST /v1/tokens/verify`
 
-Returns the current app configuration.
+Validates an SDK end-user access token server-side (e.g. to authenticate a user on your backend from a token minted client-side by the SDK).
 
 ```bash
-GET https://api.pollar.xyz/app
-Authorization: Bearer sec_testnet_xxxxxxxxxxxxxxxxxxxx
-```
+POST https://api.pollar.xyz/v1/tokens/verify
+x-pollar-api-key: sec_testnet_xxxxxxxxxxxxxxxxxxxx
+Content-Type: application/json
 
-**Response (`200`):**
-
-```json
 {
-  "id": "app_xyz789",
-  "name": "My App",
-  "network": "testnet",
-  "fundingMode": "deferred",
-  "assets": ["USDC", "EURC"],
-  "createdAt": "2026-01-01T00:00:00Z"
+  "token": "<sdk access token>"
 }
 ```
+
+On success returns `code: "SERVER_TOKEN_VERIFIED"` with content
+`{ userId, applicationId, expiresAt, network, wallet, profile, authProvider }`.
+
+**Error codes:** `SDK_AUTH_TOKEN_EXPIRED` (`401`), `SDK_AUTH_INVALID_TOKEN` (`401`), `SDK_TOKEN_WRONG_APPLICATION` (`403`).
 
 ---
 
 ## Error format
 
-All errors follow a consistent format:
+Errors are returned in the standard envelope:
 
 ```json
 {
-  "error": {
-    "code": "INSUFFICIENT_SPONSOR_BALANCE",
-    "message": "The funding wallet does not have enough XLM to activate this wallet.",
-    "status": 402
-  }
+  "code": "FUND_XLM_FAILED",
+  "success": false
 }
 ```
 
-For a full list of error codes see [Error Codes](./error-codes).
+The HTTP status code carries the status. For the list of codes see [Error Codes](https://docs.pollar.xyz/docs/sdk-reference/error-codes).

@@ -96,7 +96,7 @@ In other words: Pollar's sponsor key is structurally limited to "I'll pay the fe
 
 ### Operator wallets (funding, gas, distribution)
 
-These wallets are also managed via AWS KMS — Pollar holds the encrypted keys and signs on their behalf. The distinction from user wallets is that these are *your* wallets, funded by you, and exist specifically so Pollar can operate them for a defined set of tasks: funding XLM reserves, paying transaction fees, and distributing assets via `fund()`. Every signing operation is logged to AWS CloudTrail. Pollar cannot use these wallets outside of those operations, and no action goes unrecorded.
+These wallets are also managed via AWS KMS — Pollar holds the encrypted keys and signs on their behalf. The distinction from user wallets is that these are *your* wallets, funded by you, and exist specifically so Pollar can operate them for a defined set of tasks: funding XLM reserves, paying transaction fees, and distributing assets via distribution rules. Every signing operation is logged to AWS CloudTrail. Pollar cannot use these wallets outside of those operations, and no action goes unrecorded.
 
 ### Fee-bump policy enforcement
 

@@ -88,7 +88,7 @@ SEP-7 defines a URI scheme for Stellar payment requests — similar to Bitcoin's
 |---|---|
 | G-address + XLM reserve | Wallet creation, funding modes |
 | Fee-bump transactions | Gas sponsorship — users pay zero XLM |
-| Account sponsorship | Deferred and Manual funding modes |
+| Account sponsorship | Deferred funding mode and manual activation |
 | Trustlines | Automatic asset enablement on activation |
 | SEP-10 | Dashboard authentication |
 | SEP-24 | Fiat deposit and withdrawal |
