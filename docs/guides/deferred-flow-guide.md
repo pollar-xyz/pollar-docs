@@ -2,7 +2,7 @@
 title: "Deferred Flow Guide"
 ---
 
-Deferred mode creates user wallets on-chain without funding them immediately. The XLM reserve is only charged when your backend calls `POST /v1/wallets/activate` — typically after a business event like KYC approval or a first deposit.
+Deferred mode creates user wallets on-chain without funding them immediately. The XLM reserve is only sponsored when your backend calls `POST /v1/wallets/fund` — typically after a business event like KYC approval or a first deposit.
 
 This guide walks through the full implementation end-to-end.
 
@@ -34,11 +34,11 @@ sequenceDiagram
 
     Note over User,Backend: User completes KYC / first deposit / your trigger
 
-    Backend->>Pollar: POST /v1/wallets/activate
+    Backend->>Pollar: POST /v1/wallets/fund
     Note over Backend,Pollar: Uses secret key — never from client
     Pollar->>Stellar: beginSponsoringFutureReserves
     Stellar-->>Pollar: Reserve funded (~2s)
-    Pollar-->>Backend: 200 { status: 'active' }
+    Pollar-->>Backend: 200 { publicKey, startingBalance }
     Frontend-->>User: Wallet ready
 ```
 
@@ -67,12 +67,12 @@ export function WalletGate() {
 
 ## Step 2 — Trigger activation from your backend
 
-When the business event occurs (KYC approved, first deposit confirmed, etc.), your backend calls `POST /v1/wallets/activate` using the **secret key** and the wallet's `publicKey`.
+When the business event occurs (KYC approved, first deposit confirmed, etc.), your backend calls `POST /v1/wallets/fund` using the **secret key** and the wallet's `publicKey`.
 
 ```typescript
 // Your backend — e.g. Next.js API route, Express handler, webhook receiver
-async function activateWallet(publicKey: string) {
-  const response = await fetch('https://api.pollar.xyz/v1/wallets/activate', {
+async function fundWallet(publicKey: string) {
+  const response = await fetch('https://server.api.pollar.xyz/v1/wallets/fund', {
     method: 'POST',
     headers: {
       'x-pollar-api-key': process.env.POLLAR_SECRET_KEY!,
@@ -83,11 +83,11 @@ async function activateWallet(publicKey: string) {
 
   if (!response.ok) {
     const { code } = await response.json(); // { code, success: false }
-    throw new Error(`Activation failed: ${code}`);
+    throw new Error(`Funding failed: ${code}`);
   }
 
   return response.json();
-  // { content: { publicKey, amount }, code: 'SERVER_WALLET_ACTIVATED', success: true }
+  // { content: { publicKey, startingBalance }, code: 'SERVER_WALLET_FUNDED', success: true }
 }
 ```
 
@@ -99,7 +99,7 @@ async function activateWallet(publicKey: string) {
 
 | Code | Meaning | Action |
 |---|---|---|
-| `200 OK` | Wallet activated successfully | Proceed — wallet is funded on-chain |
+| `200 OK` | Wallet funded successfully | Proceed — wallet is live on-chain |
 | `400 Bad Request` | Missing or malformed `publicKey` | Check the request payload |
 | `402 Payment Required` | Funding wallet has insufficient XLM | Top up via **Dashboard → Treasury → Account Funding** |
 | `404 Not Found` | `publicKey` is not a wallet owned by your app | Verify the public key |
@@ -110,7 +110,7 @@ async function activateWallet(publicKey: string) {
 
 ## Step 4 — Notify the frontend
 
-After activation, notify your frontend so the UI updates. Your backend owns the "is this user activated?" signal, so the simplest approach is to poll your own endpoint; you can confirm on-chain by refreshing the wallet balance (an activated wallet now has its XLM reserve).
+After activation, notify your frontend so the UI updates. Your backend owns the "is this user activated?" signal, so the simplest approach is to poll your own endpoint; you can confirm on-chain by refreshing the wallet balance (a funded wallet is live on-chain, with its reserve sponsored by the app's funding wallet plus the app's configured starting balance).
 
 ```tsx
 'use client';
@@ -148,7 +148,7 @@ export function KycFlow({ publicKey }: { publicKey: string }) {
 
 The [template-nextjs](https://github.com/pollar-xyz/template-nextjs) demo includes a working implementation:
 
-- `app/api/activate/route.ts` — the API route that calls `POST /v1/wallets/activate`
+- `app/api/activate/route.ts` — the API route that calls `POST /v1/wallets/fund`
 - `app/components/KycGate.tsx` — the frontend component that triggers it
 
 ---
@@ -157,12 +157,12 @@ The [template-nextjs](https://github.com/pollar-xyz/template-nextjs) demo includ
 
 1. Set funding mode to **Deferred** in the Dashboard
 2. Log in — the wallet is created unfunded (no XLM reserve)
-3. Call your activate endpoint manually (e.g. with curl or Postman)
-4. Verify the wallet is now funded (it has its XLM reserve)
+3. Call your fund endpoint manually (e.g. with curl or Postman)
+4. Verify the wallet is now funded (its reserve is sponsored on-chain)
 5. Verify the G-address on [Stellar Expert testnet](https://testnet.stellar.expert)
 
 ```bash
-curl -X POST https://api.pollar.xyz/v1/wallets/activate \
+curl -X POST https://server.api.pollar.xyz/v1/wallets/fund \
   -H "x-pollar-api-key: sec_testnet_xxxxxxxxxxxxxxxxxxxx" \
   -H "Content-Type: application/json" \
   -d '{ "publicKey": "GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" }'

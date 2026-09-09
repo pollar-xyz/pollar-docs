@@ -53,7 +53,7 @@ Before switching your app to Mainnet, verify every item in this checklist. There
 
 ## Backend (Deferred mode only)
 
-- [ ] `POST /v1/wallets/activate` endpoint deployed to production
+- [ ] `POST /v1/wallets/fund` endpoint deployed to production
 
 - [ ] Endpoint uses `sec_mainnet_` secret key
 

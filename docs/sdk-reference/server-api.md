@@ -4,7 +4,7 @@ title: "Pollar Server API"
 
 REST API for backend operations. All endpoints require your **secret key** — never call these from client-side code.
 
-**Base URL:** `https://api.pollar.xyz` — all routes are versioned under `/v1`.
+**Base URL:** `https://server.api.pollar.xyz` — all routes are versioned under `/v1`.
 
 **Authentication:** pass your secret key in the `x-pollar-api-key` header (not `Authorization`).
 
@@ -23,12 +23,12 @@ Wallets are identified by their on-chain **public key** (`G…` address), not by
 
 ## Wallets
 
-### `POST /v1/wallets/activate`
+### `POST /v1/wallets/fund`
 
-Activates a wallet by funding its XLM reserve on-chain. Used in Deferred mode when a business event occurs (KYC approved, first deposit, etc.).
+Funds a custodial wallet on-chain, the same way the SDK login does: a CAP-33 sponsored createAccount where the app's funding wallet sponsors the base reserve and the wallet is seeded with the app's configured starting balance. Used in Deferred mode when a business event occurs (KYC approved, first deposit, etc.). Custodial (Pollar-managed) wallets only — external wallets fund themselves.
 
 ```bash
-POST https://api.pollar.xyz/v1/wallets/activate
+POST https://server.api.pollar.xyz/v1/wallets/fund
 x-pollar-api-key: sec_testnet_xxxxxxxxxxxxxxxxxxxx
 Content-Type: application/json
 
@@ -43,7 +43,7 @@ Content-Type: application/json
 
 | Code                      | Meaning                                                                    |
 | ------------------------- | -------------------------------------------------------------------------- |
-| `200 OK`                  | Wallet activated. XLM reserve funded on-chain.                             |
+| `200 OK`                  | Wallet funded. Its reserve is sponsored on-chain.                          |
 | `400 Bad Request`         | Missing or malformed `publicKey` (`VALIDATION_ERROR`).                     |
 | `403 Forbidden`           | `publicKey` belongs to a wallet owned by another app (`FORBIDDEN`).        |
 | `404 Not Found`           | `publicKey` is not a known wallet (`WALLET_NOT_FOUND`).                    |
@@ -56,51 +56,20 @@ Content-Type: application/json
 {
   "content": {
     "publicKey": "GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    "amount": "1.5"
+    "startingBalance": "1"
   },
-  "code": "SERVER_WALLET_ACTIVATED",
+  "code": "SERVER_WALLET_FUNDED",
   "success": true
 }
 ```
 
-`amount` is the XLM reserve funded (1 XLM base + 0.5 per configured asset).
+`startingBalance` is the XLM the wallet was seeded with (the app's configured starting balance from **Dashboard → Treasury → Account Funding**; `"0"` when unset). The sponsored base reserve is locked in the funding wallet, not transferred.
 
 ---
 
 ## Trustlines
 
-Enable or disable asset trustlines on a user wallet. The wallet must already be funded.
-
-### `POST /v1/wallets/:address/trustlines/default`
-
-Enables trustlines for all of your app's configured (default) assets on the given wallet.
-
-```bash
-POST https://api.pollar.xyz/v1/wallets/GXXX.../trustlines/default
-x-pollar-api-key: sec_testnet_xxxxxxxxxxxxxxxxxxxx
-```
-
-### `POST /v1/wallets/:address/trustlines`
-
-Enables explicit trustlines for the assets in the body.
-
-```bash
-POST https://api.pollar.xyz/v1/wallets/GXXX.../trustlines
-x-pollar-api-key: sec_testnet_xxxxxxxxxxxxxxxxxxxx
-Content-Type: application/json
-
-{
-  "assets": [
-    { "code": "USDC", "issuer": "GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" }
-  ]
-}
-```
-
-Returns `code: "SERVER_TRUSTLINES_ENABLED"`.
-
-### `DELETE /v1/wallets/:address/trustlines/:asset`
-
-Removes a trustline (the asset must have a zero balance). The `:asset` segment is `CODE:ISSUER` (e.g. `USDC:GA5Z…`). Returns `code: "SERVER_TRUSTLINE_DISABLED"`.
+There is no server-side trustline endpoint. `change_trust` is a signed operation and server-api never signs an end-user wallet, so trustlines are set from the SDK, where the wallet signs client-side: `setTrustline()` on the client, or the app's default assets configured in **Dashboard → Treasury → Tokens & Trustlines**, which are applied at login.
 
 ---
 
@@ -111,7 +80,7 @@ Register an app user (and optionally provision a wallet for them).
 ### `POST /v1/users`
 
 ```bash
-POST https://api.pollar.xyz/v1/users
+POST https://server.api.pollar.xyz/v1/users
 x-pollar-api-key: sec_testnet_xxxxxxxxxxxxxxxxxxxx
 Content-Type: application/json
 
@@ -136,7 +105,7 @@ Same body as above, but also creates a Stellar wallet for the user in one call. 
 Validates an SDK end-user access token server-side (e.g. to authenticate a user on your backend from a token minted client-side by the SDK).
 
 ```bash
-POST https://api.pollar.xyz/v1/tokens/verify
+POST https://server.api.pollar.xyz/v1/tokens/verify
 x-pollar-api-key: sec_testnet_xxxxxxxxxxxxxxxxxxxx
 Content-Type: application/json
 

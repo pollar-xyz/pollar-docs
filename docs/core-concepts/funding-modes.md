@@ -14,11 +14,11 @@ Configure the funding mode from **Dashboard → Treasury → Funding Mode**. No 
 flowchart TD
     A("User registers"):::neutral
     A --> B{"Funding mode"}:::decision
-    B -->|"Immediate"| C("Wallet funded on registration\n~2 XLM charged at login"):::immediate
+    B -->|"Immediate"| C("Wallet funded on registration\nreserve sponsored at login"):::immediate
     B -->|"Deferred"| D("G-address created, no reserve\nActivated via webhook from your backend"):::deferred
     C --> E("Wallet ready"):::ready
     D --> F("Wallet pending"):::pending
-    F -->|"POST /v1/wallets/activate\nor Dashboard Fund button"| E
+    F -->|"POST /v1/wallets/fund\nor Dashboard Fund button"| E
 
     classDef neutral fill:#f1efe8,stroke:#b4b2a9,color:#444441
     classDef decision fill:#faeeda,stroke:#ba7517,color:#633806
@@ -30,14 +30,14 @@ flowchart TD
 
 | Mode          | XLM cost                    | Activation trigger        | Best for                                      |
 | ------------- | --------------------------- | ------------------------- | --------------------------------------------- |
-| **Immediate** | \~2 XLM per registration    | Automatic on login        | Apps without compliance requirements          |
-| **Deferred**  | \~2 XLM per activation only | Webhook from your backend | Neobanks, remittance apps, KYC-gated products |
+| **Immediate** | \~1–2 XLM locked per registration | Automatic on login        | Apps without compliance requirements          |
+| **Deferred**  | \~1–2 XLM locked per funded wallet only | Webhook from your backend | Neobanks, remittance apps, KYC-gated products |
 
-In both modes, any individual wallet can also be activated manually from **Dashboard → Users → Wallets (Fund 2 XLM)**. This is useful as a fallback or for support workflows.
+In both modes, any individual wallet can also be funded manually from **Dashboard → Users → Wallets (Fund)**. This is useful as a fallback or for support workflows.
 
-> **How the \~2 XLM is calculated:** Every Stellar account requires a base reserve of **1 XLM**. Each trustline (asset) you configure in the Dashboard adds **0.5 XLM**:
+> **How the reserve is covered:** Every Stellar account requires a base reserve of **1 XLM**, and each trustline (asset) you configure in the Dashboard adds **0.5 XLM**. Pollar sponsors these reserves (CAP-33): the XLM stays **locked in your funding wallet** while it sponsors the user wallet — it is not transferred to the user:
 >
-> `1 XLM + (number of configured assets × 0.5 XLM)`
+> `1 XLM + (number of configured assets × 0.5 XLM)` locked per funded wallet
 >
 > | Assets configured    | Reserve required |
 > | -------------------- | ---------------- |
@@ -46,7 +46,7 @@ In both modes, any individual wallet can also be activated manually from **Dashb
 > | 2 (e.g. USDC + EURC) | 2 XLM            |
 > | 3                    | 2.5 XLM          |
 >
-> Pollar does not charge extra — the full amount is consumed from your funding wallet.
+> Pollar does not charge extra. On top of the locked reserve, the **starting balance** configured in **Dashboard → Treasury → Account Funding** (if any) is transferred to each new wallet as spendable XLM.
 >
 > References: [Minimum Balance](https://developers.stellar.org/docs/learn/fundamentals/lumens#minimum-balance) · [Trustlines](https://developers.stellar.org/docs/learn/fundamentals/stellar-data-structures/accounts#trustlines)
 
@@ -56,7 +56,7 @@ In both modes, any individual wallet can also be activated manually from **Dashb
 
 The wallet is funded atomically at the moment the user logs in. Ready in under 3 seconds. No additional setup required.
 
-**Cost:** \~2 XLM per registration, including users who abandon onboarding.
+**Cost:** the sponsored reserve is locked for every registration — including users who abandon onboarding — plus the configured starting balance, if any.
 
 ```tsx
 const { login, isAuthenticated } = usePollar();
@@ -70,16 +70,16 @@ await login({ provider: 'google' });
 
 The G-address is created on-chain at registration but without an XLM reserve. The wallet exists but cannot transact until it is activated.
 
-**Cost:** \~2 XLM only for users who complete activation. Zero cost for users who abandon.
+**Cost:** the reserve is only locked for users you fund. Zero cost for users who abandon.
 
-This mode solves a problem unique to Stellar: every account needs a minimum XLM reserve to exist on-chain. Without deferred funding, an app with 10,000 users who abandon onboarding burns 20,000 XLM for nothing.
+This mode solves a problem unique to Stellar: every account needs a minimum XLM reserve to exist on-chain. Without deferred funding, an app with 10,000 users who abandon onboarding locks 10,000+ XLM for nothing.
 
-### Activating via webhook
+### Funding via webhook
 
-Your backend calls `POST /v1/wallets/activate` when a business event occurs — KYC approved, first deposit, email verified, or any trigger you define.
+Your backend calls `POST /v1/wallets/fund` when a business event occurs — KYC approved, first deposit, email verified, or any trigger you define.
 
 ```bash
-POST https://api.pollar.xyz/v1/wallets/activate
+POST https://server.api.pollar.xyz/v1/wallets/fund
 x-pollar-api-key: sec_testnet_xxxxxxxxxxxxxxxxxxxx
 Content-Type: application/json
 
@@ -94,7 +94,7 @@ Content-Type: application/json
 
 | Code                      | Meaning                                              |
 | ------------------------- | ---------------------------------------------------- |
-| `200 OK`                  | Wallet activated. XLM reserve funded on-chain.       |
+| `200 OK`                  | Wallet funded. Reserve sponsored on-chain.           |
 | `400 Bad Request`         | Missing or malformed `publicKey`.                    |
 | `402 Payment Required`    | Funding wallet has insufficient XLM.                 |
 | `404 Not Found`           | `publicKey` is not a wallet owned by your app.       |
@@ -103,7 +103,7 @@ Content-Type: application/json
 
 ### Funding manually from the Dashboard
 
-Any not-yet-funded wallet can be funded from **Dashboard → Users → Wallets** with the **Fund 2 XLM** action. This works in both Immediate and Deferred mode and is useful for support workflows or one-off overrides.
+Any not-yet-funded wallet can be funded from **Dashboard → Users → Wallets** with the **Fund** action — the same sponsored funding as login. This works in both Immediate and Deferred mode and is useful for support workflows or one-off overrides.
 
 ### Checking whether a wallet is funded
 

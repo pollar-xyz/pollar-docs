@@ -4,13 +4,13 @@ title: "Account Funding"
 
 **Dashboard → Treasury → Account Funding**
 
-Manage your app's **funding wallet** — the Stellar account that covers the XLM reserve required to create and activate new user wallets. This page is where you view its balance, copy its address, and top it up.
+Manage your app's **funding wallet** — the Stellar account that sponsors the XLM reserve of new user wallets and seeds them with the configured starting balance. This page is where you view its balance, copy its address, and top it up.
 
 Pollar uses a set of operator wallets to cover costs on behalf of your users; each role has its own Treasury page:
 
 | Wallet                  | Treasury page                                                                                          | Role                                                         | Charged when               |
 | ----------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | -------------------------- |
-| **Funding wallet**      | Account Funding (this page)                                                                            | Covers the XLM reserve required to activate new user wallets | Once per wallet activation |
+| **Funding wallet**      | Account Funding (this page)                                                                            | Sponsors the XLM reserve of new user wallets (locked, not spent) and sends their starting balance | Once per funded wallet |
 | **Gas wallet**          | [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/treasury/sponsorship)                       | Pays transaction fees for all on-chain operations            | Every transaction          |
 | **Distribution wallet** | [Token Distribution](https://docs.pollar.xyz/docs/operator-guide/treasury/token-distribution)         | Sends assets to users via claimable distribution rules       | Every claim                |
 
@@ -34,7 +34,7 @@ Click **Fund wallet** in the Dashboard, connect your Stellar wallet, and send fu
 
 | Wallet              | Recommended minimum                                       |
 | ------------------- | --------------------------------------------------------- |
-| Funding wallet      | 50 XLM (\~25 wallet activations with 2 assets each)       |
+| Funding wallet      | 50 XLM (\~25 funded wallets with 2 assets each)           |
 | Gas wallet          | 10 XLM                                                    |
 | Distribution wallet | Depends on configured assets and expected distribution volume |
 
@@ -42,11 +42,11 @@ Configure low-balance alerts in [Alerts](https://docs.pollar.xyz/docs/operator-g
 
 ---
 
-## XLM reserve cost per wallet activation
+## XLM reserve cost per funded wallet
 
-The cost to activate a user wallet depends on how many assets are configured in [Tokens / Trustlines](https://docs.pollar.xyz/docs/operator-guide/treasury/tokens-trustlines):
+The XLM locked per funded user wallet depends on how many assets are configured in [Tokens / Trustlines](https://docs.pollar.xyz/docs/operator-guide/treasury/tokens-trustlines):
 
-`1 XLM + (number of configured assets × 0.5 XLM)`
+`1 XLM + (number of configured assets × 0.5 XLM)` locked per funded wallet
 
 | Assets configured    | Reserve required |
 | -------------------- | ---------------- |
@@ -55,6 +55,6 @@ The cost to activate a user wallet depends on how many assets are configured in 
 | 2 (e.g. USDC + EURC) | 2 XLM            |
 | 3                    | 2.5 XLM          |
 
-Pollar does not charge extra — the full amount is consumed from your funding wallet.
+Pollar does not charge extra — the reserve stays locked in your funding wallet while it sponsors the user wallet (CAP-33), and the configured starting balance (if any) is transferred on top as spendable XLM.
 
 > References: [Minimum Balance](https://developers.stellar.org/docs/learn/fundamentals/lumens#minimum-balance) · [Trustlines](https://developers.stellar.org/docs/learn/fundamentals/stellar-data-structures/accounts#trustlines)

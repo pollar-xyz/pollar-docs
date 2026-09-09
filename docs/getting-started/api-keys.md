@@ -17,7 +17,7 @@ Pollar issues two types of keys per environment. Understanding the difference is
 | Secret      | `sec_testnet_` | Testnet | Backend only (never expose client-side) |
 | Secret      | `sec_mainnet_` | Mainnet | Backend only (never expose client-side) |
 
-The **publishable key** is passed to `@pollar/core` or `@pollar/react` in your frontend. The **secret key** stays on your backend and is used for privileged operations like triggering wallet activation via `POST /v1/wallets/activate`.
+The **publishable key** is passed to `@pollar/core` or `@pollar/react` in your frontend. The **secret key** stays on your backend and is used for privileged operations like funding deferred wallets via `POST /v1/wallets/fund`.
 
 > For details on Stellar networks (Testnet vs Mainnet) see the [Stellar Networks docs](https://developers.stellar.org/docs/networks).
 

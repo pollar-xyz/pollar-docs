@@ -14,7 +14,7 @@ A fully working Next.js demo that shows Pollar's complete onboarding-to-payment 
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------ | ------------- |
 | Social login                   | Google, GitHub, and email OTP via `usePollar().login()`                                                                  | ✓             |
 | Wallet creation                | Stellar G-address created and encrypted with AWS KMS on login                                                            | ✓             |
-| Deferred mode — KYC simulation | A button triggers a Next.js API route that calls `POST /v1/wallets/activate` with the secret key, simulating a backend KYC approval | ✓             |
+| Deferred mode — KYC simulation | A button triggers a Next.js API route that calls `POST /v1/wallets/fund` with the secret key, simulating a backend KYC approval | ✓             |
 | Send USDC                      | Transfer USDC to any Stellar address with zero fee UX                                                                    | ✓             |
 | Receive                        | QR code (SEP-7 format) and shareable payment link                                                                        | `coming soon` |
 | Transaction history            | Full paginated history via `txHistory` hook                                                                              | ✓             |
@@ -106,7 +106,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 ### Deferred mode — KYC simulation
 
-The demo includes a Next.js API route that simulates a KYC provider calling your backend after a user is verified. The frontend calls this route — the route calls Pollar's `POST /v1/wallets/activate` using the secret key server-side. The endpoint authenticates with the `x-pollar-api-key` header and takes the wallet's `publicKey` (its `G…` address).
+The demo includes a Next.js API route that simulates a KYC provider calling your backend after a user is verified. The frontend calls this route — the route calls Pollar's `POST /v1/wallets/fund` using the secret key server-side. The endpoint authenticates with the `x-pollar-api-key` header and takes the wallet's `publicKey` (its `G…` address).
 
 ```ts
 // app/api/activate/route.ts
@@ -115,7 +115,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(req: NextRequest) {
   const { publicKey } = await req.json();
 
-  const response = await fetch('https://api.pollar.xyz/v1/wallets/activate', {
+  const response = await fetch('https://server.api.pollar.xyz/v1/wallets/fund', {
     method: 'POST',
     headers: {
       'x-pollar-api-key': process.env.POLLAR_SECRET_KEY!,

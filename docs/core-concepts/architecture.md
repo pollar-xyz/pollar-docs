@@ -14,7 +14,7 @@ flowchart TD
 
     subgraph pollar["Pollar"]
         B("1. SDK\n@pollar/core · @pollar/react"):::sdk
-        C("2. Pollar Server\napi.pollar.xyz"):::server
+        C("2. Pollar Server\nsdk.api.pollar.xyz · server.api.pollar.xyz"):::server
         D("3. Dashboard\ndashboard.pollar.xyz"):::dashboard
     end
 
@@ -39,7 +39,7 @@ flowchart TD
 | Component                                 | Runs where                                 | Your responsibility                                                |
 | ----------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------ |
 | **SDK** (`@pollar/core`, `@pollar/react`) | Your frontend                              | Install and configure with your publishable key                    |
-| **Pollar Server**                         | Hosted by Pollar at `api.pollar.xyz`       | Nothing — you call it via the SDK or REST API                      |
+| **Pollar Server**                         | Hosted by Pollar at `sdk.api.pollar.xyz` (SDK) and `server.api.pollar.xyz` (backend) | Nothing — you call it via the SDK or REST API                      |
 | **Dashboard**                             | Hosted by Pollar at `dashboard.pollar.xyz` | Configure your app settings, funding mode, and sponsorship wallets |
 
 ---

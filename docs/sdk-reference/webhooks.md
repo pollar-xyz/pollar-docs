@@ -6,7 +6,7 @@ Pollar uses webhooks in two directions:
 
 - **Inbound** — your backend receives a call from Pollar when an event occurs
 
-- **Outbound** — your backend calls Pollar to trigger an action (e.g. `POST /v1/wallets/activate`)
+- **Outbound** — your backend calls Pollar to trigger an action (e.g. `POST /v1/wallets/fund`)
 
 ---
 
@@ -197,4 +197,4 @@ Fired when any sponsorship wallet drops below its configured minimum threshold.
 
 Your backend calls Pollar to trigger actions. Currently:
 
-- `POST /v1/wallets/activate` — see [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api)
+- `POST /v1/wallets/fund` — see [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api)

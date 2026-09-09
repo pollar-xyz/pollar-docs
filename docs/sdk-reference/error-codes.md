@@ -130,6 +130,45 @@ Auth flow error codes (surfaced on the `error` `AuthState`) are exported as `AUT
 
 ---
 
+## Soroban auth entries
+
+Returned by `POST /tx/sign-auth-entry` (`pollar.signAuthEntry()`) when the app's
+allowlist refuses to authorize an entry, and by the dashboard/Server API when a
+row is saved. Configured under **Treasury → [Auth Policy](https://docs.pollar.xyz/docs/operator-guide/treasury/auth-policy)**.
+
+Every denial here also carries `applicationId` and `applicationName` — the app the decision was made against, which is the app your API key resolves to, not necessarily the one open in the dashboard.
+
+```json
+{
+  "code": "SOROBAN_AUTH_NO_POLICY",
+  "success": false,
+  "message": "no Soroban auth-entry allowlist is configured for this application",
+  "applicationId": "cm…",
+  "applicationName": "Acme Checkout"
+}
+```
+
+| Code                                | Description                                                        | Fix                                                             |
+| ----------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------- |
+| `SOROBAN_AUTH_NO_POLICY`            | The app has no enabled allowlist rows                              | Add a row — or check `applicationName` against the app you configured |
+| `SOROBAN_AUTH_CONTRACT_NOT_ALLOWED` | A contract in the invocation tree is not allowlisted               | Add it; sub-invocations each need their own row                 |
+| `SOROBAN_AUTH_FUNCTION_NOT_ALLOWED` | The contract is allowlisted, the invoked function is not           | Names match exactly: `Transfer` is not `transfer`               |
+| `SOROBAN_AUTH_ADDRESS_MISMATCH`     | The entry authorizes an address other than the caller's wallet     | Build the entry for the session's own address                   |
+| `SOROBAN_AUTH_ENTRY_INVALID`        | Not a valid `SorobanAuthorizationEntry`, or not address-credentials | Send the entry itself — a `HashIDPreimage` is a different type   |
+| `SOROBAN_AUTH_EXPIRATION_TOO_LONG`  | `validUntilLedger` is in the past or beyond the app's window       | Recompute from the latest ledger; the ceiling is 300 ledgers     |
+| `SOROBAN_AUTH_SIGN_FAILED`          | The entry passed the allowlist but signing failed                  | Retry — this one is on Pollar's side                            |
+
+Saving an allowlist row (dashboard or Server API) can also answer:
+
+| Code                                          | Description                                                          |
+| --------------------------------------------- | -------------------------------------------------------------------- |
+| `CONTRACT_FUNCTION_UNKNOWN`                   | The row names a function the contract does not expose. `message` names which |
+| `CONTRACT_NOT_FOUND`                          | The contract is not deployed on this app's network                   |
+| `CONTRACT_INTROSPECTION_FAILED`               | Pollar could not read the contract (RPC unreachable)                 |
+| `SOROBAN_AUTH_WILDCARD_REQUIRES_ANY_FUNCTION` | The "any contract" row may only carry the "any function" wildcard    |
+
+---
+
 ## Distribution
 
 | Code                                  | Description                                          | Resolution                                                |
@@ -156,6 +195,15 @@ Auth flow error codes (surfaced on the `error` `AuthState`) are exported as `AUT
 | `SDK_RAMPS_QUOTE_NOT_FOUND`     | Ramp quote not found                         |
 | `SDK_RAMPS_QUOTE_EXPIRED`       | Ramp quote expired — request a new one       |
 | `SDK_RAMPS_TX_NOT_FOUND`        | Ramp transaction not found                   |
+| `SDK_RAMPS_ASSET_NOT_ENABLED`   | The ramp asset is not enabled for the app    |
+| `SDK_RAMPS_AMOUNT_OUT_OF_RANGE` | Amount outside the route's min/max — the bounds come back as `limit`, `limitAmount` and `limitCurrency` |
+| `SDK_RAMPS_INSUFFICIENT_BALANCE`| The wallet does not hold enough to cover the off-ramp. Checked before anything is submitted, so the balance is untouched |
+| `SDK_RAMPS_WALLET_UNSUPPORTED`  | The wallet cannot drive this ramp (e.g. a passkey smart account) |
+| `SDK_RAMPS_KYC_REQUIRED`        | The provider needs KYC first — send the user to `kycUrl` |
+| `SDK_RAMPS_PROVIDER_NOT_CONFIGURED` | The ramp provider has no usable credentials for this app |
+| `SDK_RAMPS_ONCHAIN_SUBMIT_FAILED` | The network rejected the on-chain leg, so nothing moved. `details` carries the Stellar result code — `txInsufficientBalance` means the wallet has no XLM for the fee and the app does not sponsor this asset |
+| `SDK_RAMPS_ANCHOR_ERROR` / `SDK_RAMPS_BRIDGE_ERROR` / `SDK_RAMPS_ETHERFUSE_ERROR` | The provider failed upstream — retry in a moment |
+| `SDK_RAMPS_BRIDGE_TESTNET_NOT_SETTLEABLE` | The route settles on mainnet only; on testnet it stops at the deposit instructions |
 
 ---
 

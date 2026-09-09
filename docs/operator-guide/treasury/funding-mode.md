@@ -27,4 +27,4 @@ The wallet is funded atomically at the moment the user logs in. Ready in under 3
 
 ## Deferred
 
-The G-address is created on-chain at registration but without an XLM reserve. Activation happens when your backend calls `POST /v1/wallets/activate` after a business event occurs (KYC approved, first deposit, etc.). See [Deferred Flow Guide](https://docs.pollar.xyz/docs/guides/deferred-flow-guide) for the full setup.
+The G-address is created on-chain at registration but without an XLM reserve. Funding happens when your backend calls `POST /v1/wallets/fund` after a business event occurs (KYC approved, first deposit, etc.). See [Deferred Flow Guide](https://docs.pollar.xyz/docs/guides/deferred-flow-guide) for the full setup.

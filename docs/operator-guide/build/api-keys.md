@@ -17,7 +17,7 @@ title: "API Keys"
 
 **Publishable keys** are passed to `@pollar/core` or `@pollar/react` in your frontend. They can only initiate user-authenticated operations.
 
-**Secret keys** are used in your backend for privileged endpoints like `POST /v1/wallets/activate`. Never expose them client-side.
+**Secret keys** are used in your backend for privileged endpoints like `POST /v1/wallets/fund`. Never expose them client-side.
 
 > The key's network (testnet/mainnet) follows the **app's** network — it is not chosen per key. The prefix simply reflects the app environment the key belongs to.
 
