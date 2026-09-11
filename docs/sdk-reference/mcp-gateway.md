@@ -75,8 +75,11 @@ Reads require the matching `:read` scope (e.g. `wallets:read`).
 | Tool | Arguments | Scope |
 |---|---|---|
 | `update_application_domains` | `id`, `allowed_origins` | `applications:write` |
+| `update_application_redirect_uris` | `id`, `allowed_redirect_uris` | `applications:write` |
 
 `update_application_domains` **replaces** the app's entire allowed-origins (CORS) list, so pass the full set you want to keep — not just additions.
+
+`update_application_redirect_uris` does the same for the OAuth redirect allowlist. The two lists are independent: a callback host only needs to be a redirect URI, not an origin. An empty redirect list refuses every OAuth login of the app with `APPLICATION_HAS_NO_REDIRECT_URIS`.
 
 ### Helpers
 
@@ -86,7 +89,7 @@ These combine several reads (and, where noted, a conditional write) into one ans
 |---|---|---|
 | `get_application_wallet_by_role` | `id`, `role?` | Resolve a wallet by role (GLOBAL / FUNDING / GAS / DISTRIBUTION) and report whether it is funded |
 | `ensure_wallet_funded` | `id`, `role?` | Fund the role's wallet via the testnet friendbot **only if** it is not already funded (mainnet wallets are reported, not funded) |
-| `check_application_readiness` | `id` | Evaluate the dashboard "Get started" config steps (API keys, domains, app-wallet funding, trustlines) and report whether the app is ready to use |
+| `check_application_readiness` | `id` | Evaluate the dashboard "Get started" config steps (API keys, domains, OAuth redirect URIs, app-wallet funding, trustlines) and report whether the app is ready to use |
 
 `role` defaults to `GLOBAL`; use `FUNDING` / `GAS` / `DISTRIBUTION` once an app has split wallets. "Funded" means the wallet's account exists on Stellar — for exact balances call `get_wallet_balances`.
 
@@ -97,7 +100,7 @@ These combine several reads (and, where noted, a conditional write) into one ans
 Clients that support MCP tool annotations use them to decide when to prompt:
 
 - **Reads and creates run automatically** (including `fund_testnet_wallet` and `ensure_wallet_funded`, which are harmless idempotent testnet top-ups).
-- **Edits that overwrite existing state** — currently `update_application_domains` — **prompt for confirmation** before running.
+- **Edits that overwrite existing state** (`update_application_domains` and `update_application_redirect_uris`) **prompt for confirmation** before running.
 
 ---
 
@@ -164,7 +167,8 @@ With the gateway connected, you can ask an agent things like:
 
 - *"List my Pollar apps and tell me which ones are ready to use."* → `list_applications` + `check_application_readiness`
 - *"Fund the testnet global wallet for app `…` if it isn't funded yet."* → `ensure_wallet_funded`
-- *"Add `http://localhost:3000` to app `…`'s allowed domains."* → `update_application_domains` (the client confirms first)
+- *"Add `https://staging.myapp.com` to app `…`'s allowed domains."* → `update_application_domains` (the client confirms first)
+- *"Let app `…`'s OAuth login redirect back to `https://api.myapp.com/oauth/callback`."* → `update_application_redirect_uris` (the client confirms first)
 - *"Create a publishable API key for app `…`."* → `create_api_key`
 
 ---
