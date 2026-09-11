@@ -74,6 +74,7 @@ Auth flow error codes (surfaced on the `error` `AuthState`) are exported as `AUT
 | `API_KEY_TYPE_NOT_ALLOWED`   | Publishable key used on a secret-key route (or vice versa)   | Use a secret key on the Server API, publishable on the SDK API     |
 | `ORIGIN_NOT_ALLOWED`         | Request origin is not in the app's allowed origins           | Add the origin under **Build → Domains**                           |
 | `REDIRECT_URI_NOT_ALLOWED`   | OAuth `redirect_uri` is not in the app's allowed redirect URIs | Add its origin under **Build → Domains**                          |
+| `APPLICATION_HAS_NO_REDIRECT_URIS` | The app has no allowed redirect URI registered, so no OAuth login can start | Register the callback under **Build → Domains**              |
 | `RATE_LIMITED`               | Too many requests                                            | Back off and retry                                                 |
 
 > Keys are network-specific by prefix: `pub_testnet_` / `pub_mainnet_` (publishable) and `sec_testnet_` / `sec_mainnet_` (secret).

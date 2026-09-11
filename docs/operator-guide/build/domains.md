@@ -40,7 +40,7 @@ http://localhost:3000/oauth/callback
 
 Only the **origin** of each entry is matched today, so one entry covers every path under that host. Entries with a path are still accepted, and future releases will match them exactly — list the real callback URL rather than a bare origin.
 
-An app with this list empty falls back to its allowed origins, which is how OAuth behaved before the two lists were split. Add a redirect URI to control redirects on their own, and then drop from the origins list anything that was only ever there to receive a callback.
+**This list is the only thing an OAuth redirect is checked against.** While it is empty every OAuth login of the app is refused with `APPLICATION_HAS_NO_REDIRECT_URIS`, so register your callback here before going live. Once it is set, drop from the origins list anything that was only ever there to receive a callback.
 
 ---
 
