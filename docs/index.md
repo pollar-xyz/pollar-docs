@@ -122,4 +122,5 @@ The sections below mirror the Dashboard sidebar: **Overview · Build · Users ·
 | [Deferred Flow Guide](https://docs.pollar.xyz/docs/guides/deferred-flow-guide) | KYC-gated wallet activation with webhooks |
 | [Passkeys Guide](https://docs.pollar.xyz/docs/guides/passkeys-guide)           | Biometric auth with Face ID and Touch ID  |
 | [Payments UI](https://docs.pollar.xyz/docs/guides/payments-ui)                 | Send, receive, and history components     |
+| [Swaps](https://docs.pollar.xyz/docs/guides/swaps-guide)                       | Asset swaps: pre-built modal or headless  |
 | [Mainnet Checklist](https://docs.pollar.xyz/docs/guides/mainnet-checklist)     | Everything to verify before going live    |

@@ -1,10 +1,11 @@
 {
   "title": "Guides",
-  "description": "Step-by-step guides for deferred flows, passkeys, payments UI, and going to mainnet.",
+  "description": "Step-by-step guides for deferred flows, passkeys, payments UI, swaps, and going to mainnet.",
   "pages": [
     "deferred-flow-guide",
     "passkeys-guide",
     "payments-ui",
+    "swaps-guide",
     "mainnet-checklist"
   ]
 }
