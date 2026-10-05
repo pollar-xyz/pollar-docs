@@ -8,6 +8,10 @@ with other providers: external Stellar wallets (Freighter, Albedo, xBull, …) a
 embedded wallets (Privy). Each adapter is a `WalletAdapter` from `@pollar/core`
 that you register on the client's `walletAdapters` array.
 
+To connect a wallet whose key you control yourself (a key on the device, an
+MPC or HSM signer), implement `WalletAdapter` directly: see
+[Build Your Own Wallet Adapter](https://docs.pollar.xyz/docs/guides/custom-wallet-adapter).
+
 > All adapters below are published at **0.10.1** and peer on
 > `@pollar/core@^0.10.1` / `@pollar/react@^0.10.1`.
 
