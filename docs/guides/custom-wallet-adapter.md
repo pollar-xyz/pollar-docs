@@ -193,6 +193,45 @@ If your app talks to the API without `@pollar/core`, the flow is the same: `POST
 
 ---
 
+## Rotate the wallet signer
+
+For account recovery, a wallet can change which key controls it while keeping the same `G...` address: a `setOptions` adds the new key as a signer and sets the old master key's weight to 0.
+
+**Logging in after a rotation.** Pollar checks the SEP-10 challenge against the account's on-chain signers and its medium threshold, as SEP-10 specifies. After the rotation, `connect()` still returns the same `G...` address and `signTransaction` signs with the new key. A key whose weight is 0, such as the disabled master key, can no longer log in.
+
+**Having the app pay for it.** A new signer is a ledger subentry with a 0.5 XLM reserve, which a user with no XLM cannot cover. The app can sponsor the rotation, one at a time and only for users it allows:
+
+1. The app turns on **Signer rotation** under [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/treasury/sponsorship#signer-rotation).
+2. When a user asks to recover, the app grants them one rotation: from **Users > Accounts**, or from its backend with `POST /v1/wallets/{publicKey}/signer-rotation` ([Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api)).
+3. The client builds the rotation with the user's session:
+
+   ```http
+   POST /wallet/signer/build
+   Content-Type: application/json
+
+   {
+     "signer": "GNEW...KEY",
+     "signerWeight": 1,
+     "masterWeight": 0,
+     "removeSigners": []
+   }
+   ```
+
+   The response `content` is `{ sponsorSignedXdr, hash, expiresAt }`. The app's sponsor is the transaction source, pays the fee and the reserve, and has already signed.
+4. The wallet adds its signature to `sponsorSignedXdr` and sends it to `POST /tx/submit` before `expiresAt` (unix seconds, 5 minutes after the build). The signatures must meet the account's **high** threshold as it is before the rotation, since that is what Stellar requires to change signers.
+5. Once the rotation lands, the grant is spent. Another rotation needs a new grant.
+
+| Field | Rule |
+|---|---|
+| `signer` | The key to add. Not the account's own address: the master key is changed with `masterWeight`. |
+| `signerWeight` | 1 to 255, default 1. Must be at least the account's high threshold, so the new key alone keeps full control. |
+| `masterWeight` | Optional, 0 to 255. `0` disables the old master key. |
+| `removeSigners` | Up to 3 existing signers to remove, for example the key from a previous recovery. |
+
+Only wallets Pollar does not custody can rotate, and only once they exist on the network. While a rotation built for the user can still be submitted, a second build returns `409 SIGNER_ROTATION_PENDING`. The other refusals are listed under [Signer rotation errors](https://docs.pollar.xyz/docs/sdk-reference/error-codes#signer-rotation).
+
+---
+
 ## Checklist
 
 - [ ] `type` is unique, stable, and not `google`, `github` or `email`.

@@ -11,7 +11,7 @@ There are two mechanisms, and which one applies depends on the cost being covere
 | Mechanism | Covers | Used for |
 |---|---|---|
 | **Fee bump** | The network fee only | Token transfers, swaps, contract calls |
-| **Sponsor as source** | The network fee and the 0.5 XLM reserve of a new ledger entry | Trustlines, account creation |
+| **Sponsor as source** | The network fee and the 0.5 XLM reserve of a new ledger entry | Trustlines, account creation, signer rotation |
 
 ---
 
@@ -78,7 +78,7 @@ Not sponsored by a fee bump:
 
 - Payments in **native XLM**. A user who sends XLM already holds XLM to pay the fee.
 - Transactions with **more than one operation**.
-- Any other operation type (`setOptions`, `manageSellOffer`, `pathPaymentStrictReceive`, `accountMerge`, and so on).
+- Any other operation type (`setOptions`, `manageSellOffer`, `pathPaymentStrictReceive`, `accountMerge`, and so on). A signer rotation is sponsored through its own setting below, not by a fee bump.
 - Path payments sent to another account. A swap is a strict-send path payment back to the user's own wallet; paying someone else is not a swap.
 
 ---
@@ -100,6 +100,19 @@ Pick the venues (SDEX, Soroswap, Aquarius) whose swaps your app pays the fee for
 Each rule whitelists a Soroban contract and the exact methods your app pays the fee for. **Sponsor all contracts** covers every contract call on any contract and method, and the individual rules are ignored while it is on. **Include external wallets** extends it to wallets Pollar does not custody.
 
 Because a fee-bumped user is the transaction source, a contract's `require_auth` for the user is satisfied by the source-account signature. No separate authorization entry needs to be signed.
+
+### Signer rotation
+
+For account recovery of wallets Pollar does not custody: the user adds a new signer to their wallet and disables the old key (`setOptions`), keeping the same `G...` address. **Sponsor signer rotations** (off by default) lets your app pay for it. Each new signer is a ledger subentry with a 0.5 XLM reserve, so this uses the sponsor-as-source mechanism, not a fee bump: the FUNDING (or GLOBAL) wallet is the transaction source and pays both the reserve and the fee.
+
+The setting alone sponsors nothing. A user is covered only while they hold a **grant**, which you give on request:
+
+- From **Users > Accounts**: the row menu of a user with an external wallet shows **Allow sponsored signer rotation**.
+- From your backend: `POST /v1/wallets/{publicKey}/signer-rotation` in the [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api).
+
+A grant covers **one** rotation and is spent when that rotation lands on-chain. A later recovery needs a new grant. You can revoke an unspent grant from the same menu or with `DELETE` on the same endpoint.
+
+Signer changes on **custodial** wallets are never allowed: a new signer would take the wallet out of Pollar's custody. How the client builds a rotation is in [Rotate the wallet signer](https://docs.pollar.xyz/docs/guides/custom-wallet-adapter#rotate-the-wallet-signer).
 
 ### Token transfer sponsorship
 
