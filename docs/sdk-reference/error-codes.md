@@ -123,7 +123,7 @@ Auth flow error codes (surfaced on the `error` `AuthState`) are exported as `AUT
 
 | Code | Description | Resolution |
 | --- | --- | --- |
-| `SIGNER_ROTATION_NOT_ENABLED` (403) | The app does not sponsor signer rotations | Turn on **Signer rotation** under **Treasury > Sponsorship** |
+| `SIGNER_ROTATION_NOT_ENABLED` (403) | The app does not sponsor signer rotations | Turn on **Sponsor signer rotations** and **Include external wallets** under **Treasury > Sponsorship** |
 | `SIGNER_ROTATION_NOT_GRANTED` (403) | The user holds no unspent rotation grant, or already used it | Grant one from **Users > Accounts** or with `POST /v1/wallets/{publicKey}/signer-rotation` |
 | `SIGNER_ROTATION_PENDING` (409) | A sponsored rotation built for this user can still be submitted | Submit it, or wait until its `expiresAt` passes |
 | `SIGNER_ROTATION_INVALID` (422) | The wallet is custodial or not created yet, or the requested change is not allowed | Read `details`; see [the rotation rules](https://docs.pollar.xyz/docs/guides/custom-wallet-adapter#rotate-the-wallet-signer) |

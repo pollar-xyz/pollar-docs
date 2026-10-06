@@ -74,7 +74,7 @@ POST https://server.api.pollar.xyz/v1/wallets/GBW4...CX7H/signer-rotation
 x-pollar-api-key: sec_mainnet_xxxxxxxxxxxxxxxxxxxx
 ```
 
-Requires **Signer rotation** on under **Dashboard > Treasury > Sponsorship**. Granting while the user already holds an unspent grant returns that grant.
+Requires **Sponsor signer rotations** and its **Include external wallets** sub-option on under **Dashboard > Treasury > Sponsorship**. Granting while the user already holds an unspent grant returns that grant.
 
 **Response codes:**
 

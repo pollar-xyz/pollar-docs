@@ -85,6 +85,8 @@ Not sponsored by a fee bump:
 
 ## Settings
 
+Each card has an **Include external wallets** sub-option. It appears once the card sponsors something (the toggle is on, or a venue, rule or token is selected), since before that there is nothing to extend.
+
 ### Trustline sponsorship
 
 **Sponsor trustlines** (on by default): when a user adds a trustline for a token enabled under Tokens & Trustlines, the FUNDING wallet pays the 0.5 XLM reserve and the GAS wallet pays the fee. When off, each wallet pays its own reserve and fee.
@@ -105,9 +107,9 @@ Because a fee-bumped user is the transaction source, a contract's `require_auth`
 
 For account recovery of wallets Pollar does not custody: the user adds a new signer to their wallet and disables the old key (`setOptions`), keeping the same `G...` address. **Sponsor signer rotations** (off by default) lets your app pay for it. Each new signer is a ledger subentry with a 0.5 XLM reserve, so this uses the sponsor-as-source mechanism, not a fee bump: the FUNDING (or GLOBAL) wallet is the transaction source and pays both the reserve and the fee.
 
-The setting alone sponsors nothing. A user is covered only while they hold a **grant**, which you give on request:
+Rotation exists only for wallets Pollar does not custody, so turn on both **Sponsor signer rotations** and its sub-option **Include external wallets**. Even then the settings alone sponsor nothing: a user is covered only while they hold a **grant**, which you give on request:
 
-- From **Users > Accounts**: the row menu of a user with an external wallet shows **Allow sponsored signer rotation**.
+- From **Users > Accounts**: while both settings are on, the row menu of a user with an external wallet shows **Allow sponsored signer rotation**.
 - From your backend: `POST /v1/wallets/{publicKey}/signer-rotation` in the [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api).
 
 A grant covers **one** rotation and is spent when that rotation lands on-chain. A later recovery needs a new grant. You can revoke an unspent grant from the same menu or with `DELETE` on the same endpoint.
