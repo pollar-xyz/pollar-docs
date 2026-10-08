@@ -321,6 +321,84 @@ import { KycStatus } from '@pollar/react';
 
 ---
 
+### `<RequirementFormModal>`
+
+One `FORM` requirement step of a ramp route. Renders the form the backend names, prefilled with the user's previous answers, and stores the answers encrypted. `<RampWidget>` opens it by itself; render it directly when you build your own route list from the quote's `requirementsRequired`.
+
+```tsx
+import { RequirementFormModal } from '@pollar/react';
+
+<RequirementFormModal
+  formId={step.optionId}
+  progress={{ position: step.completed + 1, total: step.total }}
+  onClose={() => setOpen(false)}
+  onSubmitted={() => requote()}
+/>
+```
+
+| Prop          | Type                                  | Default | Description                                                        |
+|---------------|---------------------------------------|---------|--------------------------------------------------------------------|
+| `formId`      | `string`                              | —       | **Required.** The `optionId` of the pending `FORM` step.           |
+| `progress`    | `{ position: number; total: number }` | —       | Shown as "Step n of total".                                        |
+| `onClose`     | `() => void`                          | —       | **Required.** Called when the user dismisses the modal.            |
+| `onSubmitted` | `() => void`                          | —       | **Required.** Called once the answers are stored. Quote again.     |
+
+A 422 `KYC_FORM_INVALID_ANSWERS` is shown per field; numbers and dates are checked locally before the request.
+
+---
+
+### `<RegistryCheckModal>`
+
+One `REGISTRY_CHECK` step (SEGIP, the Bolivian civil registry, through Stereum). Shows the user's verified identity prefilled and read-only; only the surname split and the CI complement can be edited. A check the registry did not confirm is held for review and the modal shows that state with nothing to retry.
+
+```tsx
+import { RegistryCheckModal } from '@pollar/react';
+
+<RegistryCheckModal
+  optionId={step.optionId}
+  progress={{ position: step.completed + 1, total: step.total }}
+  onClose={() => setOpen(false)}
+  onApproved={() => requote()}
+/>
+```
+
+| Prop         | Type                                  | Default | Description                                                             |
+|--------------|---------------------------------------|---------|-------------------------------------------------------------------------|
+| `optionId`   | `string`                              | —       | **Required.** The `optionId` of the pending `REGISTRY_CHECK` step.      |
+| `progress`   | `{ position: number; total: number }` | —       | Shown as "Step n of total".                                             |
+| `onClose`    | `() => void`                          | —       | **Required.** Called when the user dismisses the modal.                 |
+| `onApproved` | `() => void`                          | —       | **Required.** Called once the registry confirmed the data. Quote again. |
+
+`prefill.applies === false` (the document is not one the registry checks) shows a notice and only lets the user close. A 409 `KYC_REGISTRY_IDENTITY_REQUIRED` means the KYC step before it is not complete.
+
+---
+
+### `<ProviderRegistrationModal>`
+
+One `PROVIDER_REGISTRATION` step. Lists what the ramp provider receives (identity, form answers, registry validation) and registers the user with it when they consent. A user already registered is passed through at once.
+
+```tsx
+import { ProviderRegistrationModal } from '@pollar/react';
+
+<ProviderRegistrationModal
+  corridorId={step.corridorId}
+  progress={{ position: step.completed + 1, total: step.total }}
+  onClose={() => setOpen(false)}
+  onRegistered={() => requote()}
+/>
+```
+
+| Prop           | Type                                  | Default | Description                                                                  |
+|----------------|---------------------------------------|---------|------------------------------------------------------------------------------|
+| `corridorId`   | `string`                              | —       | **Required.** The `corridorId` of the pending `PROVIDER_REGISTRATION` step.  |
+| `progress`     | `{ position: number; total: number }` | —       | Shown as "Step n of total".                                                  |
+| `onClose`      | `() => void`                          | —       | **Required.** Called when the user dismisses the modal.                      |
+| `onRegistered` | `() => void`                          | —       | **Required.** Called once the user is registered with the provider. Quote again. |
+
+A 409 `KYC_REGISTRATION_STEPS_PENDING` means an earlier step is still open; a 422 `KYC_REGISTRATION_MISSING_DATA` lists the fields the identity or the forms lack.
+
+---
+
 ### `<RampWidget>`
 
 Pre-built fiat on/off-ramp widget with support for on-ramp (fiat → crypto) and off-ramp (crypto → fiat) flows.
