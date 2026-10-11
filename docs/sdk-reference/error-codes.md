@@ -105,6 +105,9 @@ Auth flow error codes (surfaced on the `error` `AuthState`) are exported as `AUT
 | `FUND_XLM_FAILED`                  | Funding the XLM reserve failed                              | Check the funding wallet balance, then retry               |
 | `FRIENDBOT_NOT_AVAILABLE`          | Testnet Friendbot funding is unavailable                    | Retry shortly                                              |
 | `WALLET_ADAPTER_NOT_SUPPORTED`     | Server-side wallet provisioning not supported for BYO custody apps | Provision wallets via your adapter                  |
+| `SDK_WALLET_REQUIRED` (409)        | The user has no wallet yet (app with on-demand or no wallet creation) | Call `createWallet()`, or hide the feature. See [Wallet Creation](https://docs.pollar.xyz/docs/core-concepts/wallet-creation) |
+| `SDK_WALLET_PROVISIONING_DISABLED` (403) | The app's wallet creation is set to Never           | Change it in the dashboard, or do not offer wallet features |
+| `SDK_WALLET_PROVISIONING_UNSUPPORTED` (409) | The user signed in with their own wallet or a passkey; there is no wallet to create | Use the wallet the user signed in with |
 
 ---
 

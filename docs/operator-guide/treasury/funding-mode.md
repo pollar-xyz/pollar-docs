@@ -6,6 +6,8 @@ title: "Funding Mode"
 
 Controls when new user wallets are funded with their XLM reserve. Switch modes at any time without code changes — the new mode applies to all wallets created after the switch.
 
+Whether a user gets a wallet at login at all is set by [Wallet Creation](https://docs.pollar.xyz/docs/operator-guide/treasury/wallet-creation), on the same page.
+
 ---
 
 ## Modes

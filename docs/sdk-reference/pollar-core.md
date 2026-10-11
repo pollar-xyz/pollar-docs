@@ -177,6 +177,70 @@ unsubscribe();
 
 ---
 
+## Wallet
+
+### `pollar.getWallet()`
+
+The signed-in user's Stellar wallet as a `WalletInfo`, or `null` when there is no session or the user has no Stellar wallet (an app with [on-demand wallet creation](https://docs.pollar.xyz/docs/core-concepts/wallet-creation), or a user who signed in with a Solana wallet).
+
+```typescript
+const wallet = pollar.getWallet();
+console.log(wallet?.address, wallet?.custody);
+```
+
+---
+
+### `pollar.getWallets()`
+
+Every wallet the user holds, one per chain, each with its `chain`. `[]` when there is no session or no wallet.
+
+---
+
+### `pollar.hasWallet()`
+
+Whether the signed-in user has a wallet on any chain.
+
+```typescript
+if (!pollar.hasWallet()) {
+  // offer to create it, or hide wallet features
+}
+```
+
+---
+
+### `pollar.createWallet()`
+
+Creates the signed-in user's wallet, for apps whose wallet creation is **On demand**. The wallet is created on every chain the app serves and funded per the app's funding mode. Updates the session and notifies `onAuthStateChange` and `onWalletStateChange` subscribers. Idempotent: a user who already has a wallet gets it back.
+
+```typescript
+const wallet = await pollar.createWallet();
+console.log(wallet.address);
+```
+
+Throws a `PollarApiError`:
+
+| `code` | When |
+| ------ | ---- |
+| `SDK_WALLET_PROVISIONING_DISABLED` | The app's wallet creation is **Never** |
+| `SDK_WALLET_PROVISIONING_UNSUPPORTED` | The user signed in with their own wallet or a passkey |
+
+---
+
+### `isWalletRequired(errorOrOutcome)`
+
+True when a returned outcome or thrown error is `SDK_WALLET_REQUIRED`: the user has no wallet yet. Exported from `@pollar/core` with `WALLET_REQUIRED_CODE`.
+
+```typescript
+import { isWalletRequired } from '@pollar/core';
+
+const signed = await pollar.signTx(unsignedXdr);
+if (isWalletRequired(signed)) {
+  await pollar.createWallet();
+}
+```
+
+---
+
 ## Network
 
 ### `pollar.getNetwork()`

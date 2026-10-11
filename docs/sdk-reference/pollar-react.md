@@ -113,9 +113,11 @@ function MyComponent() {
 
 | Property          | Type                                    | Description                                                               |
 |-------------------|-----------------------------------------|---------------------------------------------------------------------------|
-| `isAuthenticated` | `boolean`                               | Whether the user has an active session.                                   |
+| `isAuthenticated` | `boolean`                               | Whether the user has an active session. True for a signed-in user with no wallet yet. |
 | `verified`        | `boolean`                               | `true` once the server has confirmed the session (login / refresh / resume). `false` while a cold-start session is still optimistic — gate sensitive actions (e.g. signing) on this. |
 | `wallet`          | `WalletInfo \| null`                    | The authenticated wallet as a discriminated union over `custody` (`internal` \| `smart` \| `external`), or `null` when unauthenticated. Use `wallet.address` for the on-chain address and `wallet.provider` for the login/wallet provider. |
+| `hasWallet`       | `boolean`                               | Whether the user has a wallet on any chain. `false` for an app with [on-demand wallet creation](https://docs.pollar.xyz/docs/core-concepts/wallet-creation) until `createWallet()` runs. |
+| `createWallet`    | `() => Promise<WalletInfo>`             | Creates the user's wallet (On demand apps). See [`pollar.createWallet()`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core). |
 | `login`           | `(options: PollarLoginOptions) => void` | Initiates an authentication flow.                                         |
 | `logout`          | `() => void`                            | Signs out the current user and clears the session.                        |
 
@@ -274,6 +276,8 @@ All Pollar modals are mounted inside `<PollarProvider>` and controlled programma
 ### `<WalletButton>`
 
 Pre-built button that handles the complete authentication flow. When logged out, opens the login modal. When logged in, shows the wallet address with a dropdown for balance, transaction history, and logout.
+
+Signed in without a wallet, it shows **No wallet** with **Create wallet**, active sessions and logout. For an app whose wallet creation is **Never** it shows **Signed in** without Create wallet.
 
 ```tsx
 import { WalletButton } from '@pollar/react';

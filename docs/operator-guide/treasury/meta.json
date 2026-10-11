@@ -1,9 +1,10 @@
 {
   "title": "Treasury",
-  "description": "Operator wallets, funding mode, sponsorship, transaction/auth policies, swap, earn, and token distribution.",
+  "description": "Operator wallets, funding mode, wallet creation, sponsorship, transaction/auth policies, swap, earn, and token distribution.",
   "pages": [
     "tokens-trustlines",
     "funding-mode",
+    "wallet-creation",
     "account-funding",
     "sponsorship",
     "transaction-policy",

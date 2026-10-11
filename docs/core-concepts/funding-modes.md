@@ -6,6 +6,8 @@ Every Stellar account requires a minimum XLM reserve to exist on-chain. Pollar g
 
 Configure the funding mode from **Dashboard → Treasury → Funding Mode**. No code changes required.
 
+Funding applies once a wallet exists. When the wallet is created (at login, on demand or never) is a separate setting: see [Wallet Creation](https://docs.pollar.xyz/docs/core-concepts/wallet-creation).
+
 ---
 
 ## The two modes
