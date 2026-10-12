@@ -17,7 +17,7 @@ Each end user gets a Turnkey sub-organization with two root users and a root quo
 | The end user | A P-256 key the SDK generates on the device (non-extractable WebCrypto on the web, the secure keystore on React Native) | Only the device |
 | Pollar's approver | A P-256 API key per application (a primary and a standby) | Pollar's co-signing service |
 
-The wallet inside the sub-org holds one account per chain the app enables: Stellar, Solana and Polygon addresses derived from the same seed. Signing is the only thing that needs both votes. Two policies let the user act alone on what is theirs:
+The wallet inside the sub-org holds one account per chain the app enables: Stellar, Solana and Polygon addresses derived from the same seed. A chain enabled later is added the same way everything else happens on this wallet, as a request the user approves at their next sign-in. Signing is the only thing that needs both votes. Two policies let the user act alone on what is theirs:
 
 | Policy | The user alone can | Pollar alone can |
 | ------ | ------------------ | ---------------- |
@@ -40,6 +40,8 @@ flowchart LR
 
 Pollar's vote is cast first, as the request that opens the activity. An approval has a 24 hour window; after that the request expires and the transaction is dropped.
 
+A transaction built when the request opens would be stale by the time a user gets to it: a Solana blockhash lasts about a minute, a Stellar sequence or a sponsor's signature a few minutes. So the SDK asks Pollar to **rebuild the request right before the vote**. Pollar composes the transaction again, casts its vote on a fresh activity and retires the old one; the request keeps its id, and what the device verifies and approves is seconds old. Requests your app composed itself (an XDR you built and passed to `signTx`) are approved as they are.
+
 ---
 
 ## Turning it on
@@ -52,7 +54,7 @@ Co-signed wallets need `@pollar/core` **0.11.5 or later**, because the device ke
 
 ## What changes in the SDK
 
-The wallet is created the same way as a custodial one; its Stellar account is funded by the first co-signed transaction, a sponsored `createAccount` the user approves once. Until then the wallet reports `provisioning: 'CREATING'`.
+The wallet is created the same way as a custodial one; its Stellar account is funded by the first co-signed transaction, a sponsored `createAccount` the user approves once. Until then the wallet reports `provisioning: 'CREATING'`. The trustlines your app enables follow the same way, one request at a time, until the wallet holds every asset.
 
 Every signing call can come back pending instead of signed:
 
@@ -73,14 +75,23 @@ To build your own UI, use the headless API:
 | - | ------------ |
 | `useCosign()` | `pending`, `lastResolved`, `approve(request)`, `reject(request)`, `verify(request)`, `refresh()` |
 | `pollar.cosign.pending()` | The requests waiting for this device |
-| `pollar.cosign.verify(request)` | Compares the local hash with what Turnkey was asked to sign; never trusts the server's summary |
-| `pollar.cosign.approve(request)` | Verifies, then stamps the approval with the device key. Throws `SDK_COSIGN_VERIFICATION_FAILED` and sends nothing if the payloads differ |
+| `pollar.cosign.verify(request)` | Compares what the request carries with what Turnkey was asked to sign, read straight from Turnkey: the Stellar transaction hash, the Solana serialized transaction, or the account derivation parameters. Never trusts the server's summary |
+| `pollar.cosign.refresh(request)` | Asks Pollar to rebuild the request with fresh chain state; `approve` does this on its own |
+| `pollar.cosign.approve(request)` | Refreshes, verifies, then stamps the approval with the device key. Throws `SDK_COSIGN_VERIFICATION_FAILED` and sends nothing if the payloads differ |
 | `pollar.cosign.reject(request)` | The user's vote against it |
 | `pollar.cosign.devices()` | The device keys enrolled for this user |
 | `pollar.cosign.inspectQuorum()` | Reads the root quorum from Turnkey with the device key: two users, threshold 2 |
 | `pollar.onCosignStateChange(cb)` | Fires on every pending or resolved request |
 
-The same requests are reachable over HTTP: `GET /cosign/requests`, `GET /cosign/requests/:id?sync=1`, `POST /cosign/requests/:id/cancel`, `POST /cosign/relay` and `GET /cosign/devices` on the v2 SDK API.
+The same requests are reachable over HTTP: `GET /cosign/requests`, `GET /cosign/requests/:id?sync=1`, `POST /cosign/requests/:id/refresh`, `POST /cosign/requests/:id/cancel`, `POST /cosign/relay` and `GET /cosign/devices` on the v2 SDK API.
+
+---
+
+## Solana and Polygon
+
+A Solana transfer from a co-signed wallet goes through the same `POST /v2/tx/build-sign-submit` as a custodial one and answers `202` with the request. Pollar compiles the transaction, Turnkey signs it once the user approves, and Pollar broadcasts it. When the token is marked **sponsor transfers** in the dashboard, the app's GAS wallet is the fee payer and signs last, exactly as it does for custodial wallets; otherwise the user pays the fee in SOL. Outcomes land in `/v2/tx/status` and the history as usual.
+
+A Polygon account exists in every co-signed wallet that enables the chain, but the SDK API has no Polygon transfer path yet, co-signed or not.
 
 ---
 
