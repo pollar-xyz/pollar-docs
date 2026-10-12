@@ -80,7 +80,8 @@ To build your own UI, use the headless API:
 | `pollar.cosign.approve(request)` | Refreshes, verifies, then stamps the approval with the device key. Throws `SDK_COSIGN_VERIFICATION_FAILED` and sends nothing if the payloads differ |
 | `pollar.cosign.reject(request)` | The user's vote against it |
 | `pollar.cosign.devices()` | The device keys enrolled for this user |
-| `pollar.cosign.inspectQuorum()` | Reads the root quorum from Turnkey with the device key: two users, threshold 2 |
+| `pollar.cosign.revokeDevice(id)` | Removes another enrolled device with this device's own vote; Pollar cannot do it for the user |
+| `pollar.cosign.inspectQuorum()` | Reads the root quorum from Turnkey with the device key (two users, threshold 2, this device registered) and records the reading with Pollar. The modals run it on open and refuse to approve on a quorum that is not the promised one |
 | `pollar.onCosignStateChange(cb)` | Fires on every pending or resolved request |
 
 The same requests are reachable over HTTP: `GET /cosign/requests`, `GET /cosign/requests/:id?sync=1`, `POST /cosign/requests/:id/refresh`, `POST /cosign/requests/:id/cancel`, `POST /cosign/relay` and `GET /cosign/devices` on the v2 SDK API.
