@@ -111,6 +111,23 @@ Auth flow error codes (surfaced on the `error` `AuthState`) are exported as `AUT
 
 ---
 
+## Co-signed wallets
+
+Apps in co-signed custody (see [Co-signed Wallets](https://docs.pollar.xyz/docs/core-concepts/co-signed-wallets)). A signing call that needs the user's vote is not an error: it answers **202 `SDK_COSIGN_PENDING`** and the SDK reports `status: 'cosign_pending'`.
+
+| Code                               | Description                                                  | Resolution                                                  |
+| ---------------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------- |
+| `SDK_UPGRADE_REQUIRED` (409)       | The app creates co-signed wallets and this SDK did not send the device key | Upgrade `@pollar/core` to 0.11.5 or later |
+| `SDK_COSIGN_NOT_CONFIGURED` (503)  | Co-signing is not available on the app's network           | Contact Pollar                                              |
+| `SDK_COSIGN_REQUEST_NOT_FOUND` (404) | No request with that id or fingerprint belongs to this user | Refresh `pollar.cosign.pending()`                        |
+| `SDK_COSIGN_REQUEST_NOT_PENDING` (409) | The request already reached a final state (approved, rejected, expired) | Read it with `?sync=1` to see the outcome       |
+| `SDK_COSIGN_DEVICE_NOT_ENROLLED` (403) | The key that stamped the vote is not one of the user's devices | Sign in on the device that created the wallet, or enroll this one from it |
+| `SDK_COSIGN_UPSTREAM_ERROR` (502)  | Turnkey or the co-signing service refused or failed         | Retry; the request stays pending until its 24 hour window closes |
+| `SDK_COSIGN_USER_REQUIRED` (409)   | A server-side call tried to sign for a co-signed wallet; only the user's device can vote | Run the operation from the SDK |
+| `SDK_COSIGN_VERIFICATION_FAILED`   | SDK only: the payload Turnkey holds differs from the one shown; the device sent nothing | Do not approve. Report it to Pollar with the verification report |
+
+---
+
 ## Trustlines
 
 | Code                               | Description                                              | Resolution                                       |

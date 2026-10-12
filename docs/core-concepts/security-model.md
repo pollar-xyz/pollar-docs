@@ -11,6 +11,7 @@ Pollar manages private keys on behalf of your users and your app. This page expl
 | Model | Who holds the key | Status |
 |---|---|---|
 | **AWS KMS** | KMS — no Pollar employee can access keys silently | Available |
+| **Co-signed (Turnkey 2-of-2)** | A Turnkey enclave; every signature needs the user's device and Pollar. See [Co-signed Wallets](https://docs.pollar.xyz/docs/core-concepts/co-signed-wallets) | Available on mainnet, opt-in per app |
 | **Passkeys (WebAuthn)** | The user's device Secure Enclave — Pollar never sees it | `coming soon` |
 | **BYOK (Bring Your Own KMS)** | Your own KMS instance — full operator control | `coming soon` |
 | **MPC** | No single actor holds the full key | `coming soon` |
