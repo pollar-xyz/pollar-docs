@@ -124,7 +124,9 @@ Apps in co-signed custody (see [Co-signed Wallets](https://docs.pollar.xyz/docs/
 | `SDK_COSIGN_DEVICE_NOT_ENROLLED` (403) | The key that stamped the vote is not one of the user's devices | Sign in on the device that created the wallet, or enroll this one from it |
 | `SDK_COSIGN_UPSTREAM_ERROR` (502)  | Turnkey or the co-signing service refused or failed         | Retry; the request stays pending until its 24 hour window closes |
 | `SDK_COSIGN_USER_REQUIRED` (409)   | A server-side call tried to sign for a co-signed wallet; only the user's device can vote | Run the operation from the SDK |
-| `SDK_COSIGN_VERIFICATION_FAILED`   | SDK only: the payload Turnkey holds differs from the one shown; the device sent nothing | Do not approve. Report it to Pollar with the verification report |
+| `SDK_COSIGN_VERIFICATION_FAILED`   | SDK only: the payload Turnkey holds differs from the one shown; the device rejected the request | Report it to Pollar with the verification report |
+| `SDK_CONFIRMATION_DECLINED`        | SDK only: the user declined the prompt shown under `confirmation: 'prompt'` | Nothing was signed; the user can retry |
+| `SDK_CONFIRMATION_UNAVAILABLE`     | SDK only: `confirmation: 'prompt'` with nothing rendering the prompt | Mount `PollarProvider` or subscribe with `onConfirmationRequest` |
 
 ---
 

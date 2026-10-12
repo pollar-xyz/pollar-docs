@@ -54,9 +54,32 @@ Co-signed wallets need `@pollar/core` **0.11.5 or later**, because the device ke
 
 ## What changes in the SDK
 
-The wallet is created the same way as a custodial one; its Stellar account is funded by the first co-signed transaction, a sponsored `createAccount` the user approves once. Until then the wallet reports `provisioning: 'CREATING'`. The trustlines your app enables follow the same way, one request at a time, until the wallet holds every asset.
+By default, nothing. The same code runs against a custodial wallet on testnet and a co-signed one on mainnet: `signTx` resolves to the signed XDR, `signAndSubmitTx` and `buildAndSignAndSubmitTx` report `success` or `error`, and the transaction state moves through the same steps (with one extra, `awaiting_cosign`, while the device votes). What happens underneath is different. The device holds the user's key, so for every signature it reads the activity straight from Turnkey through the relay, recomputes the transaction hash from the unsigned payload and casts its vote only when both match; a payload that does not match is rejected and the call ends in an error with `SDK_COSIGN_VERIFICATION_FAILED`.
 
-Every signing call can come back pending instead of signed:
+The wallet is created the same way as a custodial one. Its Stellar account is funded by a sponsored `createAccount` that Pollar opens as a request; until it completes the wallet reports `provisioning: 'CREATING'`. The trustlines your app enables and the accounts of a chain enabled later follow the same way. The device approves this setup on its own at sign-in, but only after decoding the request itself: a `createAccount` or `changeTrust` on this very account, sponsored or self-paid, nothing else. A payment dressed up as setup is never approved without the user.
+
+Two settings change who is asked, and they apply to every custody alike:
+
+```ts
+const pollar = new PollarClient({
+  apiKey,
+  // 'auto' (default): sign without asking. 'prompt': show the transaction and
+  // wait for the user before any signature, custodial, external or co-signed.
+  confirmation: 'prompt',
+});
+
+// Headless apps render the prompt themselves; @pollar/react shows ConfirmModal.
+pollar.onConfirmationRequest((pending) => {
+  for (const c of pending) {
+    // c.kind, c.network, c.unsignedXdr, c.operation, c.details
+    askTheUser(c) ? c.confirm() : c.reject();
+  }
+});
+```
+
+A declined prompt ends the call with `SDK_CONFIRMATION_DECLINED`; under `'prompt'` with nothing subscribed the call ends with `SDK_CONFIRMATION_UNAVAILABLE` rather than signing unasked.
+
+To drive the vote yourself instead, pass `cosignManual: true`. Signing calls then come back pending and your app approves through `pollar.cosign`:
 
 ```ts
 const result = await pollar.signAndSubmitTx({ xdr });
@@ -67,9 +90,9 @@ if (result.status === 'cosign_pending') {
 }
 ```
 
-With `@pollar/react` nothing else is needed: the provider opens **`CosignModal`** when a request arrives. The modal recomputes the transaction hash from the unsigned payload, reads the activity straight from Turnkey through the relay and only enables **Approve** when both match. The transaction then continues on its own: a `sign` call resolves to the signed XDR, a `signAndSubmitTx` call submits and reports `success` or `error`.
+With `@pollar/react` the provider opens **`CosignModal`** for whatever still needs a decision: a request under `cosignManual`, or setup the device could not recognize. The modal recomputes the transaction hash, reads the activity from Turnkey and only enables **Approve** when both match; the transaction then continues on its own.
 
-To build your own UI, use the headless API:
+The headless API:
 
 | | What it does |
 | - | ------------ |
@@ -83,6 +106,8 @@ To build your own UI, use the headless API:
 | `pollar.cosign.revokeDevice(id)` | Removes another enrolled device with this device's own vote; Pollar cannot do it for the user |
 | `pollar.cosign.inspectQuorum()` | Reads the root quorum from Turnkey with the device key (two users, threshold 2, this device registered) and records the reading with Pollar. The modals run it on open and refuse to approve on a quorum that is not the promised one |
 | `pollar.onCosignStateChange(cb)` | Fires on every pending or resolved request |
+| `pollar.onConfirmationRequest(cb)` | Under `confirmation: 'prompt'`, the signing calls waiting for the user; each carries `confirm()` and `reject()` |
+| `recognizedSetupRequest(request)` | What the device approves on its own: decodes the request and says whether it is setup of this wallet, and why not otherwise |
 
 The same requests are reachable over HTTP: `GET /cosign/requests`, `GET /cosign/requests/:id?sync=1`, `POST /cosign/requests/:id/refresh`, `POST /cosign/requests/:id/cancel`, `POST /cosign/relay` and `GET /cosign/devices` on the v2 SDK API.
 
