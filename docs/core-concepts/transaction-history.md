@@ -103,6 +103,7 @@ GET https://sdk.api.pollar.xyz/v1/tx/history?limit=20&offset=0
 | `limit`   | `number` | —       | Records per page.                    |
 | `offset`  | `number` | `0`     | Offset for pagination.               |
 | `network` | `string` | session | `testnet` or `mainnet`.              |
+| `chain`   | `'STELLAR' \| 'SOLANA' \| 'POLYGON'` | all | Only this chain's records. |
 
 **Response (`content`):**
 
@@ -111,13 +112,27 @@ GET https://sdk.api.pollar.xyz/v1/tx/history?limit=20&offset=0
   "records": [
     {
       "id": "tx_abc123",
+      "chain": "STELLAR",
       "hash": "a1b2c3d4...",
       "network": "testnet",
       "status": "SUCCESS",
       "operation": "payment",
-      "feeXlm": "0.00001",
+      "fee": { "amount": "100", "unit": "stroops" },
+      "details": {},
       "summary": "Sent 10.00 USDC",
       "createdAt": "2026-03-15T10:30:00Z"
+    },
+    {
+      "id": "tx_def456",
+      "chain": "SOLANA",
+      "hash": "5UfD...",
+      "network": "testnet",
+      "status": "SUCCESS",
+      "operation": "transfer",
+      "fee": { "amount": "5000", "unit": "lamports" },
+      "details": {},
+      "summary": "Sent 10.00 USDC",
+      "createdAt": "2026-03-15T10:31:00Z"
     }
   ],
   "total": 42,
@@ -172,12 +187,14 @@ The human-readable `operation` and `summary` fields describe what the transactio
 ```typescript
 type TxHistoryRecord = {
   id: string;
+  chain: 'STELLAR' | 'POLYGON' | 'SOLANA';
   hash: string;
   network: 'testnet' | 'mainnet';
   status: 'PENDING' | 'SUCCESS' | 'FAILED';
   operation: string;
-  feeXlm?: string;
+  fee?: { amount: string; unit: string }; // stroops, lamports, wei
   resultCode?: string;
+  details: Record<string, unknown>;
   summary: string;
   createdAt: string; // ISO 8601
 };

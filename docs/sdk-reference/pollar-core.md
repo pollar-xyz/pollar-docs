@@ -6,7 +6,7 @@ Framework-agnostic TypeScript client for Pollar, for Stellar and Solana applicat
 
 The client is multichain: a session carries one wallet per chain the app enables (`getWallets()`), balances and history are per chain, and `sendPayment()` takes a `chain`. The transaction builder (`buildTx` / `signTx` / `submitTx`) works on Stellar XDR; on Solana use `sendPayment()`. See [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support) for the full matrix.
 
-**Version:** `0.10.1`
+**Version:** `0.11.5`
 
 ```bash
 npm install @pollar/core
@@ -30,9 +30,13 @@ const pollar = new PollarClient({
 |------------------|------------------|----------------------------------|----------------------------------------------------------------------------|
 | `apiKey`         | `string`         | —                                | **Required.** Your Pollar publishable key.                                 |
 | `stellarNetwork` | `StellarNetwork` | `'testnet'`                      | Target Stellar network: `'testnet'` or `'mainnet'`.                        |
-| `baseUrl`        | `string`         | `'https://sdk.api.pollar.xyz'`   | Override the Pollar API base URL. The SDK appends `/v1` to it. Useful for self-hosted deployments. |
+| `baseUrl`        | `string`         | `'https://sdk.api.pollar.xyz'`   | Override the Pollar API base URL. The SDK appends `/v2` to it. Useful for self-hosted deployments. |
+| `confirmation`   | `'auto' \| 'prompt'` | `'auto'`                     | Confirmation policy. `'auto'`: the SDK settles every signature itself (for a co-signed wallet the device verifies the request against Turnkey and votes on its own). `'prompt'`: every signature is shown to the user first, whatever the custody. See [Co-signed wallets](#co-signed-wallets). |
+| `cosignManual`   | `boolean`        | `false`                          | Keep the raw `cosign_pending` outcome instead of letting the SDK settle co-sign requests: your app drives `client.cosign` itself. |
+| `cosignKeyManager` | `KeyManager`   | —                                | Where the device key of a co-signed wallet lives; defaults to the client's `keyManager`. |
+| `loginTimeoutMs` | `number`         | `45000`                          | How long `login()` waits for an OAuth / wallet round-trip before failing. |
 
-> Additional options are supported for non-web runtimes and advanced use: `storage`, `keyManager`, `walletAdapters` (array — see [Wallet Adapters](https://docs.pollar.xyz/docs/sdk-reference/wallet-adapters)), `requestTimeoutMs` (default `10000`), `submitTimeoutMs` (default `30000`), `retry`, `deviceLabel`, `visibilityProvider`, `openAuthUrl`, `oauthRedirectUri`, `passkey`, `logLevel`, `logger`, `onStorageDegrade`, and `maxIdleMs`. See the `PollarClientConfig` type for the full list (React Native consumers must inject a `storage` adapter, and provide `openAuthUrl` for OAuth).
+> Additional options are supported for non-web runtimes and advanced use: `storage`, `keyManager`, `walletAdapters` (array — see [Wallet Adapters](https://docs.pollar.xyz/docs/sdk-reference/wallet-adapters)), `requestTimeoutMs` (default `10000`), `submitTimeoutMs` (default `30000`), `retry`, `deviceLabel`, `visibilityProvider`, `openAuthUrl`, `oauthRedirectUri`, `passkey`, `passkeySign`, `logLevel`, `logger`, `onStorageDegrade`, and `maxIdleMs`. See the `PollarClientConfig` type for the full list (React Native consumers must inject a `storage` adapter, and provide `openAuthUrl` for OAuth).
 
 ---
 
@@ -375,7 +379,8 @@ const unsubscribe = pollar.onTransactionStateChange((state) => {
 | `submitting`                  | Submitting the signed transaction.                                  |
 | `signing-submitting`          | Custodial atomic sign+submit (server swallows the boundary).        |
 | `building-signing-submitting` | Custodial atomic build+sign+submit (`runTx` / `buildAndSignAndSubmitTx`). |
-| `submitted`                   | Accepted by Horizon; awaiting ledger confirmation. `hash` is set.   |
+| `awaiting_cosign`             | A co-signed wallet: the request (`request: CosignRequest`) waits for the device's vote. Under `confirmation: 'auto'` the SDK settles it and moves on; under `'prompt'` or `cosignManual` your app does. |
+| `submitted`                   | Accepted by the network; awaiting ledger confirmation. `hash` is set.   |
 | `success`                     | Transaction confirmed. `hash` is available.                         |
 | `error`                       | Transaction failed. Carries `phase`, and optionally `code` / `message` / `details`. |
 
@@ -435,12 +440,13 @@ const unsubscribe = pollar.onWalletBalanceStateChange((state) => {
 
 ### `pollar.fetchTxHistory(params?)`
 
-Fetches paginated transaction history for the authenticated wallet.
+Fetches paginated transaction history for the authenticated user, across every chain the app enables unless you filter by `chain`.
 
 ```typescript
 await pollar.fetchTxHistory({
   limit: 20,
   offset: 0,
+  chain: 'SOLANA',
 });
 ```
 
@@ -448,8 +454,9 @@ await pollar.fetchTxHistory({
 |----------|----------|---------|--------------------------------------------------------------------|
 | `limit`  | `number` | —       | Number of records to return.                                       |
 | `offset` | `number` | `0`     | Offset for pagination (history uses offset-based paging).          |
+| `chain`  | `'STELLAR' \| 'POLYGON' \| 'SOLANA'` | — | Only this chain's records. Omit for all chains. |
 
-> Only transactions submitted through Pollar appear here. A record reads `PENDING` immediately after build and updates to `SUCCESS` or `FAILED` once submitted. Each record exposes `id`, `hash`, `network`, `status`, `operation`, `summary`, `feeXlm`, `resultCode`, and `createdAt`.
+> Only transactions submitted through Pollar appear here. A record reads `PENDING` immediately after build and updates to `SUCCESS` or `FAILED` once submitted. Each record exposes `id`, `hash`, `chain`, `network`, `status`, `operation`, `summary`, `details`, `fee` (`{ amount, unit }`: stroops on Stellar, lamports on Solana, wei on Polygon), `resultCode`, and `createdAt`.
 
 ---
 
@@ -483,91 +490,132 @@ const unsubscribe = pollar.onTxHistoryStateChange((state) => {
 
 ## KYC
 
-Pollar provides a KYC (Know Your Customer) flow that integrates with third-party identity verification providers.
+Pollar provides a KYC (Know Your Customer) flow that integrates with third-party identity verification providers. Every method takes optional `corridorId` / `cardProviderId` arguments: with one of them, the read or the session is scoped to that ramp route's or card provider's steps instead of the app's own.
 
-### `pollar.getKycProviders(country)`
+### `pollar.getKycProviders(country, corridorId?, cardProviderId?)`
 
-Returns the list of available KYC providers for the given country code.
+Returns the KYC providers available for the given country code. With `corridorId`, only the one option the route asks for (or none).
 
 ```typescript
-const providers = await pollar.getKycProviders('US');
+const { providers } = await pollar.getKycProviders('MX');
+// providers: { id, name, flow: 'iframe' | 'form' | 'redirect', levels: KycLevel[] }[]
 ```
 
 ---
 
-### `pollar.getKycStatus(providerId?)`
+### `pollar.getKycStatus(providerId?, corridorId?, cardProviderId?)`
 
-Returns the current KYC status for the authenticated user. Optionally scoped to a specific provider. Resolves to an object — read `.status` for the value.
+The current KYC status for the authenticated user. `status` is what gates the user; `decisionStatus` and `reviewReason` say why a `pending` is pending; `pendingStep` names the requirement step still open.
 
 ```typescript
-const { status, level, providerId, expiresAt } = await pollar.getKycStatus();
-// status: 'none' | 'pending' | 'approved' | 'rejected'
+const { status, decisionStatus, reviewReason, level, providerId, expiresAt, pendingStep } =
+  await pollar.getKycStatus();
+// status: 'none' | 'pending' | 'approved' | 'rejected' | 'expired'
+// decisionStatus: 'pending' | 'manual_review' | 'approved' | 'rejected' | 'expired'
 ```
 
 ---
 
 ### `pollar.startKyc(body)`
 
-Initiates a KYC verification session with the specified provider.
+Starts a KYC session with a provider. An `iframe` / `redirect` provider answers `kycUrl`; a `form` provider answers the `fields` to render.
 
 ```typescript
 const session = await pollar.startKyc({
   providerId: 'provider_id',
   level: 'basic',
-  redirectUrl: 'https://yourapp.com/kyc/callback',
+  country: 'MX',
+  corridorId,       // optional: the ramp route this KYC is for
+  idempotencyKey,   // optional: the same key on a retry reuses the session
 });
+// session: { sessionId, kycUrl?, fields? }
 ```
 
 ---
 
-### `pollar.resolveKyc(providerId, level?)`
+### `pollar.resolveKyc(providerId, level?, country?, corridorId?, idempotencyKey?, cardProviderId?)`
 
-Resolves the outcome of a completed KYC session.
+Checks the status and returns early when already approved; otherwise starts a session. Resolves to `{ alreadyApproved: boolean }` plus the `startKyc` response when a session was opened. `SDK_KYC_ALREADY_APPROVED` from the server is mapped to `{ alreadyApproved: true }`.
 
 ```typescript
-await pollar.resolveKyc('provider_id', 'basic');
+const result = await pollar.resolveKyc('provider_id', 'basic', 'MX');
+if (!result.alreadyApproved && result.kycUrl) window.open(result.kycUrl);
 ```
 
 ---
 
-### `pollar.pollKycStatus(providerId, opts?)`
+### `pollar.pollKycDecision(providerId, opts?)` / `pollar.pollKycStatus(providerId, opts?)`
 
-Polls the KYC status until it reaches a terminal state (`approved` or `rejected`), or until the timeout is exceeded.
+Polls until the decision settles: `approved`, `rejected`, `expired`, **or `pending` held for manual review**. `pollKycDecision` resolves with the full status object; `pollKycStatus` reduces it to the `KycStatus` value. Both throw `'KYC polling timed out'` past `timeoutMs`.
 
 ```typescript
-const finalStatus = await pollar.pollKycStatus('provider_id', {
-  intervalMs: 2000,
-  timeoutMs: 60000,
-});
+const status = await pollar.pollKycStatus('provider_id', { intervalMs: 3000, timeoutMs: 300_000 });
 ```
 
-| Option       | Type     | Description                               |
-|--------------|----------|-------------------------------------------|
-| `intervalMs` | `number` | Polling interval in milliseconds.         |
-| `timeoutMs`  | `number` | Maximum wait time before throwing.        |
+| Option           | Type     | Default   | Description                                      |
+|------------------|----------|-----------|--------------------------------------------------|
+| `intervalMs`     | `number` | `3000`    | Polling interval in milliseconds.                |
+| `timeoutMs`      | `number` | `300000`  | Maximum wait time before throwing.               |
+| `corridorId`     | `string` | —         | Scope to a ramp route's steps.                   |
+| `cardProviderId` | `string` | —         | Scope to a card provider's steps.                |
 
-**`KycStatus` values:** `'none'` · `'pending'` · `'approved'` · `'rejected'`
+**`KycStatus` values:** `'none'` · `'pending'` · `'approved'` · `'rejected'` · `'expired'`
 
 **`KycLevel` values:** `'basic'` · `'intermediate'` · `'enhanced'`
 
 ---
 
+### Requirement steps
+
+An app, a ramp route or a card provider can require an ordered list of steps before the user proceeds. Steps are all required, in order (AND); the `optionIds` inside a step are alternatives (OR): the step is satisfied when any accepted option is. Step types: `KYC`, `FORM`, `REGISTRY_CHECK` (an identity registry such as SEGIP), `PROVIDER_REGISTRATION` (sign the user up with the ramp or card provider from the verified identity and form answers). `@pollar/react` walks them from `<KycModal>`, `<RampWidget>` and `<CardModal>`; the headless surface:
+
+| Method | Description |
+|---|---|
+| `getAppRequirements()` → `{ steps, next, completed, total }` | The app's own steps and the user's progress. `next` is the open step (`type`, `optionId`, `status`, `reviewReason?`) or `null` |
+| `getRequirementForm(formId)` → `RequirementForm` | A form asked by a `FORM` step: `fields` (`text`, `textarea`, `number`, `date`, `select`, `multiselect`, `checkbox`, `email`, `phone`, with `label.en` / `label.es`, `required`, `options`, `validation`), the user's previous `answers`, and the `missing` keys |
+| `submitRequirementForm(formId, answers)` → `{ formId, version, missing }` | Stores the answers encrypted. Invalid ones fail with `KYC_FORM_INVALID_ANSWERS` and `body.errors: { key, code }[]` |
+| `getRegistryCheck(optionId)` / `submitRegistryCheck(optionId, { surname1, surname2?, complementNumber? })` | A `REGISTRY_CHECK` step: the prefilled identity (only the surname split and the document complement are editable) and its `status` / `rejectedFields` |
+| `getProviderRegistration(corridorId)` / `submitProviderRegistration(corridorId)` | Whether the user is registered with the route's ramp provider, whether they can be now, what is shared, and the user's consent to register |
+
+A ramp quote reports the first open step of each route in `requirementsRequired` (see [`getRampsQuote`](#pollargetrampsquotequery)); complete it and quote again.
+
+---
+
 ## Ramps
 
-Pollar supports on-ramp (fiat → crypto) and off-ramp (crypto → fiat) flows through integrated third-party providers.
+Pollar supports on-ramp (fiat → crypto) and off-ramp (crypto → fiat) flows through integrated third-party providers. A ramp settles on the chain its route names (`chain` on the responses): Stellar, Solana or Polygon.
 
 ### `pollar.getRampsQuote(query)`
 
-Returns available quotes for a ramp operation.
+Returns the quotes for a ramp, sorted by recommendation: the first item is the best option.
 
 ```typescript
-const quotes = await pollar.getRampsQuote({
+const { quotes, requirementsRequired, unavailable } = await pollar.getRampsQuote({
   direction: 'onramp',
-  fiatCurrency: 'USD',
-  cryptoAsset: 'USDC',
-  amount: '100',
+  country: 'BR',
+  currency: 'BRL',
+  amount: 100,
 });
 ```
+
+| Query field          | Type                                   | Description                                                   |
+|----------------------|----------------------------------------|---------------------------------------------------------------|
+| `direction`          | `'onramp' \| 'offramp'`                | **Required.**                                                 |
+| `country`            | `string`                               | **Required.** ISO 3166-1 alpha-2.                             |
+| `currency`           | `string`                               | **Required.** The fiat currency.                              |
+| `amount`             | `number`                               | **Required.** In `amountDenomination`.                        |
+| `amountDenomination` | `'fiat' \| 'crypto'`                   | What `amount` is in. Default fiat.                            |
+| `amountExact`        | `string`                               | The exact decimal string when `amount` would lose precision.  |
+| `chain`              | `'STELLAR' \| 'POLYGON' \| 'SOLANA'`   | Only routes that settle on this chain.                        |
+| `routeId`            | `string`                               | Re-quote one route.                                           |
+
+The response:
+
+| Field                  | Description                                                                                       |
+|------------------------|---------------------------------------------------------------------------------------------------|
+| `quotes`               | `RampQuote[]`: `quoteId`, `provider`, `rail` (`SPEI`, `PIX`, `PSE`, `ACH`, `BREB`, `QR`), `protocol` (`SEP-24` / `REST`), `fee`, `rate`, `estimatedTime`, `recommended`, `requiredFields` (the contact / bank fields to collect), and the amounts below |
+| `requirementsRequired` | Routes not quoted because a requirement step is still open: `{ corridorId, type, optionId, status, position, completed, total }`. Complete the step (see [Requirement steps](#requirement-steps)) and quote again |
+| `unavailable`          | Providers that could not quote, with a `code`                                                     |
 
 Each quote carries the bounds of the **route** and, separately, what applies to
 **this user**:
@@ -667,7 +715,7 @@ const offramp = await pollar.createOffRamp({ ... });
 `createOnRamp` / `createOffRamp` are safe to retry with the same `quoteId`. A
 quote is consumed once, so a repeat does not open a second order or charge
 twice: it answers with the transaction the first call already produced, carrying
-its current `status` and `stellarTxHash`.
+its current `status`, `chain` and `txHash` (`stellarTxHash` on a Stellar ramp).
 
 That matters because a timeout is not a failure. The SDK abandons a request
 after 10 seconds by default, and a dropped connection can cut the answer after
@@ -712,10 +760,27 @@ const finalStatus = await pollar.pollRampTransaction('tx_id', {
 });
 ```
 
-| Option       | Type     | Description                        |
-|--------------|----------|------------------------------------|
-| `intervalMs` | `number` | Polling interval in milliseconds.  |
-| `timeoutMs`  | `number` | Maximum wait time before throwing. |
+| Option       | Type     | Default  | Description                        |
+|--------------|----------|----------|------------------------------------|
+| `intervalMs` | `number` | `5000`   | Polling interval in milliseconds.  |
+| `timeoutMs`  | `number` | `600000` | Maximum wait time before throwing. |
+
+---
+
+### More ramp methods
+
+| Method | Description |
+|---|---|
+| `getRampCountries()` → `{ countries: { code, currency }[] }` | The countries (and fiat currency) the app's enabled ramp providers serve on its network. Drive the country picker from this |
+| `getRampTransaction(txId)` | One ramp: `status`, `direction`, `amount`, `currency`, `chain`, `txHash`, `depositInstructions`, `pendingSignature`, `fundsInTransit`, `updatedAt` |
+| `retryRampTransaction(txId)` | Run the pending step of a ramp whose funds are in transit now, instead of at the next pass |
+| `completeWithdraw(txId)` | Complete an off-ramp once the anchor's KYC is done: builds, signs and submits the withdraw payment |
+| `submitRampSignature(txId, { signedXdr, action })` | Resume a ramp from an **external** wallet after the client signed the `pendingSignature` XDR (`action`: `'sep10'` or `'withdraw_payment'`) |
+| `getRampLiquidity(rail)` → `{ rail, liquidity, available, message? }` | Live liquidity on a payout rail (`'PIX'`, `'BREB'`). `available: false` means the rail cannot be served right now |
+| `getRampKycStatus()` → `{ provider, hasApproved, status }` | Poll after an off-ramp answered `kycRequired: true`; once `hasApproved`, request a fresh quote |
+| `decodePixQr(qrCode)` → `{ decoded }` | Decode a Pix "copia e cola" payload to show the payee before an off-ramp. `decoded: null` is a stale code. Pass the original payload as `bankDetails.qrCode` on `createOffRamp` |
+
+The on/off-ramp responses also carry `onboardingStatus` (`'kyc'` / `'endorsement'` / `'awaiting_provider'`) while the provider is still onboarding the user, `kycUrl` / `tosUrl` to send them to, and `depositInstructions` (a scannable Pix / Stellar / URL payload plus copyable fields) on an on-ramp.
 
 ---
 
@@ -746,9 +811,10 @@ const outcome = await pollar.runTx('payment', {
 if (outcome.status === 'error') console.error(outcome.details, outcome.resultCode);
 ```
 
-Lower-level building blocks are also available: `signTx(unsignedXdr)` (external
-wallets only), `submitTx(signedXdr)`, `getTxStatus(hash)`, `createAccount()`, and
-`resetTransactionState()`.
+Lower-level building blocks are also available: `signTx(unsignedXdr, { skipSponsorship? })`
+(a managed wallet signs server-side, an external wallet in its adapter; only passkey
+smart wallets cannot use it), `submitTx(signedXdr)`, `getTxStatus(hash)`,
+`createAccount()`, and `resetTransactionState()`.
 
 ### `pollar.sendPayment(params)`
 
@@ -777,7 +843,7 @@ await pollar.sendPayment({
 |---|---|---|---|
 | `'STELLAR'` (default) | Decimal string | `asset` | Managed: Pollar signs. External / passkey: the adapter signs |
 | `'SOLANA'` | Integer base units (lamports, or the mint's smallest unit) | `mint?` (omit for SOL) | Managed and co-signed: one call to `/v2/tx/build-sign-submit`. External (SIWS): Pollar builds, the wallet signs via `signSolanaTransaction`, Pollar submits |
-| `'POLYGON'` | Integer base units (wei, or the token's smallest unit) | `mint?` (the ERC-20 contract) | Managed only |
+| `'POLYGON'` | Integer base units (wei, or the token's smallest unit) | `mint?` (the ERC-20 contract) | Managed and co-signed; an external Polygon wallet is refused |
 
 On Solana, when the token is marked **sponsor transfers** in the dashboard, the
 app's GAS wallet is the fee payer and the recipient's associated token account is
@@ -796,12 +862,12 @@ on-chain trustline state.
 - `pollar.refreshAssets()` — refresh the enabled-assets state machine.
 - `pollar.onEnabledAssetsStateChange(cb)` — subscribe; returns an unsubscribe fn.
 - `pollar.setTrustline(asset, opts?)` — establish (omit `limit`) or remove
-  (`limit: '0'`) a trustline. Pass `{ sponsored: true }` so the app covers the
-  reserve + fee when eligible; otherwise the user's wallet pays. Returns a
-  `TrustlineOutcome`.
+  (`limit: '0'`) a trustline. The app covers the reserve and the fee whenever
+  the dashboard sponsors trustlines; pass `{ skipSponsorship: true }` to make
+  the user's wallet pay instead. Returns a `TrustlineOutcome`.
 
 ```typescript
-await pollar.setTrustline({ code: 'USDC', issuer: 'GABC...' }, { sponsored: true });
+await pollar.setTrustline({ code: 'USDC', issuer: 'GABC...' });
 ```
 
 ---
@@ -863,6 +929,150 @@ See [Smart Wallets](https://docs.pollar.xyz/docs/smart-wallets/overview) for the
 
 ---
 
+## Stellar SEP proofs
+
+Ownership proofs signed by the user's Stellar wallet, custodial or external:
+
+- `pollar.stellar.sep53.signMessage(message)` → `{ status: 'signed', signature, signerAddress, scheme: 'sep53' }` or `{ status: 'error', code?, details? }`. SEP-53 message signing.
+- `pollar.stellar.sep10.sign({ challengeXdr, homeDomains?, webAuthDomain? })` → `{ status: 'signed', signedXdr, signerAddress }` or an error. Signs a SEP-10 web-auth challenge from your own anchor.
+
+---
+
+## Lifecycle and wallet readiness
+
+| Method | Description |
+|---|---|
+| `pollar.ready()` → `Promise<void>` | Resolves once the keypair and the stored session are restored. Await it before reading `getAuthState()` on a cold start |
+| `pollar.destroy()` | Detaches the cross-tab storage listener and aborts any in-flight login |
+| `pollar.refresh()` | Refreshes the access token; concurrent calls are coalesced |
+| `pollar.refreshWalletState()` → `Promise<WalletProvisioning \| null>` | Asks the server where the Stellar account stands: `'READY'`, `'CREATING'`, `'FAILED'` or `'NONE'`. Never throws |
+| `pollar.onWalletStateChange(cb)` | Subscribe to that readiness; replays the current value, then emits on change |
+| `isWalletNotReady(errorOrOutcome)` / `WALLET_NOT_READY_CODE` | `true` when a failure is "the wallet is still being prepared" (`SDK_WALLET_NOT_READY`), whether thrown or returned as an outcome. Retry once the state is `READY` |
+| `pollar.getUserProfile()` → `PollarUserProfile \| null` | Email, names, avatar and linked providers. Held in memory only, never persisted |
+| `pollar.providerAction(provider, action, payload?)` | A named secondary step on a registered auth provider (the email provider's `sendCode` / `verifyCode`) |
+| `pollar.setPasskeyDefaults({ passkey?, passkeySign? })` | Fill in the passkey ceremony and signer when they were not configured at construction (`@pollar/react` does this) |
+| `pollar.getNetworkState()` | `{ step: 'idle' }` or `{ step: 'connected', network }` |
+| `pollar.getWalletType()` → `WalletId \| null` | The provider the session was opened with |
+| `pollar.listWalletAdapters()` → `{ id, meta, chain }[]` | The registered adapters, Freighter and Albedo first, each with its `chain` |
+| `pollar.getWalletAdapter(id)` | One registered adapter instance |
+| `pollar.getLogger()` | The client's level-gated logger |
+
+---
+
+## Co-signed wallets
+
+A mainnet app whose dashboard sets [wallet custody](https://docs.pollar.xyz/docs/operator-guide/wallets/settings) to **Co-signed with Turnkey** gives each user a 2-of-2 quorum: this device's key plus Pollar's approver key. Every signature needs both votes, on Stellar, Solana and Polygon. The concepts are in [Co-signed Wallets](https://docs.pollar.xyz/docs/core-concepts/co-signed-wallets); this section is the client surface.
+
+The device key is a second P-256 key kept under the `cosign` namespace of the client's storage (`cosignKeyManager` to hold it elsewhere, for example hardware-backed). Logout does not reset it, so the user's vote survives signing out. `login()` and `createWallet()` send its public key, which becomes the user's half of the quorum: a user on an SDK older than 0.11.5 cannot create a co-signed wallet.
+
+### Confirmation policy
+
+`confirmation` in `PollarClientConfig` decides how much the user sees, whatever the custody:
+
+| Policy | Custodial wallet | Co-signed wallet | External wallet |
+|---|---|---|---|
+| `'auto'` (default) | Signs on the server, no prompt | The device verifies the request against Turnkey and votes on its own; `signTx` returns `signed`, `runTx` returns `success`, exactly as for a custodial wallet | Only the wallet's own popup |
+| `'prompt'` | Shows the transaction first, then signs | Shows it first, then verifies and votes | Shows it first, then the wallet's popup |
+
+Under `'prompt'`, `@pollar/react` renders the prompt (`<ConfirmModal>`); a headless app subscribes with `onConfirmationRequest` and answers each `PendingConfirmation` with `confirm()` or `reject()`. While nothing is subscribed, a signing call fails with `SDK_CONFIRMATION_UNAVAILABLE` rather than signing unasked.
+
+```typescript
+pollar.onConfirmationRequest((pending) => {
+  for (const c of pending) {
+    // c.kind: 'sign' | 'sign_and_send' | 'build_sign_submit'; c.network; c.operation; c.details
+    showDialog(c).then((ok) => (ok ? c.confirm() : c.reject()));
+  }
+});
+```
+
+- `pollar.getPendingConfirmations()` → `PendingConfirmation[]`.
+- `pollar.onConfirmationRequest(cb)` — subscribe; replays the current list.
+
+### What the device verifies
+
+Before voting, the device asks Pollar to **rebuild** a refreshable request (a Solana blockhash lasts about a minute, a Stellar sequence a few), then reads Turnkey's copy of the activity with its own key and compares:
+
+| Chain | Check |
+|---|---|
+| Stellar | The transaction hash, recomputed from the unsigned envelope |
+| Solana | A CCTP `deposit_for_burn` is decoded on the device (amount, signing account, destination domain and recipient, fee and rent payer); anything the reader cannot decode is compared byte for byte |
+| Polygon | The unsigned EIP-1559 transaction is decoded: chain id, and only a POL / ERC-20 transfer, `approve`, Uniswap V3 `exactInputSingle` or CCTP V2 `depositForBurn` with the stated destination, value and calldata |
+| Account derivation | Wallet id and parameters |
+
+A mismatch throws `SDK_COSIGN_VERIFICATION_FAILED` and nothing is sent. Setup requests Pollar opens on its own (account creation, a trustline, an account on a new chain) are approved without a prompt only when the device decodes them field by field and they name this wallet; anything else lands in the pending list. Requests that belong to an **approval group** (a ramp's swap and bridge, for example) are shown once with all their steps; after the user approves the first, the device votes the rest on its own, still verifying each.
+
+### `pollar.cosign`
+
+The raw surface, for an app that drives the flow itself (`cosignManual: true`) or renders its own approval UI:
+
+| Method | Description |
+|---|---|
+| `pending()` → `Promise<CosignRequest[]>` | The requests waiting for this device's vote |
+| `get(id, { sync? })` | One request; `sync` re-reads the activity from Turnkey first |
+| `verify(request)` → `Promise<CosignVerification>` | The check above, without voting. `{ ok: true, localHash, turnkeyPayload }` or `{ ok: false, reason }` |
+| `approve(request \| id, { verify? })` | Vote yes. Verifies first unless told not to. Resolves with the request after the vote: approved and signed (and submitted, for intents that submit), or still pending |
+| `reject(request \| id)` | Vote no. Final |
+| `cancel(id)` | Withdraw Pollar's vote: the activity is rejected in Turnkey. Final |
+| `refresh(request \| id)` | Rebuild the request right before the vote; same id, new Turnkey activity |
+| `inspectQuorum({ report? })` → `Promise<CosignQuorumReport>` | Reads the sub-organization back and reports whether it is the promised quorum: two root users, threshold 2, this device registered. Run once after the wallet is created, before the first deposit |
+| `devices()` → `Promise<CosignDevicesContent>` | The user's enrolled devices and the quorum state |
+| `revokeDevice(deviceId, { force? })` | Revoke one of the user's devices. Revoking the key this device signs with locks it out, so it is refused unless `force` |
+
+- `pollar.getCosignState()` → `{ pending: CosignRequest[]; lastResolved?: CosignRequest }`.
+- `pollar.onCosignStateChange(cb)` — subscribe; replays the current value.
+
+With `cosignManual: true`, a signing call on a co-signed wallet returns `{ status: 'cosign_pending', request, buildData? }` and `TransactionState` sits on `awaiting_cosign` until your app approves through `pollar.cosign.approve()`.
+
+Helpers: `cosignGroupOf(request)` → `CosignGroup | null`, `cosignStepKeyOf(request)`, `stepInGroup(group, stepKey)`, and `transactionErrorMessage(code, details)` for user-facing text of a failed transaction or approval.
+
+---
+
+## Cards
+
+An app that enables a card provider in [Cards → Providers](https://docs.pollar.xyz/docs/operator-guide/cards/providers) offers its users a virtual card funded from their wallet. `@pollar/react` wraps the whole flow in `<CardModal>`; the methods below are the headless surface. The card number is decrypted on the device, never on a Pollar server.
+
+Every method takes an optional `{ cardProviderId }`, needed only when the app enables more than one provider.
+
+| Method | Description |
+|---|---|
+| `getCardProviders()` → `Promise<CardProvider[]>` | The providers this app enables. An empty array means Cards is off: hide the UI |
+| `getCardRequirements(params?)` → `Promise<CardRequirements>` | The platform steps the provider needs (`KYC`, `FORM`, `REGISTRY_CHECK`, `PROVIDER_REGISTRATION`) and where the user stands (`next`, `completed`, `total`) |
+| `getCardProviderRegistration(cardProviderId)` / `submitCardProviderRegistration(cardProviderId)` | Whether the user is registered with the provider, what is shared, and the user's consent to sign up from the verified identity and form answers |
+| `getCardHolder(params?)` → `Promise<CardHolder \| null>` | The holder, `null` before `createCardHolder` |
+| `createCardHolder(params?)` | Creates the holder; `firstName`, `lastName`, `email` default to the session profile |
+| `submitCardKyc({ termsAccepted, kyc })` → `Promise<CardHolder>` | The provider's own KYC form (`CardKycInput`); `termsAccepted` must be `true`. The returned holder carries `verificationLink` while `kycStatus` is `PENDING` / `NEEDS_ACTION` / `IN_REVIEW` |
+| `getCardOccupations(params?)` | The occupation codes `CardKycInput.occupation` accepts |
+| `getCards(params?)` → `Promise<CardInfo[]>` | The user's cards; never includes card numbers |
+| `issueCard({ nickname?, limit? })` → `Promise<CardInfo>` | Issue a virtual card. Needs an approved KYC |
+| `getCardBalance(params?)` → `Promise<CardBalance \| null>` | Credit limit, spending power and balance due, read live from the provider |
+| `getCardTransactions({ cardId?, limit?, offset? })` → `Promise<CardTransactionsPage>` | Newest first |
+| `fundCard({ amount })` → `Promise<CardFundingOutcome>` | Moves USDC from the user's **Stellar** wallet to the card's collateral. A custodial wallet pays at once; an external wallet is asked to sign, and `{ status: 'cancelled' }` means it declined. The returned `CardFunding` then advances on its own: `CREATED → BURNED → ATTESTED → MINTED → CREDITED`, or `FAILED` with `error` |
+| `getCardFunding(fundingId)` / `listCardFundings(params?)` | Follow a funding, or list them newest first |
+| `getCardDepositAddresses(params?)` | One deposit address per network, for funding from another wallet |
+| `revealCardSecrets(cardId, params?)` → `Promise<CardSecrets>` | PAN and CVC, decrypted on this device with a one-shot key the server never sees. Show them and drop them; never store or log the result |
+
+```typescript
+const [provider] = await pollar.getCardProviders();
+if (!provider) return; // Cards is off for this app
+
+let holder = await pollar.getCardHolder();
+if (!holder) holder = await pollar.createCardHolder();
+if (holder.kycStatus === 'NOT_STARTED') {
+  holder = await pollar.submitCardKyc({ termsAccepted: true, kyc: form });
+  // send the user to holder.verificationLink, poll getCardHolder() until APPROVED
+}
+
+const card = (await pollar.getCards())[0] ?? (await pollar.issueCard({ nickname: 'Travel' }));
+const funding = await pollar.fundCard({ amount: '25' });
+const { pan, cvc } = await pollar.revealCardSecrets(card.id);
+```
+
+Errors are `PollarApiError`s: `SDK_CARDS_PROVIDER_ERROR` (the provider is down), `SDK_CARDS_IP_NOT_SUPPORTED`, `SDK_CARDS_PROVIDER_USER_TAKEN` (the email is already registered through another app), and `SDK_CARDS_REQUIREMENT_REQUIRED` (409: a platform step is still open; the body names `requirementType` and `optionId`).
+
+Types: `CardProvider`, `CardHolder`, `CardKycStatus`, `CardKycInput`, `CardInfo`, `CardStatus`, `CardBalance`, `CardTransaction`, `CardFunding`, `CardFundingStatus`, `CardFundingOutcome`, `CardSecrets`, `CardRequirements`, `CardRequirementStep`.
+
+---
+
 ## Types
 
 ```typescript
@@ -880,14 +1090,26 @@ import type {
   TxHistoryRecord,
   WalletBalanceState,
   WalletBalanceRecord,
+  WalletChain,
+  WalletProvisioning,
+  SendPaymentParams,
+  SubmitOutcome,
+  SignOutcome,
   KycLevel,
   KycStatus,
+  KycDecisionStatus,
+  KycStatusContent,
   KycFlow,
   KycProvider,
   KycStartBody,
   KycStartResponse,
+  AppRequirements,
+  RequirementForm,
+  RequirementFormAnswers,
+  RegistryCheck,
   RampsQuoteQuery,
   RampQuote,
+  RampQuoteRequirement,
   RampsQuoteResponse,
   RampsOnrampBody,
   RampsOnrampResponse,
@@ -906,7 +1128,30 @@ import type {
   SessionInfo,
   DistributionRule,
   WalletInfo,
+  PollarUserProfile,
   PollarFlowError,
+  // co-signed wallets and confirmations
+  CosignRequest,
+  CosignState,
+  CosignVerification,
+  CosignQuorumReport,
+  ConfirmationRequest,
+  PendingConfirmation,
+  // cards
+  CardProvider,
+  CardHolder,
+  CardKycInput,
+  CardInfo,
+  CardBalance,
+  CardTransaction,
+  CardFunding,
+  CardFundingOutcome,
+  CardSecrets,
+  CardRequirements,
+  // Stellar SEP proofs
+  StellarMessageProof,
+  Sep10SignParams,
+  Sep10Proof,
 } from '@pollar/core';
 
 import { WalletType } from '@pollar/core';

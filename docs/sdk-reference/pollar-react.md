@@ -6,7 +6,7 @@ React hooks and pre-built UI components for Pollar, for Stellar and Solana appli
 
 The modals are multichain: Send, Receive, Wallet balance, Enabled assets and Transaction history carry a network picker on an app with more than one chain, and each scopes its rows to the selected chain (Solana rows link to explorer.solana.com and show fees in lamports). Swap and Earn are Stellar modals. See [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support).
 
-**Version:** `0.10.1`
+**Version:** `0.11.5`
 
 ```bash
 npm install @pollar/react
@@ -45,7 +45,10 @@ import { PollarProvider } from '@pollar/react';
 |------------------|------------------|----------------------------------|---------------------------------------------|
 | `apiKey`         | `string`         | —                                | **Required.** Your Pollar API key.          |
 | `stellarNetwork` | `StellarNetwork` | `'testnet'`                      | Target network: `'testnet'` or `'mainnet'`. |
-| `baseUrl`        | `string`         | `'https://sdk.api.pollar.xyz'` (the SDK appends `/v1`) | Override the Pollar API base URL. |
+| `baseUrl`        | `string`         | `'https://sdk.api.pollar.xyz'` (the SDK appends `/v2`) | Override the Pollar API base URL. |
+| `confirmation`   | `'auto' \| 'prompt'` | `'auto'`                     | `'prompt'` shows every signature to the user in `<ConfirmModal>` first. |
+
+Every other `PollarClientConfig` option (`walletAdapters`, `cosignManual`, `loginTimeoutMs`, `storage`, `passkey`, ...) is documented in [`@pollar/core`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core#pollarclient).
 
 ---
 
@@ -123,6 +126,37 @@ function MyComponent() {
 | `login`           | `(options: PollarLoginOptions) => void` | Initiates an authentication flow.                                         |
 | `logout`          | `() => void`                            | Signs out the current user and clears the session.                        |
 
+### Wallets per chain
+
+| Property     | Type                | Description                                                                 |
+|--------------|---------------------|-----------------------------------------------------------------------------|
+| `wallets`    | `WalletInfo[]`      | Every wallet the user holds, one per chain, each with `chain` set. `[]` when logged out. Drives the network pickers; the first one is the default. |
+| `wallet`     | `WalletInfo \| null` | The Stellar wallet (see above); `null` after a Solana-only sign-in. Read `wallets` on a multichain app. |
+
+```tsx
+const { wallets } = usePollar();
+const solana = wallets.find((w) => w.chain === 'SOLANA');
+```
+
+See [`useChains()`](#usechains) for the app's chain order and the primary chain, and `walletNotReadyReason(wallet, chain)` for the message to show while a Stellar account is still being created.
+
+### Co-signed wallets and confirmations
+
+| Property           | Type                    | Description                                                                 |
+|--------------------|-------------------------|-----------------------------------------------------------------------------|
+| `cosign`           | `CosignState`           | `{ pending, lastResolved? }`: requests waiting for this device's vote (Turnkey co-signed wallets). |
+| `openCosignModal`  | `() => void`            | Opens the approval prompt of a co-signed wallet. It opens by itself when a request arrives. |
+| `confirmations`    | `PendingConfirmation[]` | Signing calls waiting for the user under `confirmation: 'prompt'`; the provider shows the first one in `<ConfirmModal>`. |
+
+Under the default `confirmation: 'auto'` a co-signed wallet behaves like a custodial one from the app's point of view: the device verifies and votes, and `runTx` resolves to `success`. See [Co-signed wallets](https://docs.pollar.xyz/docs/sdk-reference/pollar-core#co-signed-wallets) in `@pollar/core` and [`useCosign()`](#usecosign) for a custom approval UI.
+
+### App config
+
+| Property       | Type                               | Description                                                                 |
+|----------------|------------------------------------|-----------------------------------------------------------------------------|
+| `configStatus` | `'loading' \| 'ready' \| 'error'`  | State of the remote `/applications/config` load. `'ready'` at once when `appConfig` is passed. On `'error'` the styles fall back to defaults and the login modal shows a retry. |
+| `retryConfig`  | `() => void`                       | Re-run the config fetch after an error. No-op when `appConfig` is passed.   |
+
 **`PollarLoginOptions`:**
 
 | Value                                    | Description                                                       |
@@ -143,7 +177,7 @@ function MyComponent() {
 | `tx`                      | `TransactionState`                                            | Current transaction state (reactive).                                   |
 | `buildTx`                 | `(operation, params, options?) => Promise<BuildOutcome>`     | Builds an unsigned Stellar transaction.                                |
 | `signAndSubmitTx`         | `(unsignedXdr?: string) => Promise<SubmitOutcome>`           | Signs and submits a built transaction (defaults to the current `built` XDR if omitted). |
-| `signTx`                  | `(unsignedXdr: string) => Promise<SignOutcome>`             | External-wallet only — sign without submitting.                        |
+| `signTx`                  | `(unsignedXdr: string, options?: { skipSponsorship? }) => Promise<SignOutcome>` | Sign without submitting (server-side for a managed wallet, in the adapter for an external one; not available to passkey smart wallets). |
 | `submitTx`                | `(signedXdr: string) => Promise<SubmitOutcome>`            | Submits an already-signed XDR.                                         |
 | `buildAndSignAndSubmitTx` | `(operation, params, options?) => Promise<SubmitOutcome>`   | One-shot build → sign → submit.                                        |
 | `runTx`                   | `(operation, params, options?) => Promise<SubmitOutcome>`   | Alias of `buildAndSignAndSubmitTx`.                                    |
@@ -181,7 +215,7 @@ The transaction modal opens automatically when `buildTx` is called. See [`@polla
 |--------------------------|-------------------------------------------------------------------------------|-----------------------------------------------------------------|
 | `enabledAssets`          | `EnabledAssetsState`                                                          | App-enabled assets paired with the wallet's trustline state.    |
 | `refreshAssets`          | `() => Promise<void>`                                                         | Refreshes the enabled-assets state.                             |
-| `setTrustline`           | `(asset: { code; issuer }, opts?: { limit?; sponsored? }) => Promise<TrustlineOutcome>` | Establish (omit `limit`) or remove (`limit: '0'`) a trustline. Pass `sponsored: true` so the app covers reserve + fee when eligible. |
+| `setTrustline`           | `(asset: { code; issuer }, opts?: { limit?; skipSponsorship? }) => Promise<TrustlineOutcome>` | Establish (omit `limit`) or remove (`limit: '0'`) a trustline. The app sponsors it when the dashboard says so; `skipSponsorship: true` makes the user pay. |
 | `openEnabledAssetsModal` | `() => void`                                                                 | Opens the enabled-assets / trustline modal.                     |
 
 ---
@@ -224,13 +258,17 @@ The transaction modal opens automatically when `buildTx` is called. See [`@polla
 
 | Property       | Type                                                                                  | Description                       |
 |----------------|---------------------------------------------------------------------------------------|-----------------------------------|
-| `openKycModal` | `(options?: { country?: string; level?: KycLevel; onApproved?: () => void }) => void` | Opens the KYC verification modal. |
+| `openKycModal` | `(options?: { corridorId?; providerId?; country?; level?; onApproved? }) => void` | Opens the KYC verification modal. |
 
 | Option       | Type         | Default   | Description                                                           |
 |--------------|--------------|-----------|-----------------------------------------------------------------------|
+| `corridorId` | `string`     | —         | Walk the requirement steps of this ramp route (KYC, forms, registry checks, provider registration). |
+| `providerId` | `string`     | —         | Open this KYC option directly instead of listing the choices (the one a ramp's KYC gate names). |
 | `country`    | `string`     | `'MX'`    | ISO 3166-1 alpha-2 country code to filter providers.                  |
-| `level`      | `KycLevel`   | `'basic'` | Required KYC level: `'basic'`, `'intermediate'`, or `'enhanced'`.    |
+| `level`      | `KycLevel`   | `'basic'` | Legacy fallback for older backends; named options select their own workflow. |
 | `onApproved` | `() => void` | —         | Callback invoked when the KYC verification is successfully approved.  |
+
+Without `corridorId` or `providerId` the modal walks the app's own KYC steps, as configured in the dashboard.
 
 ---
 
@@ -271,6 +309,55 @@ All Pollar modals are mounted inside `<PollarProvider>` and controlled programma
 | `openEarnModal()`                | Opens the Earn modal.                   |
 | `openSessionsModal()`            | Opens the active-sessions modal.        |
 | `openDistributionRulesModal()`   | Opens the distribution-rules modal.     |
+| `openCardModal()`                | Opens the Cards modal: sign-up, identity verification, issuing, the card and its activity. |
+| `openCosignModal()`              | Opens the co-sign approval prompt.      |
+
+---
+
+## Hooks
+
+### `useChains()`
+
+The chains the app serves **and** the user holds a wallet on, in the order configured under [Chains](https://docs.pollar.xyz/docs/operator-guide/wallets/chains). Drive every chain selector from this, not from `wallets` alone: a chain can be enabled before this user is provisioned on it.
+
+```tsx
+import { useChains, ChainSelect } from '@pollar/react';
+
+const { chains, primaryChain, primaryAddress, ready } = useChains();
+const [chain, setChain] = useState(primaryChain);
+
+if (!ready) return null;
+<ChainSelect value={chain} options={chains} onChange={setChain} />
+```
+
+| Field            | Type                   | Description                                                                 |
+|------------------|------------------------|-----------------------------------------------------------------------------|
+| `chains`         | `WalletChain[]`        | `'STELLAR' \| 'SOLANA' \| 'POLYGON'`, in the app's order. `[]` until the config resolves. |
+| `primaryChain`   | `WalletChain \| null`  | The app's first configured chain the user holds.                            |
+| `primaryAddress` | `string`               | The address on `primaryChain`.                                              |
+| `ready`          | `boolean`              | `false` while the config is loading or failed; gate chain UI on it.         |
+
+Helpers exported alongside: `chainsOf(wallets, order?)`, `addressForChain(wallets, chain)`, `resolveChain(chain)` (pre-multichain records are Stellar), and `walletNotReadyReason(wallet, chain)`, which returns the message to show while a Stellar account is `CREATING` or `FAILED`, and `null` on every other chain.
+
+### `useCosign()`
+
+The user's side of a Turnkey co-signed wallet, for an app that renders its own confirmation UI instead of `<CosignModal>`. Subscribes to the client's co-sign store and loads the pending requests once on mount.
+
+| Field          | Type                                                  | Description                                                   |
+|----------------|-------------------------------------------------------|---------------------------------------------------------------|
+| `pending`      | `CosignRequest[]`                                     | Requests waiting for this device's vote, oldest first.        |
+| `lastResolved` | `CosignRequest \| undefined`                          | The last request that reached a final state.                  |
+| `loaded`       | `boolean`                                             | Whether the store has been read at least once.                |
+| `refresh`      | `() => Promise<void>`                                 | Re-read the pending requests.                                 |
+| `verify`       | `(r) => Promise<CosignVerification>`                  | The verification a UI can show before the user decides.       |
+| `approve`      | `(r) => Promise<CosignRequest>`                       | Verify against Turnkey and, when it checks out, vote yes.     |
+| `reject`       | `(r) => Promise<CosignRequest>`                       | Vote no. Final.                                               |
+| `inspectQuorum`| `() => Promise<CosignQuorumReport>`                   | Confirm the wallet is the promised 2-of-2 with this device registered. |
+| `devices` / `revokeDevice` | see `@pollar/core`                        | The user's enrolled devices; revoke one (`force` to revoke this one). |
+
+### `createPollarAdapterHook(key)`
+
+Builds a hook over a transaction adapter registered through the `adapters` prop (for example `@pollar/accesly-adapter`): each adapter method becomes `(params) => Promise<SubmitOutcome>` that builds through the adapter and then calls `signAndSubmitTx`.
 
 ---
 
@@ -310,21 +397,30 @@ import { KycModal } from '@pollar/react';
 | Prop         | Type         | Default   | Description                                             |
 |--------------|--------------|-----------|---------------------------------------------------------|
 | `onClose`    | `() => void` | —         | **Required.** Called when the user dismisses the modal. |
+| `corridorId` | `string`     | —         | Walk the requirement steps of this ramp route.          |
+| `cardProviderId` | `string` | —         | A card provider's steps, in place of a route's.         |
+| `providerId` | `string`     | —         | Open this KYC option directly instead of listing the choices. |
 | `country`    | `string`     | `'MX'`    | ISO 3166-1 alpha-2 country code to filter providers.    |
-| `level`      | `KycLevel`   | `'basic'` | Required KYC level.                                     |
+| `level`      | `KycLevel`   | `'basic'` | Legacy fallback for older backends.                     |
 | `onApproved` | `() => void` | —         | Called when KYC is successfully approved.               |
 
 ---
 
 ### `<KycStatus>`
 
-Displays the current KYC status for the authenticated user.
+A display-only badge for a KYC status value. It fetches nothing: pass the status you read from `getKycStatus()`.
 
 ```tsx
 import { KycStatus } from '@pollar/react';
 
-<KycStatus />
+<KycStatus status={status} />
 ```
+
+| Prop        | Type             | Description                                                     |
+|-------------|------------------|-----------------------------------------------------------------|
+| `status`    | `KycStatus`      | **Required.** `'none'`, `'pending'`, `'approved'`, `'rejected'` or `'expired'`. |
+| `label`     | `string`         | Replaces the status label, keeping its color.                   |
+| `className` | `string`         |                                                                 |
 
 ---
 
@@ -397,12 +493,43 @@ import { ProviderRegistrationModal } from '@pollar/react';
 
 | Prop           | Type                                  | Default | Description                                                                  |
 |----------------|---------------------------------------|---------|------------------------------------------------------------------------------|
-| `corridorId`   | `string`                              | —       | **Required.** The `corridorId` of the pending `PROVIDER_REGISTRATION` step.  |
+| `corridorId`   | `string`                              | —       | The route whose ramp the user registers with. One of `corridorId` / `cardProviderId`. |
+| `cardProviderId` | `string`                            | —       | Or the card provider to register with.                                       |
 | `progress`     | `{ position: number; total: number }` | —       | Shown as "Step n of total".                                                  |
 | `onClose`      | `() => void`                          | —       | **Required.** Called when the user dismisses the modal.                      |
 | `onRegistered` | `() => void`                          | —       | **Required.** Called once the user is registered with the provider. Quote again. |
 
 A 409 `KYC_REGISTRATION_STEPS_PENDING` means an earlier step is still open; a 422 `KYC_REGISTRATION_MISSING_DATA` lists the fields the identity or the forms lack.
+
+---
+
+### `<CardModal>`
+
+The Cards flow: provider steps (KYC, forms, registry check, provider registration), the provider's own KYC form with terms, verification polling, issuing, the card face with limit / available / to pay, recent activity, **Reveal** (decrypted on the device, auto-hidden after 30 s) and **Add funds** (from the user's Stellar wallet, shown as "Step n of 4" until credited, or a deposit address for another wallet).
+
+```tsx
+import { CardModal } from '@pollar/react';
+
+<CardModal onClose={() => setOpen(false)} />
+```
+
+| Prop      | Type         | Description                                              |
+|-----------|--------------|----------------------------------------------------------|
+| `onClose` | `() => void` | **Required.** A funding in flight keeps advancing after close. |
+
+Headless: the card methods on `PollarClient` ([Cards](https://docs.pollar.xyz/docs/sdk-reference/pollar-core#cards)).
+
+---
+
+### `<CosignModal>`
+
+The approval prompt of a Turnkey co-signed wallet. It verifies each request against Turnkey before enabling **Approve**, so the user only confirms a transaction the device checked itself. The provider opens it by itself when a request arrives; render it yourself only to control placement.
+
+```tsx
+import { CosignModal } from '@pollar/react';
+
+<CosignModal onClose={() => setOpen(false)} />
+```
 
 ---
 
@@ -456,9 +583,14 @@ Template components handle rendering only — they receive all data and callback
 | `<SwapModalTemplate>`             | Swap screen (exports `SwapAssetOption`).                    |
 | `<ReceiveModalTemplate>`          | Receive (address / QR) screen.                              |
 | `<SessionsModalTemplate>`         | Active-sessions list screen.                                |
+| `<CosignModalTemplate>`           | Co-sign approval screen (`CosignModalTemplateProps`: `pending`, `current`, `verification`, `busy`, `onApprove`, `onReject`, ...). |
 | `<DistributionRulesModalTemplate>`| Claimable distribution rules screen.                        |
 
-> Live (non-template) modal components are also exported for direct rendering: `SendModal`, `SwapModal`, `EarnModal`, `ReceiveModal`, `EnabledAssetsModal`, `WalletBalanceModal`, `SessionsModal`, `DistributionRulesModal`, plus `KycStatus`, `RouteDisplay`, and `TxStatusView`.
+Some template props are required because the live modals need them: `SendModalTemplateProps.onMax` / `onPaste`, `SwapModalTemplateProps.onReverse` / `onMax`, `SessionsModalTemplateProps.revokeError`, `RampWidgetTemplateProps.kycRequired` / `onVerifyRoute`. The Send, Receive and WalletButton templates take an optional `notReadyReason` (from `walletNotReadyReason`), and the ramp template an optional `onboardingStatus`.
+
+> Live (non-template) modal components are also exported for direct rendering: `SendModal`, `SwapModal`, `EarnModal`, `CardModal`, `CosignModal`, `ReceiveModal`, `EnabledAssetsModal`, `WalletBalanceModal`, `SessionsModal`, `DistributionRulesModal`, `KycModal`, `RequirementFormModal`, `RegistryCheckModal`, `ProviderRegistrationModal`, plus `KycStatus`, `RouteDisplay`, `ChainSelect` and `TxStatusView`. Each live modal takes `onClose`.
+>
+> Styling helpers: `buildModalCssVars(theme, accentColor, overrides?, variant?)`, `modalChrome(styles)`, `readableTextOn(background)` and the `ModalStyleOverrides` type (`backgroundColor`, `textColor`, `buttonColor`, `modalBorderRadius`, `buttonBorderRadius`). Passkeys: `browserPasskeyCeremony` and `browserPasskeySigner` are the WebAuthn implementations the provider installs on the client.
 
 Import the corresponding `*Props` type for full type safety:
 

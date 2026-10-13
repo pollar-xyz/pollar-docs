@@ -49,7 +49,7 @@ The `client` prop accepts either a `PollarClientConfig` (the provider builds the
 | Prop       | Type                              | Default | Description                                              |
 | ---------- | --------------------------------- | ------- | ------------------------------------------------------- |
 | `client`   | `PollarClientConfig \| PollarClient` | —    | **Required.** Client config (`{ apiKey }`) or instance. |
-| `appConfig` | `PollarConfig`                   | —       | Local override of the remote dashboard config/styles.   |
+| `appConfig` | `PollarConfig`                   | —       | Local **replacement** of the remote dashboard config: passing it skips the `/applications/config` fetch and nothing is merged in. Leave it out to keep branding, login methods and chains in sync with the dashboard. |
 
 See [`@pollar/react`](https://docs.pollar.xyz/docs/sdk-reference/pollar-react) for the full prop list (`appConfig`, `adapters`, `onStorageDegrade`).
 
@@ -76,23 +76,26 @@ import { usePollar } from '@pollar/react';
 export function LoginButton() {
   const { isAuthenticated, wallet, login } = usePollar();
 
-  if (isAuthenticated) return <p>✓ Wallet ready — {wallet?.address}</p>;
+  if (!isAuthenticated) {
+    return (
+      <button onClick={() => login({ provider: 'google' })}>
+        Continue with Google
+      </button>
+    );
+  }
 
-  return (
-    <button onClick={() => login({ provider: 'google' })}>
-      Continue with Google
-    </button>
-  );
+  if (!wallet) return <p>Signed in, creating your wallet...</p>;
+  return <p>✓ Wallet ready — {wallet.address}</p>;
 }
 ```
 
 When `login()` is called, Pollar:
 
-1. Authenticates the user via OAuth (Google or GitHub) or email OTP
-2. Creates a Stellar G-address on-chain
-3. Encrypts the private key with AWS KMS
-4. Enables trustlines for all assets configured in your Dashboard (if none configured, no trustlines are set up)
-5. Funds the wallet based on your configured [funding mode](https://docs.pollar.xyz/docs/core-concepts/funding-modes)
+1. Authenticates the user via OAuth (Google or GitHub) or email OTP and opens the session
+2. Creates a managed wallet on every chain the app enables (a Stellar G-address, a Solana address, ...), with the key encrypted at rest
+3. In the background, activates the Stellar account on-chain, enables trustlines for the assets configured in your Dashboard, and funds it per your [funding mode](https://docs.pollar.xyz/docs/core-concepts/funding-modes); on Solana, sends the starting SOL you configured
+
+`isAuthenticated` turns true at step 1. `wallet` is `null` until the wallet exists, and on an app with [on-demand wallet creation](https://docs.pollar.xyz/docs/core-concepts/wallet-creation) it stays `null` until you call `createWallet()`. A payment sent while the Stellar account is still being activated returns `SDK_WALLET_NOT_READY`; retry once `wallet.provisioning` is `READY`.
 
 The user never sees a seed phrase, a wallet address, or a trustline prompt.
 
@@ -183,9 +186,11 @@ function WalletDemo() {
     );
   }
 
+  if (!wallet) return <p>Creating your wallet...</p>;
+
   return (
     <div>
-      <p>✓ Wallet active — {wallet?.address}</p>
+      <p>✓ Wallet active — {wallet.address}</p>
       <button
         onClick={() =>
           runTx('payment', {

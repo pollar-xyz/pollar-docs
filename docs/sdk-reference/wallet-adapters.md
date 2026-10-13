@@ -20,8 +20,10 @@ To connect a wallet whose key you control yourself (a key on the device, an
 MPC or HSM signer), implement `WalletAdapter` directly: see
 [Build Your Own Wallet Adapter](https://docs.pollar.xyz/docs/guides/custom-wallet-adapter).
 
-> All adapters below are published at **0.10.1** and peer on
-> `@pollar/core@^0.10.1` / `@pollar/react@^0.10.1`.
+> Published versions on npm: `@pollar/solana-wallet-standard-adapter` **0.11.5**,
+> `@pollar/stellar-wallets-kit-adapter` **0.11.2**, `@pollar/privy-adapter` **0.11.1**,
+> `@pollar/accesly-adapter` **0.10.1**. Each peers on the `@pollar/core` line it
+> was released with; install the matching `@pollar/core` / `@pollar/react`.
 
 ---
 
@@ -285,4 +287,4 @@ Two more first-party adapters exist for narrower cases:
   the separate `adapters` prop on `PollarProvider` (not `walletAdapters`) and
   driven with `createPollarAdapterHook`.
 
-Both are published at 0.10.1.
+`@pollar/privy-server-adapter` is published at 0.10.0-rc.10 and `@pollar/accesly-adapter` at 0.10.1.
