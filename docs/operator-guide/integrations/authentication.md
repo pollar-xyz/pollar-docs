@@ -2,7 +2,7 @@
 title: "Authentication"
 ---
 
-**Dashboard → Integrations → Authentication**
+**Dashboard → Integrations → Authentication** · Chains: all
 
 > 🚧 The per-app provider **configuration UI is upcoming** (the dashboard page is currently a "coming soon" stub). The providers below reflect what `login()` supports today.
 

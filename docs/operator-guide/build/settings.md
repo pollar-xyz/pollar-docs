@@ -2,7 +2,7 @@
 title: "Settings"
 ---
 
-**Dashboard → Build → Settings**
+**Dashboard → Build → Settings** · Chains: all
 
 General configuration for your Pollar app.
 

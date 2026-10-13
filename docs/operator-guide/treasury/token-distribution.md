@@ -2,7 +2,7 @@
 title: "Token Distribution"
 ---
 
-**Dashboard → Treasury → Token Distribution**
+**Dashboard → Treasury → Token Distribution** · Chains: Stellar
 
 Configures **distribution rules** — assets your app makes available from its distribution wallet for users to claim. Users claim them from the SDK (`openDistributionRulesModal()`, or `getClient().listDistributionRules()` / `claimDistributionRule()`).
 
@@ -27,4 +27,4 @@ Relevant errors: `DISTRIBUTION_RULE_NOT_FOUND`, `DISTRIBUTION_RULE_DISABLED`, `D
 
 ## Distribution wallet
 
-Claims are paid from the app's **distribution wallet**. If none is configured, claims fail with `DISTRIBUTION_NO_DISTRIBUTION_WALLET`. Fund it by sending assets directly to its G-address, or via the **Fund wallet** button in [App Wallets](https://docs.pollar.xyz/docs/operator-guide/treasury/account-funding).
+Claims are paid from the app's **distribution wallet**. If none is configured, claims fail with `DISTRIBUTION_NO_DISTRIBUTION_WALLET`. Fund it by sending assets directly to its G-address, or via the **Fund wallet** button in [App Wallets](https://docs.pollar.xyz/docs/operator-guide/wallets/account-funding).

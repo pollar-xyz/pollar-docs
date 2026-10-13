@@ -2,7 +2,7 @@
 title: "Pollar Pay"
 ---
 
-**Dashboard → Integrations → Pollar Pay**
+**Dashboard → Integrations → Pollar Pay** · Chains: Stellar
 
 Configure the Pollar Pay integration for your app — Pollar's payments layer for collecting payments into your app.
 

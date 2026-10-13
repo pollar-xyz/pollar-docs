@@ -2,7 +2,9 @@
 title: "@pollar/react"
 ---
 
-React hooks and pre-built UI components for Pollar. Built on top of `@pollar/core`.
+React hooks and pre-built UI components for Pollar, for Stellar and Solana applications. Built on top of `@pollar/core`.
+
+The modals are multichain: Send, Receive, Wallet balance, Enabled assets and Transaction history carry a network picker on an app with more than one chain, and each scopes its rows to the selected chain (Solana rows link to explorer.solana.com and show fees in lamports). Swap and Earn are Stellar modals. See [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support).
 
 **Version:** `0.10.1`
 
@@ -145,6 +147,7 @@ function MyComponent() {
 | `submitTx`                | `(signedXdr: string) => Promise<SubmitOutcome>`            | Submits an already-signed XDR.                                         |
 | `buildAndSignAndSubmitTx` | `(operation, params, options?) => Promise<SubmitOutcome>`   | One-shot build → sign → submit.                                        |
 | `runTx`                   | `(operation, params, options?) => Promise<SubmitOutcome>`   | Alias of `buildAndSignAndSubmitTx`.                                    |
+| `sendPayment`             | `(params: SendPaymentParams) => Promise<SubmitOutcome>`     | One-shot payment on any chain: Stellar (`asset`), Solana (`chain: 'SOLANA'`, `mint?`, base units) or Polygon. |
 | `openTxModal`             | `() => void`                                                 | Opens the transaction modal programmatically.                          |
 
 The transaction modal opens automatically when `buildTx` is called. See [`@pollar/core`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core) for `TransactionState` step details and the per-call `BuildOutcome` / `SignOutcome` / `SubmitOutcome` return types.

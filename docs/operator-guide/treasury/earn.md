@@ -2,9 +2,9 @@
 title: "Earn"
 ---
 
-**Dashboard → Treasury → Earn**
+**Dashboard → Treasury → Earn** · Chains: Stellar
 
-Choose which yield providers your users can access to earn on their balances. **If no provider is enabled, the Earn UI is hidden for your users.**
+Choose which yield providers your users can access to earn on their balances. **If no provider is enabled, the Earn UI is hidden for your users.** DeFindex and Blend settle on Stellar, so Earn applies to the user's Stellar wallet; see [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support).
 
 ---
 

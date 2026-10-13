@@ -1,8 +1,9 @@
 {
   "title": "Core Concepts",
-  "description": "Architecture, funding modes, wallet creation, Stellar primitives, security model, co-signed wallets, and transaction history.",
+  "description": "Architecture, chain support, funding modes, wallet creation, Stellar primitives, security model, co-signed wallets, and transaction history.",
   "pages": [
     "architecture",
+    "chain-support",
     "funding-modes",
     "wallet-creation",
     "stellar-primitives",

@@ -3,10 +3,18 @@ title: "Wallet Adapters"
 ---
 
 Pollar's default login is **custodial** — social / email sign-in and a
-platform-custodied Stellar G-address. Wallet adapters let you extend `login()`
-with other providers: external Stellar wallets (Freighter, Albedo, xBull, …) and
+platform-managed wallet on every chain the app enables. Wallet adapters let you extend `login()`
+with other providers: external Stellar wallets (Freighter, Albedo, xBull, …), external
+**Solana wallets** (Phantom, Solflare, Backpack, through Sign In With Solana) and
 embedded wallets (Privy). Each adapter is a `WalletAdapter` from `@pollar/core`
-that you register on the client's `walletAdapters` array.
+that you register on the client's `walletAdapters` array. An adapter declares its
+`chain`, and the login modal shows it only when the app serves that chain.
+
+| Adapter package | Chain | Login mechanism |
+|---|---|---|
+| `@pollar/stellar-wallets-kit-adapter` | Stellar | SEP-10 challenge |
+| `@pollar/solana-wallet-standard-adapter` | Solana | Sign In With Solana (SIWS) |
+| `@pollar/privy-adapter` | Stellar | Privy embedded wallet |
 
 To connect a wallet whose key you control yourself (a key on the device, an
 MPC or HSM signer), implement `WalletAdapter` directly: see
@@ -126,6 +134,72 @@ Under Next.js / Remix, construct the client on the client side (mounted flag or
 
 **Also exported:** `StellarWalletsKitAdapter` (the class, for direct use) and
 the types `KitPickerOptions`, `StellarWalletsKitAdapterOptions`.
+
+---
+
+## `@pollar/solana-wallet-standard-adapter`
+
+The Solana counterpart of the Stellar Wallets Kit adapter. It connects
+user-controlled Solana wallets (Phantom, Solflare, Backpack, and any other wallet
+that implements the [Wallet Standard](https://github.com/wallet-standard/wallet-standard))
+to `@pollar/core`. Login uses **Sign In With Solana (SIWS)** through the wallet's
+native `solana:signIn` feature, the Solana analogue of Stellar's SEP-10 challenge:
+the SDK requests a SIWS input from Pollar, the wallet signs it, and Pollar verifies
+the signature and opens the session.
+
+```bash
+npm install @pollar/solana-wallet-standard-adapter @pollar/core
+```
+
+`@pollar/core` is the only peer dependency; the `@wallet-standard/*` packages are
+real dependencies of the adapter.
+
+```ts
+import { PollarClient } from '@pollar/core';
+import { solanaWalletStandardAdapters } from '@pollar/solana-wallet-standard-adapter';
+
+const pollar = new PollarClient({
+  apiKey: 'pub_testnet_xxxxxxxxxxxxxxxxxxxx',
+  walletAdapters: [...solanaWalletStandardAdapters()],
+});
+```
+
+### `solanaWalletStandardAdapters()`
+
+Discovers every installed Solana wallet and returns one adapter each, so the
+login modal lists the wallets the user actually has. It is SSR-safe (returns `[]`
+when `window` is undefined): build the `PollarClient` on the client.
+
+Each adapter declares `chain: 'SOLANA'`, which is what routes `login({ provider })`
+through the SIWS flow. The adapter also exposes `signMessage` and
+`signSolanaTransaction`; the latter is what `sendPayment({ chain: 'SOLANA', ... })`
+uses for a wallet the user controls: Pollar builds the transfer (with the app's GAS
+wallet as fee payer when the token is sponsored), the wallet signs it, Pollar submits.
+
+### Alongside Stellar wallets
+
+`walletAdapters` is one flat list, so Stellar and Solana wallets coexist:
+
+```ts
+import { solanaWalletStandardAdapters } from '@pollar/solana-wallet-standard-adapter';
+import { stellarWalletsKitAdapters } from '@pollar/stellar-wallets-kit-adapter';
+import { Networks } from '@creit.tech/stellar-wallets-kit';
+
+const pollar = new PollarClient({
+  apiKey: '...',
+  walletAdapters: [
+    ...stellarWalletsKitAdapters({ network: Networks.PUBLIC }),
+    ...solanaWalletStandardAdapters(),
+  ],
+});
+```
+
+The login modal filters the list by the app's enabled chains, so a Solana-only
+app never shows a Stellar wallet and vice versa.
+
+> Requires a wallet with the `solana:signIn` feature. Phantom, Solflare and
+> Backpack have it. After a SIWS login the session holds a Solana wallet and
+> `getWallet()` (the Stellar accessor) is `null`; read `getWallets()`.
 
 ---
 

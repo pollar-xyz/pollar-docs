@@ -2,7 +2,7 @@
 title: "Accounts"
 ---
 
-**Dashboard → Users → Accounts**
+**Dashboard → Users → Accounts** · Chains: all
 
 Browse and manage all users who have authenticated through your app.
 
@@ -30,4 +30,4 @@ Click any user to see:
 - Auth provider and login history
 - Associated wallet — ID, G-address, status, and balances
 - Full transaction history
-- Option to manually fund/activate their wallet (the **Fund 2 XLM** action lives on **Users → Wallets** for not-yet-funded wallets)
+- Option to manually fund/activate their wallet (the **Fund 2 XLM** action lives on **Wallets → Wallets** for not-yet-funded wallets)

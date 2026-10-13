@@ -2,7 +2,7 @@
 title: "Chains"
 ---
 
-**Dashboard → Build → Chains**
+**Dashboard → Wallets → Chains** · Chains: Stellar, Solana, Polygon
 
 Choose which blockchains your app provisions wallets on. Your users get **one wallet per enabled chain**, created at login.
 
@@ -28,7 +28,7 @@ Stellar is the exception, not the rule. On Polygon and Solana there is no sponso
 
 Each toggle opens a confirmation, because none of these are cheap clicks: enabling a chain commits your treasury to funding it.
 
-For Polygon and Solana the page also lets you **create the app's GAS wallet** if it does not exist yet, and shows its balance once it does. Stellar's equivalent lives in [Treasury → Account Funding](https://docs.pollar.xyz/docs/operator-guide/treasury/account-funding); Polygon and Solana have no Treasury page of their own, so they are created and monitored here.
+For Polygon and Solana the page also lets you **create the app's GAS wallet** if it does not exist yet, and shows its balance once it does. Stellar's equivalent lives in [Treasury → Account Funding](https://docs.pollar.xyz/docs/operator-guide/wallets/account-funding); Polygon and Solana have no Treasury page of their own, so they are created and monitored here.
 
 A GAS wallet at **zero balance** is the failure mode worth watching. The wallet exists, every user gets an address, and not one of them can sign. The page flags it in red.
 
@@ -63,7 +63,7 @@ This is reversible. Re-enabling restores access to the existing wallets.
 
 ## Related
 
-- [Account Funding](https://docs.pollar.xyz/docs/operator-guide/treasury/account-funding) — the Stellar funding wallet and its XLM reserve
-- [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/treasury/sponsorship) — who pays the fee on Stellar
-- [Tokens / Trustlines](https://docs.pollar.xyz/docs/operator-guide/treasury/tokens-trustlines) — the assets enabled on each wallet
-- [Wallets](https://docs.pollar.xyz/docs/operator-guide/users/wallets) — the user wallets these chains provision
+- [Account Funding](https://docs.pollar.xyz/docs/operator-guide/wallets/account-funding) — the Stellar funding wallet and its XLM reserve
+- [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship) — who pays the fee on Stellar
+- [Tokens / Trustlines](https://docs.pollar.xyz/docs/operator-guide/wallets/tokens-trustlines) — the assets enabled on each wallet
+- [Wallets](https://docs.pollar.xyz/docs/operator-guide/wallets/user-wallets) — the user wallets these chains provision

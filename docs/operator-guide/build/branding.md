@@ -2,7 +2,7 @@
 title: "Branding"
 ---
 
-**Dashboard → Build → Branding**
+**Dashboard → Build → Branding** · Chains: all
 
 Customize the appearance of the SDK login modal — the pre-built `WalletButton` / login component from `@pollar/react`.
 

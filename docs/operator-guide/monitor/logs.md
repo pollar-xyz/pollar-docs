@@ -2,7 +2,7 @@
 title: "Logs"
 ---
 
-**Dashboard → Monitor → Logs**
+**Dashboard → Monitor → Logs** · Chains: all
 
 API request logs, errors, and webhook delivery history for your app.
 

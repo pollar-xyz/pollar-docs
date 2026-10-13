@@ -2,7 +2,7 @@
 title: "Archive app"
 ---
 
-**Dashboard → Danger Zone → Archive app**
+**Dashboard → Danger Zone → Archive app** · Chains: all
 
 Irreversible-feeling but reversible actions for the app. **Owner only** — only the app owner sees and can perform these actions.
 

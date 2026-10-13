@@ -2,7 +2,7 @@
 title: "KYC `upcoming`"
 ---
 
-**Dashboard → Integrations → KYC**
+**Dashboard → Integrations → KYC** · Chains: all
 
 > 🚧 **Not yet available.** The KYC configuration page is gated behind a "coming soon" state in the dashboard.
 

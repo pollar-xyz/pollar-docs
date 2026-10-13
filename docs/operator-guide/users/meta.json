@@ -1,8 +1,7 @@
 {
   "title": "Users",
-  "description": "Browse and manage your end users and their wallets.",
+  "description": "Browse and manage your end users.",
   "pages": [
-    "accounts",
-    "wallets"
+    "accounts"
   ]
 }

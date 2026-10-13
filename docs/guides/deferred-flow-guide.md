@@ -10,7 +10,7 @@ This guide walks through the full implementation end-to-end.
 
 ## Prerequisites
 
-- Funding mode set to **Deferred** in **Dashboard → Treasury → Funding Mode**
+- Funding mode set to **Deferred** in **Dashboard → Wallets → Account Funding** (Stellar tab)
 - A secret key from **Dashboard → Build → API Keys**
 - That's it — no additional dashboard configuration required
 
@@ -101,7 +101,7 @@ async function fundWallet(publicKey: string) {
 |---|---|---|
 | `200 OK` | Wallet funded successfully | Proceed — wallet is live on-chain |
 | `400 Bad Request` | Missing or malformed `publicKey` | Check the request payload |
-| `402 Payment Required` | Funding wallet has insufficient XLM | Top up via **Dashboard → Treasury → Account Funding** |
+| `402 Payment Required` | Funding wallet has insufficient XLM | Top up via **Dashboard → Wallets → Account Funding** |
 | `404 Not Found` | `publicKey` is not a wallet owned by your app | Verify the public key |
 | `409 Conflict` | Wallet already funded | Safe to ignore — treat as success |
 | `503 Service Unavailable` | Stellar network issue | Pollar retries automatically |

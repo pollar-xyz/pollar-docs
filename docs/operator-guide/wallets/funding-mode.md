@@ -2,11 +2,11 @@
 title: "Funding Mode"
 ---
 
-**Dashboard → Treasury → Account Funding** (the funding-mode selector lives on the Account Funding page — there is no standalone "Funding Mode" page).
+**Dashboard → Wallets → Account Funding** (Stellar tab) · Chains: Stellar
 
 Controls when new user wallets are funded with their XLM reserve. Switch modes at any time without code changes — the new mode applies to all wallets created after the switch.
 
-Whether a user gets a wallet at login at all is set by [Wallet Creation](https://docs.pollar.xyz/docs/operator-guide/treasury/wallet-creation), on the same page.
+Whether a user gets a wallet at login at all is set by [Wallet Creation](https://docs.pollar.xyz/docs/operator-guide/wallets/settings), on the same page.
 
 ---
 
@@ -17,7 +17,7 @@ Whether a user gets a wallet at login at all is set by [Wallet Creation](https:/
 | **Immediate** | \~2 XLM per registration    | Automatic on login                                    | Apps without compliance requirements          |
 | **Deferred**  | \~2 XLM per activation only | Webhook from your backend | Neobanks, remittance apps, KYC-gated products |
 
-In both modes, any individual wallet can also be funded manually from **Dashboard → Users → Wallets** using the **Fund 2 XLM** action. This is useful as a fallback or for support workflows.
+In both modes, any individual wallet can also be funded manually from **Dashboard → Wallets → Wallets** using the **Fund 2 XLM** action. This is useful as a fallback or for support workflows.
 
 ---
 

@@ -2,7 +2,7 @@
 title: "Auth Policy"
 ---
 
-**Dashboard → Treasury → Auth Policy**
+**Dashboard → Wallets → Auth Policy** · Chains: Stellar
 
 Controls which Soroban contracts and functions a custodial wallet may **authorize**. This is the signing allowlist for `SorobanAuthorizationEntry` — the authorization a user signs when your own contract is the transaction source and only needs the user's consent, not a full signed envelope.
 
@@ -88,7 +88,7 @@ Full list, with the save-time codes: [Error Codes](https://docs.pollar.xyz/docs/
 
 ## Related
 
-- [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/treasury/sponsorship) — who pays the fee for these transactions
-- [Transaction Policy](https://docs.pollar.xyz/docs/operator-guide/treasury/transaction-policy) — limits on ordinary transactions
+- [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship) — who pays the fee for these transactions
+- [Transaction Policy](https://docs.pollar.xyz/docs/operator-guide/wallets/transaction-policy) — limits on ordinary transactions
 - [Security Model](https://docs.pollar.xyz/docs/core-concepts/security-model) — how custodial keys are held
 - [`pollar.signAuthEntry()`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core) — the client method this page governs

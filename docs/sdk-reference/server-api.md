@@ -63,7 +63,7 @@ Content-Type: application/json
 }
 ```
 
-`startingBalance` is the XLM the wallet was seeded with (the app's configured starting balance from **Dashboard → Treasury → Account Funding**; `"0"` when unset). The sponsored base reserve is locked in the funding wallet, not transferred.
+`startingBalance` is the XLM the wallet was seeded with (the app's configured starting balance from **Dashboard → Wallets → Account Funding**; `"0"` when unset). The sponsored base reserve is locked in the funding wallet, not transferred.
 
 ### `POST /v1/wallets/{publicKey}/signer-rotation`
 
@@ -74,7 +74,7 @@ POST https://server.api.pollar.xyz/v1/wallets/GBW4...CX7H/signer-rotation
 x-pollar-api-key: sec_mainnet_xxxxxxxxxxxxxxxxxxxx
 ```
 
-Requires **Sponsor signer rotations** and its **Include external wallets** sub-option on under **Dashboard > Treasury > Sponsorship**. Granting while the user already holds an unspent grant returns that grant.
+Requires **Sponsor signer rotations** and its **Include external wallets** sub-option on under **Dashboard > Wallets > Sponsorship**. Granting while the user already holds an unspent grant returns that grant.
 
 **Response codes:**
 

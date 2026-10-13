@@ -2,7 +2,7 @@
 title: "Members"
 ---
 
-**Dashboard → Build → Members**
+**Dashboard → Build → Members** · Chains: all
 
 Manage who can access this app in the Dashboard.
 

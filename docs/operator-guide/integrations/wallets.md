@@ -10,4 +10,4 @@ For **client-side** wallet login today — connecting external Stellar wallets (
 
 By default, Pollar provisions built-in **custodial** wallets (social / email login, platform-custodied G-address); no configuration is required.
 
-> Not to be confused with **Users → Wallets**, which lists the actual end-user wallets created in your app.
+> Not to be confused with **Wallets → Wallets**, which lists the actual end-user wallets created in your app.

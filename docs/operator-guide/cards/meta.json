@@ -1,0 +1,8 @@
+{
+  "title": "Cards",
+  "description": "Card providers and your users' cards.",
+  "pages": [
+    "providers",
+    "card-holders"
+  ]
+}

@@ -20,7 +20,7 @@ Pollar treats an adapter as a black box that can tell it an address and sign Ste
 4. `signTransaction(challengeXdr)` signs the challenge, and the server verifies the signature. That proves the user controls the key.
 5. The session is created and the adapter's `type` is stored with it.
 
-**Transactions**: every time the SDK needs the user's signature (`signTx`, `signAndSubmitTx`, `createAccount`, `setTrustline`, swaps, contract calls), it calls `signTransaction(xdr, { networkPassphrase, accountToSign })` and sends the result to `POST /tx/submit`. That is where the app's [sponsorship](https://docs.pollar.xyz/docs/operator-guide/treasury/sponsorship) is applied, so a fee-bumped transaction needs no extra code in the adapter.
+**Transactions**: every time the SDK needs the user's signature (`signTx`, `signAndSubmitTx`, `createAccount`, `setTrustline`, swaps, contract calls), it calls `signTransaction(xdr, { networkPassphrase, accountToSign })` and sends the result to `POST /tx/submit`. That is where the app's [sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship) is applied, so a fee-bumped transaction needs no extra code in the adapter.
 
 **Page reloads and app restarts**: the session is restored from storage and the adapter is looked up again **by `type`** in the client's `walletAdapters`. If no adapter with that `type` is registered, the session is still valid, but signing returns `Wallet not connected. Reconnect your wallet to sign.`
 
@@ -180,12 +180,12 @@ if (built.status === 'built') {
 }
 ```
 
-For step 3 to be paid by the app, the dashboard needs, under **Treasury > Sponsorship > Token transfer sponsorship**:
+For step 3 to be paid by the app, the dashboard needs, under **Wallets > Sponsorship > Token transfer sponsorship**:
 
 - The token selected.
 - **Include external wallets** on. It is off by default. While it is off, the user pays the fee, and a user with no XLM gets `tx_insufficient_balance`.
 
-The [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/treasury/sponsorship) page lists exactly which transactions qualify. In short: one operation, sourced by the user, and a payment of a selected token, a swap on an enabled venue, or a whitelisted contract call. XLM payments are never sponsored.
+The [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship) page lists exactly which transactions qualify. In short: one operation, sourced by the user, and a payment of a selected token, a swap on an enabled venue, or a whitelisted contract call. XLM payments are never sponsored.
 
 ### Using the REST API directly
 
@@ -201,7 +201,7 @@ For account recovery, a wallet can change which key controls it while keeping th
 
 **Having the app pay for it.** A new signer is a ledger subentry with a 0.5 XLM reserve, which a user with no XLM cannot cover. The app can sponsor the rotation, one at a time and only for users it allows:
 
-1. The app turns on **Sponsor signer rotations** and **Include external wallets** under [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/treasury/sponsorship#signer-rotation).
+1. The app turns on **Sponsor signer rotations** and **Include external wallets** under [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship#signer-rotation).
 2. When a user asks to recover, the app grants them one rotation: from **Users > Accounts**, or from its backend with `POST /v1/wallets/{publicKey}/signer-rotation` ([Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api)).
 3. The client builds the rotation with the user's session:
 

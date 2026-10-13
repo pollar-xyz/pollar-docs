@@ -137,7 +137,7 @@ Apps in co-signed custody (see [Co-signed Wallets](https://docs.pollar.xyz/docs/
 | `TRUSTLINE_FAILED`                 | Failed to create/remove a trustline on Stellar          | Retry — transient network issue                  |
 | `INSUFFICIENT_FUNDS_FOR_TRUSTLINE` | Not enough XLM to cover the trustline reserve (0.5 XLM) | Top up the funding wallet                         |
 | `TRUSTLINE_HAS_BALANCE`            | Cannot remove a trustline that still holds a balance    | Move the balance to zero first                   |
-| `NO_DEFAULT_TRUSTLINES`            | No default assets are configured for the app            | Configure assets under **Treasury → Tokens & Trustlines** |
+| `NO_DEFAULT_TRUSTLINES`            | No default assets are configured for the app            | Configure assets under **Wallets → Tokens & Trustlines** |
 
 ---
 
@@ -145,7 +145,7 @@ Apps in co-signed custody (see [Co-signed Wallets](https://docs.pollar.xyz/docs/
 
 | Code | Description | Resolution |
 | --- | --- | --- |
-| `SIGNER_ROTATION_NOT_ENABLED` (403) | The app does not sponsor signer rotations | Turn on **Sponsor signer rotations** and **Include external wallets** under **Treasury > Sponsorship** |
+| `SIGNER_ROTATION_NOT_ENABLED` (403) | The app does not sponsor signer rotations | Turn on **Sponsor signer rotations** and **Include external wallets** under **Wallets > Sponsorship** |
 | `SIGNER_ROTATION_NOT_GRANTED` (403) | The user holds no unspent rotation grant, or already used it | Grant one from **Users > Accounts** or with `POST /v1/wallets/{publicKey}/signer-rotation` |
 | `SIGNER_ROTATION_PENDING` (409) | A sponsored rotation built for this user can still be submitted | Submit it, or wait until its `expiresAt` passes |
 | `SIGNER_ROTATION_INVALID` (422) | The wallet is custodial or not created yet, or the requested change is not allowed | Read `details`; see [the rotation rules](https://docs.pollar.xyz/docs/guides/custom-wallet-adapter#rotate-the-wallet-signer) |
@@ -169,7 +169,7 @@ Apps in co-signed custody (see [Co-signed Wallets](https://docs.pollar.xyz/docs/
 
 Returned by `POST /tx/sign-auth-entry` (`pollar.signAuthEntry()`) when the app's
 allowlist refuses to authorize an entry, and by the dashboard/Server API when a
-row is saved. Configured under **Treasury → [Auth Policy](https://docs.pollar.xyz/docs/operator-guide/treasury/auth-policy)**.
+row is saved. Configured under **Wallets → [Auth Policy](https://docs.pollar.xyz/docs/operator-guide/wallets/auth-policy)**.
 
 Every denial here also carries `applicationId` and `applicationName` — the app the decision was made against, which is the app your API key resolves to, not necessarily the one open in the dashboard.
 

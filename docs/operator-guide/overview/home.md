@@ -2,7 +2,7 @@
 title: "Home"
 ---
 
-**Dashboard → Overview → Home**
+**Dashboard → Overview → Home** · Chains: all
 
 The per-app landing page. It surfaces your app's key status at a glance — environment (testnet/mainnet), API keys, configured assets, and recent activity — with shortcuts into the sections you use most.
 

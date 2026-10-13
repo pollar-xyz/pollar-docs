@@ -1,0 +1,8 @@
+{
+  "title": "Ramps",
+  "description": "Fiat on/off-ramp providers and the ramp transactions of your app.",
+  "pages": [
+    "providers",
+    "transactions"
+  ]
+}

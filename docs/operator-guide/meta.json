@@ -1,11 +1,14 @@
 {
   "title": "Operator Guide",
-  "description": "Configure and monitor your app from the Pollar Dashboard: Build, Users, Treasury, Integrations, and Monitor.",
+  "description": "Configure and monitor your app from the Pollar Dashboard: Build, Users, Wallets, Ramps, Cards, Treasury, Integrations, and Monitor.",
   "pages": [
     "dashboard-overview",
     "overview",
     "build",
     "users",
+    "wallets",
+    "ramps",
+    "cards",
     "treasury",
     "integrations",
     "monitor",

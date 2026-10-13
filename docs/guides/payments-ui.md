@@ -67,9 +67,30 @@ await runTx(
 );
 ```
 
+### On Solana
+
+`runTx` builds Stellar transactions. On Solana use `sendPayment` with `chain: 'SOLANA'`; it is the same one-shot call and resolves to the same `SubmitOutcome`. Amounts are integer base units: lamports for SOL, the mint's smallest unit for an SPL token (USDC has 6 decimals).
+
+```tsx
+const { sendPayment } = usePollar();
+
+// 0.5 SOL
+await sendPayment({ chain: 'SOLANA', destination: '7xKX...', amount: '500000000' });
+
+// 10 USDC (SPL mint, 6 decimals)
+await sendPayment({
+  chain: 'SOLANA',
+  destination: '7xKX...',
+  amount: '10000000',
+  mint: 'EPjFWdd5AufqSSqeM3qQw8xJXpY4zFrPyLKS3jcKBVMy',
+});
+```
+
+When the token is marked **sponsor transfers** under **Wallets → Sponsorship**, the app's GAS wallet pays the fee and creates the recipient's token account; the user's wallet needs no SOL. A user signed in with Phantom, Solflare or Backpack signs the transfer in their wallet; a Pollar-managed or co-signed wallet needs no interaction. Solana has no memo field.
+
 ### Pre-built send modal
 
-Pollar ships a ready-made send flow (address input, asset selector, amount field, confirmation). Open it programmatically — appearance is customizable from **Build → Branding**:
+Pollar ships a ready-made send flow (network picker on a multichain app, asset selector, amount with Max, destination with Paste, confirmation; a memo field on Stellar). It sends on Stellar, Solana and Polygon. Open it programmatically — appearance is customizable from **Build → Branding**:
 
 ```tsx
 const { openSendModal } = usePollar();
@@ -227,7 +248,7 @@ export function Balances() {
 
 ## Fiat on/off-ramp
 
-Ramps integrate third-party providers (configure them under **Integrations → Ramps**). Open the pre-built widget with `openRampModal()`:
+Ramps integrate third-party providers (configure them under **Ramps → Providers**). Open the pre-built widget with `openRampModal()`:
 
 ```tsx
 'use client';
@@ -242,4 +263,4 @@ export function FiatButton() {
 
 For headless control over quotes and on/off-ramp creation, use `getClient().getRampsQuote()`, `createOnRamp()`, and `createOffRamp()` from [`@pollar/core`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core).
 
-See [Fiat Ramps](https://docs.pollar.xyz/docs/operator-guide/integrations/ramps) for setup.
+See [Fiat Ramps](https://docs.pollar.xyz/docs/operator-guide/ramps/providers) for setup.

@@ -2,7 +2,7 @@
 title: "API Keys"
 ---
 
-**Dashboard → Build → API Keys**
+**Dashboard → Build → API Keys** · Chains: all
 
 ---
 

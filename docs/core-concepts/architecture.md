@@ -2,7 +2,7 @@
 title: "Architecture"
 ---
 
-Pollar sits between your app and the Stellar network. This page explains how the three components interact and how requests flow from your frontend to the blockchain.
+Pollar sits between your app and the chains it serves: Stellar, Solana and Polygon. This page explains how the three components interact and how requests flow from your frontend to the blockchain. The diagram shows Stellar; a Solana-enabled app adds Pollar's Solana wallet service behind the same server, with its own encrypted keystore per cluster (devnet for a testnet app, mainnet-beta for a mainnet one). See [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support).
 
 ---
 
@@ -79,7 +79,7 @@ your funding wallet is replenished in larger batches tied to user growth. Mixing
 in a single wallet makes it harder to monitor and plan each cost independently.
 
 For configuration and recommended minimum balances see
-[Operator guide/Configuration/App Wallets](https://docs.pollar.xyz/docs/operator-guide/treasury/account-funding).
+[Operator guide/Configuration/App Wallets](https://docs.pollar.xyz/docs/operator-guide/wallets/account-funding).
 
 ---
 

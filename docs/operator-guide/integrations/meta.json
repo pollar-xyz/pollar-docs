@@ -1,11 +1,9 @@
 {
   "title": "Integrations",
-  "description": "Authentication, KYC, ramps, and Pollar Pay.",
+  "description": "Authentication, KYC, and Pollar Pay.",
   "pages": [
     "authentication",
     "kyc",
-    "ramps",
-    "pollar-pay",
-    "wallets"
+    "pollar-pay"
   ]
 }

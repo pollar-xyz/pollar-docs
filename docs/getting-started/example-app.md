@@ -220,14 +220,14 @@ The QR code currently encodes the user's G-address as a payment link. SEP-7 supp
 
 ## Funding modes in the demo
 
-Switch from **Dashboard → Treasury → Funding Mode** — no code changes needed.
+Switch from **Dashboard → Wallets → Account Funding** (Stellar tab) — no code changes needed.
 
 | Mode          | Behavior in the demo                                      |
 | ------------- | --------------------------------------------------------- |
 | **Immediate** | Wallet funded on login. KYC gate hidden.                  |
 | **Deferred**  | Wallet unfunded until "Simulate KYC approval" is clicked. |
 
-> A wallet in either mode can always be funded manually from **Users → Wallets** (the **Fund 2 XLM** action on not-yet-funded wallets).
+> A wallet in either mode can always be funded manually from **Wallets → Wallets** (the **Fund 2 XLM** action on not-yet-funded wallets).
 
 ---
 

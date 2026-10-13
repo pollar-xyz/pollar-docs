@@ -4,7 +4,7 @@ title: "Wallet Creation"
 
 By default every user gets a wallet the first time they sign in. **Wallet creation** decides *when* that wallet exists; [Funding Modes](https://docs.pollar.xyz/docs/core-concepts/funding-modes) decide when it is funded once it does.
 
-Configure it from **Dashboard → Treasury → Account Funding → Wallet creation**. No code changes are needed to keep the default.
+Configure it from **Dashboard → Wallets → Wallet settings**. No code changes are needed to keep the default.
 
 ---
 

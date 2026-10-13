@@ -4,7 +4,7 @@ title: "Funding Modes"
 
 Every Stellar account requires a minimum XLM reserve to exist on-chain. Pollar gives you two modes to control exactly when that reserve is funded — so you only pay for users who matter to your app.
 
-Configure the funding mode from **Dashboard → Treasury → Funding Mode**. No code changes required.
+Configure the funding mode from **Dashboard → Wallets → Account Funding** (Stellar tab). No code changes required.
 
 Funding applies once a wallet exists. When the wallet is created (at login, on demand or never) is a separate setting: see [Wallet Creation](https://docs.pollar.xyz/docs/core-concepts/wallet-creation).
 
@@ -35,7 +35,7 @@ flowchart TD
 | **Immediate** | \~1–2 XLM locked per registration | Automatic on login        | Apps without compliance requirements          |
 | **Deferred**  | \~1–2 XLM locked per funded wallet only | Webhook from your backend | Neobanks, remittance apps, KYC-gated products |
 
-In both modes, any individual wallet can also be funded manually from **Dashboard → Users → Wallets (Fund)**. This is useful as a fallback or for support workflows.
+In both modes, any individual wallet can also be funded manually from **Dashboard → Wallets → Wallets (Fund)**. This is useful as a fallback or for support workflows.
 
 > **How the reserve is covered:** Every Stellar account requires a base reserve of **1 XLM**, and each trustline (asset) you configure in the Dashboard adds **0.5 XLM**. Pollar sponsors these reserves (CAP-33): the XLM stays **locked in your funding wallet** while it sponsors the user wallet — it is not transferred to the user:
 >
@@ -48,7 +48,7 @@ In both modes, any individual wallet can also be funded manually from **Dashboar
 > | 2 (e.g. USDC + EURC) | 2 XLM            |
 > | 3                    | 2.5 XLM          |
 >
-> Pollar does not charge extra. On top of the locked reserve, the **starting balance** configured in **Dashboard → Treasury → Account Funding** (if any) is transferred to each new wallet as spendable XLM.
+> Pollar does not charge extra. On top of the locked reserve, the **starting balance** configured in **Dashboard → Wallets → Account Funding** (if any) is transferred to each new wallet as spendable XLM.
 >
 > References: [Minimum Balance](https://developers.stellar.org/docs/learn/fundamentals/lumens#minimum-balance) · [Trustlines](https://developers.stellar.org/docs/learn/fundamentals/stellar-data-structures/accounts#trustlines)
 
@@ -105,7 +105,7 @@ Content-Type: application/json
 
 ### Funding manually from the Dashboard
 
-Any not-yet-funded wallet can be funded from **Dashboard → Users → Wallets** with the **Fund** action — the same sponsored funding as login. This works in both Immediate and Deferred mode and is useful for support workflows or one-off overrides.
+Any not-yet-funded wallet can be funded from **Dashboard → Wallets → Wallets** with the **Fund** action — the same sponsored funding as login. This works in both Immediate and Deferred mode and is useful for support workflows or one-off overrides.
 
 ### Checking whether a wallet is funded
 

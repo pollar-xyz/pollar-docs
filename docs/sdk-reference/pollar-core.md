@@ -2,7 +2,9 @@
 title: "@pollar/core"
 ---
 
-Framework-agnostic TypeScript client for Pollar. Use this package directly if you are not using React, or to build custom integrations on top of the Pollar platform.
+Framework-agnostic TypeScript client for Pollar, for Stellar and Solana applications. Use this package directly if you are not using React, or to build custom integrations on top of the Pollar platform.
+
+The client is multichain: a session carries one wallet per chain the app enables (`getWallets()`), balances and history are per chain, and `sendPayment()` takes a `chain`. The transaction builder (`buildTx` / `signTx` / `submitTx`) works on Stellar XDR; on Solana use `sendPayment()`. See [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support) for the full matrix.
 
 **Version:** `0.10.1`
 
@@ -321,7 +323,7 @@ if (state?.step === 'built') {
 
 Signs a single Soroban `SorobanAuthorizationEntry` — the user's authorization on its own, without a transaction envelope. Use it when your own contract is the transaction source (it sponsors the gas and submits), and all it needs from the user is consent to the invocation.
 
-For **external wallets** the adapter signs the entry directly. For **custodial wallets** Pollar signs server-side, and only if every contract and function in the entry's invocation tree is allowlisted for your app under **Treasury → [Auth Policy](https://docs.pollar.xyz/docs/operator-guide/treasury/auth-policy)**. That allowlist is what keeps the custodial signer from being usable as a signing oracle, so an unconfigured app signs nothing. **Passkey smart accounts** (C-address sessions) are not supported by this method in the current build: they sign auth entries through their passkey ceremony, which this call does not run, so it resolves to `{ status: 'error' }` rather than signing with the wrong key.
+For **external wallets** the adapter signs the entry directly. For **custodial wallets** Pollar signs server-side, and only if every contract and function in the entry's invocation tree is allowlisted for your app under **Wallets → [Auth Policy](https://docs.pollar.xyz/docs/operator-guide/wallets/auth-policy)**. That allowlist is what keeps the custodial signer from being usable as a signing oracle, so an unconfigured app signs nothing. **Passkey smart accounts** (C-address sessions) are not supported by this method in the current build: they sign auth entries through their passkey ceremony, which this call does not run, so it resolves to `{ status: 'error' }` rather than signing with the wrong key.
 
 `validUntilLedger` is the absolute ledger the signature expires at — compute it from the network's latest ledger. Your app's validity window caps how far ahead it may be (120 ledgers by default, 300 at most).
 
@@ -747,6 +749,41 @@ if (outcome.status === 'error') console.error(outcome.details, outcome.resultCod
 Lower-level building blocks are also available: `signTx(unsignedXdr)` (external
 wallets only), `submitTx(signedXdr)`, `getTxStatus(hash)`, `createAccount()`, and
 `resetTransactionState()`.
+
+### `pollar.sendPayment(params)`
+
+One entry point for a payment on any chain. `SendPaymentParams` is a per-chain
+union; the Stellar member routes through `buildAndSignAndSubmitTx` (so external
+adapters and passkey wallets keep the split flow), the Solana and Polygon members
+are a single server-side call for a managed wallet.
+
+```typescript
+// Stellar: decimal amount and an asset
+await pollar.sendPayment({ destination: 'G...', amount: '1.5', asset: { type: 'native' } });
+
+// Solana: integer base units. Omit `mint` for native SOL (lamports)...
+await pollar.sendPayment({ chain: 'SOLANA', destination: '7xKX...', amount: '1500000000' });
+
+// ...or pass the SPL mint and its smallest unit (USDC has 6 decimals)
+await pollar.sendPayment({
+  chain: 'SOLANA',
+  destination: '7xKX...',
+  amount: '2500000',
+  mint: 'EPjFWdd5AufqSSqeM3qQw8xJXpY4zFrPyLKS3jcKBVMy',
+});
+```
+
+| `chain` | `amount` | Asset field | Signing |
+|---|---|---|---|
+| `'STELLAR'` (default) | Decimal string | `asset` | Managed: Pollar signs. External / passkey: the adapter signs |
+| `'SOLANA'` | Integer base units (lamports, or the mint's smallest unit) | `mint?` (omit for SOL) | Managed and co-signed: one call to `/v2/tx/build-sign-submit`. External (SIWS): Pollar builds, the wallet signs via `signSolanaTransaction`, Pollar submits |
+| `'POLYGON'` | Integer base units (wei, or the token's smallest unit) | `mint?` (the ERC-20 contract) | Managed only |
+
+On Solana, when the token is marked **sponsor transfers** in the dashboard, the
+app's GAS wallet is the fee payer and the recipient's associated token account is
+created in the same transaction. Sending an SPL token the sender does not hold yet
+fails with `TX_NO_TRUSTLINE`. The result is the same `SubmitOutcome` as `runTx`,
+with the Solana signature in `hash`.
 
 ---
 

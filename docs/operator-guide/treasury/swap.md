@@ -2,9 +2,9 @@
 title: "Swap"
 ---
 
-**Dashboard → Treasury → Swap**
+**Dashboard → Treasury → Swap** · Chains: Stellar
 
-Choose which swap venues your users can use to exchange one asset for another.
+Choose which swap venues your users can use to exchange one asset for another. The venues (SDEX, Soroswap, Aquarius) are Stellar and Soroban protocols, so the swap modal only shows for a user with a Stellar wallet; see [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support).
 
 ---
 

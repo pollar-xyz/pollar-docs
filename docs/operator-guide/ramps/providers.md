@@ -1,8 +1,8 @@
 ---
-title: "Ramps"
+title: "Providers"
 ---
 
-**Dashboard → Integrations → Ramps**
+**Dashboard → Ramps → Providers** · Chains: Stellar, Solana, Polygon (per provider)
 
 Configure fiat on/off-ramp providers so users can deposit and withdraw real money directly in your app via a modal.
 
@@ -38,16 +38,20 @@ no code behind it. You own the overrides: turn a corridor off, or tighten its mi
 | Stereum        | Buy       | BO      | BOB  | QR   | USDC on Stellar |
 | Stereum        | Sell      | BO      | BOB  | ACH  | USDC on Stellar |
 
-Two providers do not settle on Stellar natively and are bridged through Circle CCTP: **Stereum** moves USDT on Polygon,
-and **PagFinance** is paid USDC on Solana by its Partner API. Both bridges are internal plumbing — your users only ever
-hold USDC on Stellar, and never need a wallet on the other chain.
+Each corridor settles on a chain, and a user only needs a wallet on that chain:
+
+- **PagFinance** is paid USDC **on Solana** by its Partner API. On a Solana app the funds land straight in the user's Solana wallet.
+- **Stereum** delivers on the user's Polygon wallet (a [rail wallet](https://docs.pollar.xyz/docs/operator-guide/wallets/rail-wallets)) and bridges it with **Circle CCTP** to the user's Stellar wallet, or to their Solana wallet when the app serves Solana and not Stellar. The app's GAS wallet relays the mint.
+- **Bridge**, **Etherfuse**, **Abroad** and **Anclap** settle on Stellar.
+
+The bridges are internal plumbing: your users see one order and one balance.
 
 PagFinance's off-ramp is not open yet: it pays into a receiver shared across orders, and Pollar will not send funds it
 cannot attribute back to a single order, so a sell attempt is recorded and then declined.
 
 Each provider is configured with its own credentials (base URL + API keys) and, where applicable, its enabled corridors.
 Assets you enable must also be configured
-in [Tokens / Trustlines](https://docs.pollar.xyz/docs/operator-guide/treasury/tokens-trustlines).
+in [Tokens / Trustlines](https://docs.pollar.xyz/docs/operator-guide/wallets/tokens-trustlines).
 
 Once enabled, the ramp modal is available via `openRampModal()` in the SDK:
 

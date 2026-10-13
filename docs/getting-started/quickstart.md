@@ -2,7 +2,7 @@
 title: "Quickstart"
 ---
 
-Get from zero to a working Stellar wallet with USDC payments in under 10 minutes.
+Get from zero to a working wallet with USDC payments in under 10 minutes. The steps below use Stellar; a Solana app follows the same steps with Solana enabled under [Chains](https://docs.pollar.xyz/docs/operator-guide/wallets/chains) and `sendPayment({ chain: 'SOLANA', ... })` for the payment (see [Payments UI](https://docs.pollar.xyz/docs/guides/payments-ui#on-solana)).
 
 **Requirements:** Node.js 20+ · React 18+ · A publishable key from [dashboard.pollar.xyz](https://dashboard.pollar.xyz)
 
