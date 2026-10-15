@@ -10,7 +10,7 @@ Configure URLs where Pollar sends event notifications when things happen in your
 
 ---
 
-## Adding a webhook endpoint
+## Planned endpoint configuration
 
 1. Click **Add endpoint**
 2. Enter your URL (must be HTTPS in production)
@@ -21,23 +21,20 @@ Configure URLs where Pollar sends event notifications when things happen in your
 
 ## Verifying webhook signatures
 
-Every request includes an `X-Pollar-Signature` header. Verify it before processing:
+The current internal `stellar.tx` dispatcher signs the raw request body with
+HMAC-SHA256 and the configured secret, using `X-Pollar-Signature: sha256=<hex>`.
+See the constant-time verification example in the [Webhooks reference](https://docs.pollar.xyz/docs/sdk-reference/webhooks).
+Verify the raw bytes before parsing or processing an event. This internal format
+does not establish the future durable ramp-webhook contract.
 
-```typescript
-import { createHmac } from 'crypto';
-
-function verifyWebhook(payload: string, signature: string, secret: string): boolean {
-  const expected = createHmac('sha256', secret)
-    .update(payload)
-    .digest('hex');
-  return `sha256=${expected}` === signature;
-}
-```
-
-Always respond with `200` immediately. Pollar retries failed deliveries with exponential backoff — see [Webhooks reference](https://docs.pollar.xyz/docs/sdk-reference/webhooks) for the full retry policy and event formats.
+A successful receiver should return a 2xx response promptly. Current internal
+delivery attempts once and logs failures; it has no retry/backoff. Durable
+application delivery, retry policy and replay tooling remain pending.
 
 ---
 
-## Event log
+## Planned event log
 
-**Dashboard → Build → Webhooks → Event log** shows every delivery attempt — timestamp, event type, response code, and latency. Use this to debug failed deliveries or verify that events are being received correctly.
+A delivery-attempt event log is planned. Do not depend on a dashboard event log
+or exhausted-retry controls in this revision. Ramp lifecycle outbox records
+store internal events; they do not prove delivery to an application endpoint.

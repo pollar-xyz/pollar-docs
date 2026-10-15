@@ -583,7 +583,18 @@ A ramp quote reports the first open step of each route in `requirementsRequired`
 
 ## Ramps
 
+The registered-adapter details in this section are checked against SDK source
+`0.12.0-rc.1` and backend revision
+[`2c7a5dc`](https://github.com/pollar-xyz/pollar-platform/commit/2c7a5dc1975e0dcc61dd846bf0c8e48dff8ca0e5).
+This source snapshot does not establish which npm version or API revision your
+deployment runs; confirm both before depending on optional fields.
+
 Pollar supports on-ramp (fiat → crypto) and off-ramp (crypto → fiat) flows through integrated third-party providers. A ramp settles on the chain its route names (`chain` on the responses): Stellar, Solana or Polygon.
+
+Provider code and supported chain identifiers do not establish availability in
+your deployment. Application configuration, network, wallets, credentials and
+settlement verification gates determine which routes can be offered. Existing
+[KYC and requirement steps](#requirement-steps) remain part of eligibility.
 
 ### `pollar.getRampsQuote(query)`
 
@@ -628,6 +639,14 @@ Each quote carries the bounds of the **route** and, separately, what applies to
 | `availableAmount`   | The fiat this user's wallet balance covers on an off-ramp. `null` when there is no answer to give: an on-ramp, a provider without its own FX rate, or a balance Pollar cannot read. `null` never means zero — your app may hold the balance elsewhere and fund the wallet before the user signs. |
 | `expiresAt`         | When the quote stops being accepted. **This is the deadline to count down.** |
 | `providerExpiresAt` | When the underlying provider's own quote dies, or `null`. Informational — see below. |
+| `route` / `terms`   | Optional registered-adapter route and exact accepted terms. `terms` carries decimal-string `fiatAmount`, `cryptoAmount`, `feeAmount` and their currencies plus `assetCode`, nullable `assetIssuer` and `assetChain`. |
+
+Use exact `terms` when present. Their crypto total describes the credit on an
+on-ramp and the debit on an off-ramp; the compatibility numeric `cryptoAmount`
+remains null on deposits. Do not reconstruct totals from `rate` or convert exact
+strings through floating-point arithmetic. `terms.feeAmount` is a disclosed
+component already included in the totals; do not add it again. `amountExact` is an additive input
+for registered adapters; it does not make legacy providers exact-decimal APIs.
 
 #### Quote expiry: count down `expiresAt`, not `providerExpiresAt`
 
@@ -635,20 +654,16 @@ A Pollar quote is accepted for **15 minutes**. Past `expiresAt`, starting a ramp
 with that `quoteId` fails with `SDK_RAMPS_QUOTE_EXPIRED` and you request a new
 one.
 
-Providers run on much shorter clocks — Stereum's own quote lasts about a minute,
-Etherfuse's about two — and `providerExpiresAt` reports that when the provider
-publishes it. **You do not have to beat it.** When you start the ramp, Pollar
-re-quotes the provider under the same parameters as the quote you were shown,
-and confirms the order against that fresh quote. A provider quote going stale
-while your user fills in a bank form is absorbed server-side and never reaches
-you.
+Providers can run on shorter clocks; `providerExpiresAt` reports their validity
+when available. It does not replace the public `expiresAt` countdown. Registered
+adapters can use an unexpired firm offer or refresh it before dispatch. The
+default policy requires unchanged exact totals; a change outside the route's
+authorized policy returns `SDK_RAMPS_QUOTE_CHANGED`. Request a fresh quote and
+show its terms for user acceptance before starting again. A reserved operation
+is replayed from saved terms rather than repriced.
 
-That matters most on off-ramps, where the form asks for an account number, a
-bank, a holder name and a document: nobody completes it inside a provider's
-one-minute window, and they do not have to.
-
-`providerExpiresAt` is there for transparency — showing which provider clock is
-running, or logging it — not as something to enforce.
+Legacy providers retain their own refresh behavior. Do not assume that an
+expired provider quote will always be refreshed without a visible price change.
 
 #### The amount you asked for is not always the amount quoted
 
@@ -669,22 +684,21 @@ Which is why you should not divide at all — read `cryptoAmount`.
 
 #### Funding an off-ramp: use `cryptoAmount`
 
-An off-ramp is paid from the wallet, so the crypto has to be there before you
-start it. `cryptoAmount` is that figure, and it is **fixed at quote time**: the
-order charges exactly it, so moving precisely this much into the wallet is
-always enough. If your app holds the balance elsewhere — a lending position, a
-vault, a savings product — this is the number to withdraw.
+An off-ramp is paid from the wallet, so the required crypto has to be there
+before payment. Use exact `terms.cryptoAmount` when present, otherwise the
+compatibility `cryptoAmount`, to display the quoted debit. Transaction fees and
+chain-specific prerequisites still apply; the asset amount alone does not
+guarantee that a wallet can submit the payment.
 
 Do not derive it by dividing the fiat amount by `rate`. `rate` is published
 against an amount already rounded to the cent, so the division cannot recover
 the charge and can land you a cent short; the ramp then fails with
 `SDK_RAMPS_INSUFFICIENT_BALANCE`.
 
-The trade-off that buys you a fixed charge: the **payout** absorbs rate movement
-instead. Between the quote and the order, Pollar re-quotes the provider for the
-same crypto amount, so the fiat that arrives can differ slightly from the figure
-you displayed. Read the settled amounts back from the ramp transaction rather
-than assuming the quote's.
+Some legacy providers refresh with a fixed crypto amount and a changing fiat
+payout. That behavior is provider-specific; registered adapters enforce their
+saved terms and declared refresh policy. Read the returned transaction terms
+and status rather than assuming a universal pricing or settlement guarantee.
 
 ---
 
@@ -712,29 +726,22 @@ const offramp = await pollar.createOffRamp({ ... });
 
 #### Retrying a start that timed out
 
-`createOnRamp` / `createOffRamp` are safe to retry with the same `quoteId`. A
-quote is consumed once, so a repeat does not open a second order or charge
-twice: it answers with the transaction the first call already produced, carrying
-its current `status`, `chain` and `txHash` (`stellarTxHash` on a Stellar ramp).
+The backend can replay an already persisted transaction when a sequential
+`createOnRamp` / `createOffRamp` call repeats its `quoteId`, returning current
+state. Retain the original body and quote ID when recovering a lost response;
+do not create a new quote to retry an unknown payment outcome. If you have the
+`txId`, read `getRampTransaction(txId)` first.
 
-That matters because a timeout is not a failure. The SDK abandons a request
-after 10 seconds by default, and a dropped connection can cut the answer after
-the server has committed — on an off-ramp, after the crypto has left the wallet.
-Treating that as a failed withdrawal is wrong, and there is no other way to find
-the transaction, because its id came back in the answer you never received.
+Ramp starts have a 30-second SDK request budget, distinct from the general
+10-second default. A timeout can happen after the server committed and does
+not prove that an order or payment failed. `reconciliationRequired` means the
+existing transfer needs review; do not submit a second transfer.
 
-```ts
-// On a network error, ask again with the same quoteId rather than giving up.
-try {
-  return await pollar.createOffRamp(body);
-} catch (e) {
-  if (isNetworkError(e)) return await pollar.createOffRamp(body); // replays, never duplicates
-  throw e;
-}
-```
-
-A genuine first failure still fails: nothing was created, so the retry runs the
-start for real.
+The complete cross-provider atomic retry contract remains pending.
+There is no supported ramp `Idempotency-Key` header in this revision; existing
+quote replay is not a universal guarantee that every provider's ambiguous
+write can be retried. Follow the returned action or request operator review
+when the outcome cannot be established.
 
 ---
 
@@ -746,6 +753,57 @@ Returns the current state of a ramp transaction by ID.
 const tx = await pollar.getRampTransaction('tx_id');
 console.log(tx.status);
 ```
+
+`status` stays `pending`, `processing`, `completed` or `failed`. Enrolled
+transactions can additionally return `lifecycleState`: `created`,
+`awaiting_payment`, `processing`, `settling_onchain`, `completed`, `failed` or
+`refunded`. Refunds project to compatibility `failed`; legacy rows may have no
+lifecycle. `reconciliationRequired` is separate from either state field.
+
+Optional `milestones` describe verified receipt/payment observations. A raw
+`txHash`, provider success response or intermediary bridge hash alone does not
+prove end-to-end completion.
+
+### Registered-adapter actions
+
+`getRampRoutes()` returns eligible routes and their capabilities for the
+authenticated application and user. It can return an empty list when no
+registered integration satisfies configuration and verification gates; legacy
+providers can still be available through the quote flow. The chain enum is
+`STELLAR`, `POLYGON` or `SOLANA`, distinct from `mainnet` / `testnet`.
+
+```typescript
+const { routes } = await pollar.getRampRoutes();
+// Populate choices from routes; do not assume a provider or direction is enabled.
+
+// Call from the user's explicit Continue action for a saved user_ready step.
+async function continueAfterUserConfirmation(txId: string) {
+  const current = await pollar.getRampTransaction(txId);
+  if (current.nextAction?.kind !== 'user_ready' ||
+      current.transactionVersion === undefined || current.reconciliationRequired) {
+    return current;
+  }
+  return pollar.continueRamp(txId, {
+    actionId: current.nextAction.actionId,
+    transactionVersion: current.transactionVersion,
+  });
+}
+```
+
+Render the saved `nextAction`; `describeRampAction(snapshot)` supplies a shared
+UI interpretation, and `mergeRampSnapshot(previous, incoming)` prevents older
+versions replacing newer progress. Continuations bind to both `actionId` and
+`transactionVersion`; refresh status when an action is stale. Information steps
+can supply `fields` to `continueRamp`; signed steps supply `signedPayload`.
+
+For a `sign_transaction` step, `signRampAction(txId, snapshot)` refreshes the
+action, invokes a registered signing handler and continues the workflow. Every
+chain/encoding pair needs `registerRampSigningHandler(chain, encoding, handler)`,
+including `STELLAR` / `xdr`. The handler must validate the payload, account,
+chain and network, then return the signed payload without broadcasting it.
+Signing and continuation require user interaction; polling and restoration
+must never trigger them automatically. Existing legacy signature helpers below
+remain supported.
 
 ---
 

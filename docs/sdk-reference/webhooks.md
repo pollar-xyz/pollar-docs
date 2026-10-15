@@ -2,19 +2,24 @@
 title: "Webhooks"
 ---
 
-Pollar uses webhooks in two directions:
+Pollar distinguishes event delivery from authenticated API calls:
 
-- **Inbound** — your backend receives a call from Pollar when an event occurs
+- **App event webhooks** — Pollar sends a call to your backend when an event occurs (outbound from Pollar, inbound to your app)
 
-- **Outbound** — your backend calls Pollar to trigger an action (e.g. `POST /v1/wallets/fund`)
+- **Server API calls** — your backend calls Pollar to trigger an action (e.g. `POST /v1/wallets/fund`); these are not webhook deliveries
 
 ---
 
-## Inbound webhooks `upcoming`
+## App event webhooks `upcoming`
 
-> 🚧 **Not yet available.** Inbound event webhooks are on the roadmap and **not implemented in production yet**. The dashboard configuration page is gated behind a "coming soon" state, and the semantic events, signature convention, and retry schedule documented below describe the **planned** design so you can prepare your integration — they are not live.
+> 🚧 **Not yet available.** Structured app event webhooks remain pending. The dashboard configuration page is gated behind a "coming soon" state, and the semantic events below describe the **planned** design, not a released delivery contract.
 >
 > What exists today is an internal, generic on-chain delivery: a single `stellar.tx` event carrying raw Stellar operation data, posted once (no retry/backoff) with an `X-Pollar-Signature: sha256=<hmac>` header. The structured `wallet.*` / `payment.*` events below are not emitted yet.
+
+Ramp lifecycle `ramp.transaction.updated` records are stored in an internal
+outbox. Durable delivery to application endpoints, retries and replay remain
+pending; an outbox record does not mean your backend received a notification.
+Provider-to-Pollar event ingestion is a separate integration.
 
 When available, you'll configure a webhook URL in **Build → Webhooks**. Pollar sends a `POST` request to your URL when an event occurs.
 
@@ -23,13 +28,14 @@ When available, you'll configure a webhook URL in **Build → Webhooks**. Pollar
 Every request includes an `X-Pollar-Signature` header — an HMAC-SHA256 signature of the raw request body using your webhook secret.
 
 ```typescript
-import { createHmac } from 'crypto';
+import { createHmac, timingSafeEqual } from 'node:crypto';
+import { NextResponse, type NextRequest } from 'next/server';
 
 function verifyWebhook(payload: string, signature: string, secret: string): boolean {
-  const expected = createHmac('sha256', secret)
-    .update(payload)
-    .digest('hex');
-  return `sha256=${expected}` === signature;
+  if (!/^sha256=[a-f0-9]{64}$/i.test(signature)) return false;
+  const received = Buffer.from(signature.slice(7), 'hex');
+  const expected = createHmac('sha256', secret).update(payload).digest();
+  return received.length === expected.length && timingSafeEqual(received, expected);
 }
 
 // Next.js API route
@@ -47,21 +53,16 @@ export async function POST(req: NextRequest) {
 }
 ```
 
-Always respond with `200` as quickly as possible. If your endpoint returns a non-2xx status or times out, Pollar retries with exponential backoff.
+Verify the raw body before processing and acknowledge accepted events promptly
+with a 2xx response. The current internal dispatcher does not retry non-2xx
+responses or timeouts.
 
 ### Retry policy `upcoming`
 
 > Planned design — there is **no retry/backoff implemented today**. The current internal delivery posts once and logs failures.
 
-| Attempt | Delay      |
-| ------- | ---------- |
-| 1       | Immediate  |
-| 2       | 1 minute   |
-| 3       | 10 minutes |
-| 4       | 1 hour     |
-| 5       | 24 hours   |
-
-After 5 failed attempts the event is marked as failed and visible in **Build → Webhooks → Event log**.
+Durable attempts, backoff, replay and an operator delivery log are pending.
+No retry schedule or attempt limit is part of the current delivery contract.
 
 ---
 
@@ -193,7 +194,7 @@ Fired when any sponsorship wallet drops below its configured minimum threshold.
 
 ---
 
-## Outbound webhooks
+## Server API calls
 
 Your backend calls Pollar to trigger actions. Currently:
 
