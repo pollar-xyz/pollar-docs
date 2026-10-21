@@ -38,7 +38,7 @@ A chain the platform is not serving right now appears **locked** rather than hid
 
 ## Order matters
 
-Enabled chains are **ordered**, and the order is not cosmetic. The array is handed to the SDK exactly as you arrange it through `/v1/applications/config`, so **the first chain is the default your users see** in the SDK's chain pickers.
+Enabled chains are **ordered**, and the order is not cosmetic. The array is handed to the SDK exactly as you arrange it through `/v3/applications/config`, so **the first chain is the default your users see** in the SDK's chain pickers.
 
 Drag a row by its grip, or use the arrows, to reorder. Reordering saves immediately with no confirmation: it orphans nothing and creates no funding obligation.
 
@@ -47,7 +47,7 @@ Two details follow from that:
 - A newly enabled chain joins the **end** of the list. Enabling never silently changes which chain is your default.
 - A disabled chain has no position, because it is not sent to the SDK at all.
 
-Your client should drive its chain selector from `/v1/applications/config` rather than from the user's wallet list. A chain can be enabled before a given user has been provisioned on it.
+Your client should drive its chain selector from `/v3/applications/config` rather than from the user's wallet list. A chain can be enabled before a given user has been provisioned on it.
 
 ---
 

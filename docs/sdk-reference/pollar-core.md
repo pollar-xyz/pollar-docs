@@ -30,7 +30,7 @@ const pollar = new PollarClient({
 |------------------|------------------|----------------------------------|----------------------------------------------------------------------------|
 | `apiKey`         | `string`         | —                                | **Required.** Your Pollar publishable key.                                 |
 | `stellarNetwork` | `StellarNetwork` | `'testnet'`                      | Target Stellar network: `'testnet'` or `'mainnet'`.                        |
-| `baseUrl`        | `string`         | `'https://sdk.api.pollar.xyz'`   | Override the Pollar API base URL. The SDK appends `/v2` to it. Useful for self-hosted deployments. |
+| `baseUrl`        | `string`         | `'https://sdk.api.pollar.xyz'`   | Override the Pollar API base URL. Pass the origin only: the SDK appends the API version (`/v3` from 0.12.0, `/v2` in 0.11.x). Useful for self-hosted deployments. |
 | `confirmation`   | `'auto' \| 'prompt'` | `'auto'`                     | Confirmation policy. `'auto'`: the SDK settles every signature itself (for a co-signed wallet the device verifies the request against Turnkey and votes on its own). `'prompt'`: every signature is shown to the user first, whatever the custody. See [Co-signed wallets](#co-signed-wallets). |
 | `cosignManual`   | `boolean`        | `false`                          | Keep the raw `cosign_pending` outcome instead of letting the SDK settle co-sign requests: your app drives `client.cosign` itself. |
 | `cosignKeyManager` | `KeyManager`   | —                                | Where the device key of a co-signed wallet lives; defaults to the client's `keyManager`. |
@@ -842,7 +842,7 @@ await pollar.sendPayment({
 | `chain` | `amount` | Asset field | Signing |
 |---|---|---|---|
 | `'STELLAR'` (default) | Decimal string | `asset` | Managed: Pollar signs. External / passkey: the adapter signs |
-| `'SOLANA'` | Integer base units (lamports, or the mint's smallest unit) | `mint?` (omit for SOL) | Managed and co-signed: one call to `/v2/tx/build-sign-submit`. External (SIWS): Pollar builds, the wallet signs via `signSolanaTransaction`, Pollar submits |
+| `'SOLANA'` | Integer base units (lamports, or the mint's smallest unit) | `mint?` (omit for SOL) | Managed and co-signed: one call to `/tx/build-sign-submit`. External (SIWS): Pollar builds, the wallet signs via `signSolanaTransaction`, Pollar submits |
 | `'POLYGON'` | Integer base units (wei, or the token's smallest unit) | `mint?` (the ERC-20 contract) | Managed and co-signed; an external Polygon wallet is refused |
 
 On Solana, when the token is marked **sponsor transfers** in the dashboard, the

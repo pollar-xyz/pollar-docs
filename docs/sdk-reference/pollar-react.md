@@ -45,7 +45,7 @@ import { PollarProvider } from '@pollar/react';
 |------------------|------------------|----------------------------------|---------------------------------------------|
 | `apiKey`         | `string`         | —                                | **Required.** Your Pollar API key.          |
 | `stellarNetwork` | `StellarNetwork` | `'testnet'`                      | Target network: `'testnet'` or `'mainnet'`. |
-| `baseUrl`        | `string`         | `'https://sdk.api.pollar.xyz'` (the SDK appends `/v2`) | Override the Pollar API base URL. |
+| `baseUrl`        | `string`         | `'https://sdk.api.pollar.xyz'` (origin only; the SDK appends the API version: `/v3` from 0.12.0, `/v2` in 0.11.x) | Override the Pollar API base URL. |
 | `confirmation`   | `'auto' \| 'prompt'` | `'auto'`                     | `'prompt'` shows every signature to the user in `<ConfirmModal>` first. |
 
 Every other `PollarClientConfig` option (`walletAdapters`, `cosignManual`, `loginTimeoutMs`, `storage`, `passkey`, ...) is documented in [`@pollar/core`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core#pollarclient).

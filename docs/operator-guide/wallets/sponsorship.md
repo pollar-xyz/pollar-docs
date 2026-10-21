@@ -124,7 +124,7 @@ For account recovery of wallets Pollar does not custody: the user adds a new sig
 Rotation exists only for wallets Pollar does not custody, so turn on both **Sponsor signer rotations** and its sub-option **Include external wallets**. Even then the settings alone sponsor nothing: a user is covered only while they hold a **grant**, which you give on request:
 
 - From **Users > Accounts**: while both settings are on, the row menu of a user with an external wallet shows **Allow sponsored signer rotation**.
-- From your backend: `POST /v1/wallets/{publicKey}/signer-rotation` in the [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api).
+- From your backend: `POST /v3/wallets/{publicKey}/signer-rotation` in the [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api).
 
 A grant covers **one** rotation and is spent when that rotation lands on-chain. A later recovery needs a new grant. You can revoke an unspent grant from the same menu or with `DELETE` on the same endpoint.
 

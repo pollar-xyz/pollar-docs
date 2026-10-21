@@ -4,7 +4,11 @@ title: "Pollar Server API"
 
 REST API for backend operations. All endpoints require your **secret key** — never call these from client-side code.
 
-**Base URL:** `https://server.api.pollar.xyz` — all routes are versioned under `/v1`.
+**Base URL:** `https://server.api.pollar.xyz/v3`.
+
+**Versions.** `/v3` is the current version and the one new integrations use; it is where server-side features are added. `/v1` serves the same endpoints below with the same requests and answers, and stays frozen (security fixes only). A backend already on `/v1` moves by changing the prefix; nothing else changes. `/v1` keeps working, and its retirement will be announced with its own date (see [API versions](https://docs.pollar.xyz/docs/sdk-reference/api-versions)).
+
+**Reference.** The OpenAPI documents are public: `https://server.api.pollar.xyz/openapi.v3.json` (v3) and `https://server.api.pollar.xyz/openapi.json` (v1). The interactive reference for v3 is `https://server.api.pollar.xyz/docs/v3`, where you can paste a secret key and send real requests.
 
 **Authentication:** pass your secret key in the `x-pollar-api-key` header (not `Authorization`).
 
@@ -23,12 +27,12 @@ Wallets are identified by their on-chain **public key** (`G…` address), not by
 
 ## Wallets
 
-### `POST /v1/wallets/fund`
+### `POST /v3/wallets/fund`
 
 Funds a custodial wallet on-chain, the same way the SDK login does: a CAP-33 sponsored createAccount where the app's funding wallet sponsors the base reserve and the wallet is seeded with the app's configured starting balance. Used in Deferred mode when a business event occurs (KYC approved, first deposit, etc.). Custodial (Pollar-managed) wallets only — external wallets fund themselves.
 
 ```bash
-POST https://server.api.pollar.xyz/v1/wallets/fund
+POST https://server.api.pollar.xyz/v3/wallets/fund
 x-pollar-api-key: sec_testnet_xxxxxxxxxxxxxxxxxxxx
 Content-Type: application/json
 
@@ -65,12 +69,12 @@ Content-Type: application/json
 
 `startingBalance` is the XLM the wallet was seeded with (the app's configured starting balance from **Dashboard → Wallets → Account Funding**; `"0"` when unset). The sponsored base reserve is locked in the funding wallet, not transferred.
 
-### `POST /v1/wallets/{publicKey}/signer-rotation`
+### `POST /v3/wallets/{publicKey}/signer-rotation`
 
 Grants the user whose external Stellar wallet is `publicKey` one sponsored signer rotation, for account recovery. The user then builds it from the client with `POST /wallet/signer/build` (see [Rotate the wallet signer](https://docs.pollar.xyz/docs/guides/custom-wallet-adapter#rotate-the-wallet-signer)), and the app pays the fee and the 0.5 XLM reserve of the new signer. The grant is spent when that rotation lands; another rotation needs a new grant.
 
 ```bash
-POST https://server.api.pollar.xyz/v1/wallets/GBW4...CX7H/signer-rotation
+POST https://server.api.pollar.xyz/v3/wallets/GBW4...CX7H/signer-rotation
 x-pollar-api-key: sec_mainnet_xxxxxxxxxxxxxxxxxxxx
 ```
 
@@ -85,7 +89,7 @@ Requires **Sponsor signer rotations** and its **Include external wallets** sub-o
 | `404 Not Found` | No user of this app has that wallet (`USER_NOT_FOUND`). |
 | `422 Unprocessable` | The wallet is custodial; only wallets Pollar does not hold are rotated (`SIGNER_ROTATION_INVALID`). |
 
-### `DELETE /v1/wallets/{publicKey}/signer-rotation`
+### `DELETE /v3/wallets/{publicKey}/signer-rotation`
 
 Revokes the user's unspent grant. Returns `200` with `code: "SERVER_SIGNER_ROTATION_REVOKED"` and `content: { userId, revoked }`, where `revoked` is `false` when there was nothing to revoke.
 
@@ -101,10 +105,10 @@ There is no server-side trustline endpoint. `change_trust` is a signed operation
 
 Register an app user (and optionally provision a wallet for them).
 
-### `POST /v1/users`
+### `POST /v3/users`
 
 ```bash
-POST https://server.api.pollar.xyz/v1/users
+POST https://server.api.pollar.xyz/v3/users
 x-pollar-api-key: sec_testnet_xxxxxxxxxxxxxxxxxxxx
 Content-Type: application/json
 
@@ -116,7 +120,7 @@ Content-Type: application/json
 
 `externalId` (1–255 chars) is required; `email`, `firstName`, `lastName`, and `avatar` are optional. Returns `201` with `code: "SERVER_USER_REGISTERED"`.
 
-### `POST /v1/users/with-wallet`
+### `POST /v3/users/with-wallet`
 
 Same body as above, but also creates a Stellar wallet for the user in one call. Returns `201` with `code: "SERVER_USER_WALLET_CREATED"`.
 
@@ -124,12 +128,12 @@ Same body as above, but also creates a Stellar wallet for the user in one call. 
 
 ## Tokens
 
-### `POST /v1/tokens/verify`
+### `POST /v3/tokens/verify`
 
 Validates an SDK end-user access token server-side (e.g. to authenticate a user on your backend from a token minted client-side by the SDK).
 
 ```bash
-POST https://server.api.pollar.xyz/v1/tokens/verify
+POST https://server.api.pollar.xyz/v3/tokens/verify
 x-pollar-api-key: sec_testnet_xxxxxxxxxxxxxxxxxxxx
 Content-Type: application/json
 

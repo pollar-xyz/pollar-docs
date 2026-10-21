@@ -3,7 +3,7 @@ title: "API versions"
 description: "Which version of the Pollar SDK API your app uses, and how to move off v1 before it is retired on 2026-11-30."
 ---
 
-The SDK API is versioned in the path (`/v1/...`, `/v2/...`, `/v3/...`). Each `@pollar/core` release talks to one version, so the version your app uses is decided by the SDK version your users run.
+The SDK API (`https://sdk.api.pollar.xyz`) is versioned in the path (`/v1/...`, `/v2/...`, `/v3/...`). Each `@pollar/core` release talks to one version, so the version your app uses is decided by the SDK version your users run.
 
 | API version | Status | `@pollar/core` |
 |---|---|---|
@@ -76,3 +76,10 @@ If you pass a custom `baseUrl` to the SDK, pass the origin only (`https://sdk.ap
 ## What is not affected
 
 The [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api), which your backend calls with a **SECRET** key, is a separate API and is not part of this retirement.
+
+| Server API version | Status |
+|---|---|
+| v1 | Frozen (security fixes only). Keeps working; its retirement will be announced with its own date. |
+| v3 | Current. Same endpoints and answers as v1; new server-side features land here. |
+
+There is no Server API v2: the Server API jumps to v3 so both APIs share the current version number. Moving a backend from `/v1` to `/v3` is a change of prefix.

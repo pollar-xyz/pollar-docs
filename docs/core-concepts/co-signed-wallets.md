@@ -115,7 +115,7 @@ The same requests are reachable over HTTP: `GET /cosign/requests`, `GET /cosign/
 
 ## Solana and Polygon
 
-A Solana transfer from a co-signed wallet goes through the same `POST /v2/tx/build-sign-submit` as a custodial one and answers `202` with the request. Pollar compiles the transaction, Turnkey signs it once the user approves, and Pollar broadcasts it. When the token is marked **sponsor transfers** in the dashboard, the app's GAS wallet is the fee payer and signs last, exactly as it does for custodial wallets; otherwise the user pays the fee in SOL. Outcomes land in `/v2/tx/status` and the history as usual.
+A Solana transfer from a co-signed wallet goes through the same `POST /v3/tx/build-sign-submit` as a custodial one and answers `202` with the request. Pollar compiles the transaction, Turnkey signs it once the user approves, and Pollar broadcasts it. When the token is marked **sponsor transfers** in the dashboard, the app's GAS wallet is the fee payer and signs last, exactly as it does for custodial wallets; otherwise the user pays the fee in SOL. Outcomes land in `/v3/tx/status` and the history as usual.
 
 A Polygon account exists in every co-signed wallet that enables the chain, but the SDK API has no Polygon transfer path yet, co-signed or not.
 

@@ -69,7 +69,7 @@ if (!pollar.hasWallet()) {
 }
 ```
 
-`createWallet()` calls `POST /v2/wallet/provision`. It creates the wallet on every chain your app serves, funds it per your [funding mode](https://docs.pollar.xyz/docs/core-concepts/funding-modes) and sets up your enabled trustlines, exactly as a login does in **At login** mode. It updates the session, so `usePollar()`, `getWallet()` and `onWalletStateChange` all see the new wallet. Calling it again returns the same wallet.
+`createWallet()` calls `POST /v3/wallet/provision`. It creates the wallet on every chain your app serves, funds it per your [funding mode](https://docs.pollar.xyz/docs/core-concepts/funding-modes) and sets up your enabled trustlines, exactly as a login does in **At login** mode. It updates the session, so `usePollar()`, `getWallet()` and `onWalletStateChange` all see the new wallet. Calling it again returns the same wallet.
 
 In React, `<WalletButton>` offers **Create wallet** to a signed-in user without one, and `usePollar()` exposes `hasWallet` and `createWallet`.
 

@@ -20,7 +20,7 @@ flowchart TD
     B -->|"Deferred"| D("G-address created, no reserve\nActivated via webhook from your backend"):::deferred
     C --> E("Wallet ready"):::ready
     D --> F("Wallet pending"):::pending
-    F -->|"POST /v1/wallets/fund\nor Dashboard Fund button"| E
+    F -->|"POST /v3/wallets/fund\nor Dashboard Fund button"| E
 
     classDef neutral fill:#f1efe8,stroke:#b4b2a9,color:#444441
     classDef decision fill:#faeeda,stroke:#ba7517,color:#633806
@@ -78,10 +78,10 @@ This mode solves a problem unique to Stellar: every account needs a minimum XLM 
 
 ### Funding via webhook
 
-Your backend calls `POST /v1/wallets/fund` when a business event occurs — KYC approved, first deposit, email verified, or any trigger you define.
+Your backend calls `POST /v3/wallets/fund` when a business event occurs — KYC approved, first deposit, email verified, or any trigger you define.
 
 ```bash
-POST https://server.api.pollar.xyz/v1/wallets/fund
+POST https://server.api.pollar.xyz/v3/wallets/fund
 x-pollar-api-key: sec_testnet_xxxxxxxxxxxxxxxxxxxx
 Content-Type: application/json
 

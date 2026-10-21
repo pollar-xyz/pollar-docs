@@ -2,7 +2,7 @@
 title: "Deferred Flow Guide"
 ---
 
-Deferred mode creates user wallets on-chain without funding them immediately. The XLM reserve is only sponsored when your backend calls `POST /v1/wallets/fund` — typically after a business event like KYC approval or a first deposit.
+Deferred mode creates user wallets on-chain without funding them immediately. The XLM reserve is only sponsored when your backend calls `POST /v3/wallets/fund` — typically after a business event like KYC approval or a first deposit.
 
 This guide walks through the full implementation end-to-end.
 
@@ -34,7 +34,7 @@ sequenceDiagram
 
     Note over User,Backend: User completes KYC / first deposit / your trigger
 
-    Backend->>Pollar: POST /v1/wallets/fund
+    Backend->>Pollar: POST /v3/wallets/fund
     Note over Backend,Pollar: Uses secret key — never from client
     Pollar->>Stellar: beginSponsoringFutureReserves
     Stellar-->>Pollar: Reserve funded (~2s)
@@ -67,12 +67,12 @@ export function WalletGate() {
 
 ## Step 2 — Trigger activation from your backend
 
-When the business event occurs (KYC approved, first deposit confirmed, etc.), your backend calls `POST /v1/wallets/fund` using the **secret key** and the wallet's `publicKey`.
+When the business event occurs (KYC approved, first deposit confirmed, etc.), your backend calls `POST /v3/wallets/fund` using the **secret key** and the wallet's `publicKey`.
 
 ```typescript
 // Your backend — e.g. Next.js API route, Express handler, webhook receiver
 async function fundWallet(publicKey: string) {
-  const response = await fetch('https://server.api.pollar.xyz/v1/wallets/fund', {
+  const response = await fetch('https://server.api.pollar.xyz/v3/wallets/fund', {
     method: 'POST',
     headers: {
       'x-pollar-api-key': process.env.POLLAR_SECRET_KEY!,
@@ -148,7 +148,7 @@ export function KycFlow({ publicKey }: { publicKey: string }) {
 
 The [template-nextjs](https://github.com/pollar-xyz/template-nextjs) demo includes a working implementation:
 
-- `app/api/activate/route.ts` — the API route that calls `POST /v1/wallets/fund`
+- `app/api/activate/route.ts` — the API route that calls `POST /v3/wallets/fund`
 - `app/components/KycGate.tsx` — the frontend component that triggers it
 
 ---
@@ -162,7 +162,7 @@ The [template-nextjs](https://github.com/pollar-xyz/template-nextjs) demo includ
 5. Verify the G-address on [Stellar Expert testnet](https://testnet.stellar.expert)
 
 ```bash
-curl -X POST https://server.api.pollar.xyz/v1/wallets/fund \
+curl -X POST https://server.api.pollar.xyz/v3/wallets/fund \
   -H "x-pollar-api-key: sec_testnet_xxxxxxxxxxxxxxxxxxxx" \
   -H "Content-Type: application/json" \
   -d '{ "publicKey": "GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" }'

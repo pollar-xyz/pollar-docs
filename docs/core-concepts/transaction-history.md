@@ -91,7 +91,7 @@ if (state.step === 'loaded') {
 The end-user transaction history is served by the SDK API (publishable key + authenticated end-user session), not by the secret-key Server API:
 
 ```bash
-GET https://sdk.api.pollar.xyz/v1/tx/history?limit=20&offset=0
+GET https://sdk.api.pollar.xyz/v3/tx/history?limit=20&offset=0
 ```
 
 > There is currently **no secret-key Server API endpoint** for wallet transaction history. Use the SDK (`fetchTxHistory`) from an authenticated session.
