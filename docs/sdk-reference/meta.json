@@ -8,6 +8,7 @@
     "server-api",
     "webhooks",
     "error-codes",
+    "api-versions",
     "mcp-gateway"
   ]
 }
