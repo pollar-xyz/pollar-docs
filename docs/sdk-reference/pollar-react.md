@@ -375,7 +375,7 @@ import { WalletButton } from '@pollar/react';
 <WalletButton />
 ```
 
-No props required. Appearance comes from your remote dashboard configuration (or the `appConfig` override passed to `<PollarProvider>`), exposed as `styles` on `usePollar()`.
+No props required. Appearance comes from your remote dashboard configuration (or the `appConfig` override passed to `<PollarProvider>`), exposed as `styles` on `usePollar()`. To override colors and corners from your own CSS, see [Theming](https://docs.pollar.xyz/docs/sdk-reference/theming).
 
 ---
 
@@ -586,11 +586,11 @@ Template components handle rendering only — they receive all data and callback
 | `<CosignModalTemplate>`           | Co-sign approval screen (`CosignModalTemplateProps`: `pending`, `current`, `verification`, `busy`, `onApprove`, `onReject`, ...). |
 | `<DistributionRulesModalTemplate>`| Claimable distribution rules screen.                        |
 
-Some template props are required because the live modals need them: `SendModalTemplateProps.onMax` / `onPaste`, `SwapModalTemplateProps.onReverse` / `onMax`, `SessionsModalTemplateProps.revokeError`, `RampWidgetTemplateProps.kycRequired` / `onVerifyRoute`. The Send, Receive and WalletButton templates take an optional `notReadyReason` (from `walletNotReadyReason`), and the ramp template an optional `onboardingStatus`.
+Some template props are required because the live modals need them: `SendModalTemplateProps.onMax` / `onPaste`, `SwapModalTemplateProps.onReverse` / `onMax`, `SessionsModalTemplateProps.revokeError`, `RampWidgetTemplateProps.kycRequired` / `onVerifyRoute`. `WalletButtonTemplateProps` takes `theme`, `accentColor` and an optional `styleOverrides`, like the modal templates. The Send, Receive and WalletButton templates take an optional `notReadyReason` (from `walletNotReadyReason`), and the ramp template an optional `onboardingStatus`.
 
 > Live (non-template) modal components are also exported for direct rendering: `SendModal`, `SwapModal`, `EarnModal`, `CardModal`, `CosignModal`, `ReceiveModal`, `EnabledAssetsModal`, `WalletBalanceModal`, `SessionsModal`, `DistributionRulesModal`, `KycModal`, `RequirementFormModal`, `RegistryCheckModal`, `ProviderRegistrationModal`, plus `KycStatus`, `RouteDisplay`, `ChainSelect` and `TxStatusView`. Each live modal takes `onClose`.
 >
-> Styling helpers: `buildModalCssVars(theme, accentColor, overrides?, variant?)`, `modalChrome(styles)`, `readableTextOn(background)` and the `ModalStyleOverrides` type (`backgroundColor`, `textColor`, `buttonColor`, `modalBorderRadius`, `buttonBorderRadius`). Passkeys: `browserPasskeyCeremony` and `browserPasskeySigner` are the WebAuthn implementations the provider installs on the client.
+> Styling helpers: `buildModalCssVars(theme, accentColor, overrides?, variant?)`, `modalChrome(styles)`, `readableTextOn(background)` and the `ModalStyleOverrides` type (`backgroundColor`, `textColor`, `buttonColor`, `modalBorderRadius`, `buttonBorderRadius`). The CSS variables they feed are listed in [Theming](https://docs.pollar.xyz/docs/sdk-reference/theming). Passkeys: `browserPasskeyCeremony` and `browserPasskeySigner` are the WebAuthn implementations the provider installs on the client.
 
 Import the corresponding `*Props` type for full type safety:
 
