@@ -43,11 +43,11 @@ Set the variables on the Pollar root elements:
 | `.pollar-modal-card` | The card of every modal (login, KYC, send, swap, ramp, history, ...) |
 | `.pollar-wallet-wrapper` | The signed-in `<WalletButton>` and its dropdown |
 | `.pollar-wallet-login-btn` | The signed-out `<WalletButton>` |
-| `.pollar-overlay` | The backdrop behind a modal (only `--pollar-overlay-z-index`) |
+| `.pollar-overlay` | The backdrop behind a modal (only `--pollar-overlay-z-index` and `--pollar-overlay-bg`) |
 
 You don't need `!important`, and load order doesn't matter: the SDK declares its own values with zero specificity, so any selector with a class wins.
 
-**Set them on these elements, not on `:root` or `body`.** Each Pollar root declares the variables itself, and a value declared on an element takes precedence over one inherited from `:root`.
+**Set them on these elements, not on `:root` or `body`.** Each Pollar root declares the variables itself, and a value declared on an element takes precedence over one inherited from `:root`. The two font variables are the exception: the SDK doesn't declare them, so they also work from `:root`.
 
 To theme a single modal, target its own class. Each card has one next to `.pollar-modal-card`, for example `.pollar-modal` (login), `.pollar-send-modal`, `.pollar-swap-modal`, `.pollar-ramp-modal` or `.pollar-hist-modal`:
 
@@ -107,10 +107,13 @@ html.dark .pollar-wallet-wrapper {
 | `--pollar-modal-border-radius` | Corners → Modal | `16px` | Modal card corners |
 | `--pollar-buttons-border-radius` | Corners → Buttons | `6px` | Button corners, including `<WalletButton>` |
 | `--pollar-overlay-z-index` | Stacking order | `50` | Stacking order of the modal overlay. Set it on `.pollar-overlay`. |
+| `--pollar-overlay-bg` | none | `rgba(0, 0, 0, 0.5)` | Backdrop behind a modal. Set it on `.pollar-overlay`. |
 | `--pollar-buttons-height` | none | `44px` | Height of the full-width buttons |
 | `--pollar-input-height` | none | `44px` | Height of text inputs |
 | `--pollar-input-border-radius` | none | `0.5rem` | Input corners |
 | `--pollar-card-border-radius` | none | `10px` | Inner cards and list items |
+| `--pollar-font-family` | none | not set: your page's font | Every text, button and input in the modals and `<WalletButton>` |
+| `--pollar-font-family-mono` | none | `ui-monospace, SFMono-Regular, Menlo, monospace` | Addresses, hashes, codes and XDR |
 
 "Blended" means that when Branding sets a Background or Text color, the SDK mixes the border, secondary text and input fill from those two colors, so they match the custom pair. With neither set, they come from the theme.
 
