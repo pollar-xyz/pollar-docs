@@ -1,0 +1,8 @@
+{
+  "title": "Billing",
+  "description": "Credits: balance, top-ups, usage, statements and prices. The distribution vault and its withdrawals.",
+  "pages": [
+    "credits",
+    "distribution-vault"
+  ]
+}

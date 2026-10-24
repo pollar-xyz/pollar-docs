@@ -2,7 +2,7 @@
 title: "Swap"
 ---
 
-**Dashboard → Treasury → Swap** · Chains: Stellar
+**Dashboard > Treasury > Swap** · Chains: Stellar
 
 Choose which swap venues your users can use to exchange one asset for another. The venues (SDEX, Soroswap, Aquarius) are Stellar and Soroban protocols, so the swap modal only shows for a user with a Stellar wallet; see [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support).
 
@@ -24,9 +24,9 @@ Extra tokens your users can swap **into**, on top of your enabled assets. The ca
 
 The venues and tokens configured here drive the client SDK:
 
-- `getSwapConfig()` → enabled venues (empty = swap disabled)
-- `getSwapTokens()` → the buy-token catalog
-- `getSwapQuote(params)` / `swap(quote)` → quote and execute
-- `openSwapModal()` (`@pollar/react`) → the pre-built swap modal
+- `getSwapConfig()` -> enabled venues (empty = swap disabled)
+- `getSwapTokens()` -> the buy-token catalog
+- `getSwapQuote(params)` / `swap(quote)` -> quote and execute
+- `openSwapModal()` (`@pollar/react`) -> the pre-built swap modal
 
 See [`@pollar/core`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core) and [`@pollar/react`](https://docs.pollar.xyz/docs/sdk-reference/pollar-react).

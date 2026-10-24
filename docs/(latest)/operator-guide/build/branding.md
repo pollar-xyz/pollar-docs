@@ -2,7 +2,7 @@
 title: "Branding"
 ---
 
-**Dashboard → Build → Branding** · Chains: all
+**Dashboard > Build > Branding** · Chains: all
 
 Customize the appearance of every modal in `@pollar/react` (login, KYC, transaction, send, swap, receive, ramp, history, balance, sessions, ...) and of the `<WalletButton>`.
 
@@ -24,7 +24,7 @@ Customize the appearance of every modal in `@pollar/react` (login, KYC, transact
 | **Login methods** | Toggle **Email** login on/off. **Social providers** are marked _Coming soon_ and are not individually toggleable yet. |
 | **Wallets** | **Embedded wallets** and **Smart Wallet (passkey)** options |
 
-> App name is edited in **Build → Settings**, not here.
+> App name is edited in **Build > Settings**, not here.
 
 Each setting maps to a CSS variable, and your app's own stylesheet takes precedence over the dashboard. See [Theming](https://docs.pollar.xyz/docs/sdk-reference/theming) to override them per app or follow your app's dark mode.
 

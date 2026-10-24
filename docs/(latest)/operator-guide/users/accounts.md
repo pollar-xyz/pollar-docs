@@ -2,9 +2,9 @@
 title: "Accounts"
 ---
 
-**Dashboard → Users → Accounts** · Chains: all
+**Dashboard > Users > Accounts** · Chains: all
 
-Browse and manage all users who have authenticated through your app.
+Every user who has signed in to your app. The cards on top show **Total users**, **With wallet** and **Active last 7 days**.
 
 ---
 
@@ -12,22 +12,21 @@ Browse and manage all users who have authenticated through your app.
 
 | Column | Description |
 |---|---|
-| **User ID** | Pollar user ID (`usr_...`) |
-| **Email** | User email — shown if authenticated via email OTP or OAuth with email scope |
-| **Provider** | Auth provider used (Google, GitHub, Email, external wallet) |
-| **Wallet** | Associated wallet ID and status |
-| **Created** | First login timestamp |
-| **Last seen** | Most recent activity |
+| **User** | Avatar, name or email, and a second line with the email or ID |
+| **Providers** | How the user signs in (Google, GitHub, Email, external wallet, passkey) |
+| **Wallets** | Every wallet of the user, one line per chain: the network, the address (click it to open the wallet in [Wallets](https://docs.pollar.xyz/docs/operator-guide/wallets/user-wallets)), a copy button, and a **Co-signed**, **External** or **Rail** badge when it applies. A dash means the user has no wallet yet |
+| **Status** | Active |
+| **Activity** | Last login and when the user joined |
 
-Search by email or user ID. Filter by auth provider or wallet status.
+Search by name, email, ID or wallet address. Filter with **All accounts**, **With wallet**, **No wallet** or **Active last 7d**, and by provider. **Export CSV** exports the list with every wallet of each user.
 
 ---
 
-## User detail
+## Row actions
 
-Click any user to see:
+The row menu offers:
 
-- Auth provider and login history
-- Associated wallet — ID, G-address, status, and balances
-- Full transaction history
-- Option to manually fund/activate their wallet (the **Fund 2 XLM** action lives on **Wallets → Wallets** for not-yet-funded wallets)
+- **Copy user ID** and **Copy wallet public key**
+- **Allow sponsored signer rotation** / **Revoke signer rotation**, for a user with an external wallet, while signer rotation and its external sub-option are on under [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship#signer-rotation). A grant covers one rotation.
+
+There is no per-user detail page. To fund a user's Stellar wallet by hand, use **Fund** on the wallet's row in [Wallets](https://docs.pollar.xyz/docs/operator-guide/wallets/user-wallets); transactions are in [Monitor > Transactions](https://docs.pollar.xyz/docs/operator-guide/monitor/transactions).

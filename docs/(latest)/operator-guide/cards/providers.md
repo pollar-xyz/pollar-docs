@@ -2,7 +2,7 @@
 title: "Providers"
 ---
 
-**Dashboard → Cards → Providers** · Chains: all (the card is funded from the user's Stellar wallet)
+**Dashboard > Cards > Providers** · Chains: all (the card is funded from the user's Stellar wallet)
 
 Let your users get a card funded from their Pollar wallet. Enable the card providers you want to offer; they are off by default.
 

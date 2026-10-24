@@ -2,9 +2,9 @@
 title: "Transactions"
 ---
 
-**Dashboard → Monitor → Transactions** · Chains: Stellar, Solana, Polygon
+**Dashboard > Monitor > Transactions** · Chains: Stellar, Solana, Polygon
 
-A real-time view of all on-chain transactions across your app, on every chain. Each row shows its own chain, fee unit and explorer.
+The outgoing transactions originated by your app and its users, on every chain.
 
 ---
 
@@ -12,20 +12,24 @@ A real-time view of all on-chain transactions across your app, on every chain. E
 
 | Column | Description |
 |---|---|
-| **Tx hash** | The transaction hash, linked to its chain's explorer: stellar.expert, explorer.solana.com, polygonscan |
-| **Chain** | Stellar, Solana or Polygon |
-| **Type** | `payment`, `activation`, `trustline`, `receive`, ... |
-| **Asset** | Asset code (a Stellar asset, an SPL token, an ERC-20) |
-| **Amount** | Transaction amount |
-| **From / To** | The addresses involved on that chain |
-| **Fee** | The network fee in the chain's own unit: stroops / XLM on Stellar, **lamports** on Solana, wei / POL on Polygon, and whether your GAS wallet paid it |
-| **Ledger / slot** | Stellar ledger number, Solana slot, Polygon block |
-| **Timestamp** | Confirmation time |
+| **Hash** | The transaction hash, with a link to its chain's explorer |
+| **Operation** | What the transaction does: `payment`, `create_account`, `change_trust`, `path_payment_strict_send` or `invoke_contract`, with a summary |
+| **User** | The user who originated it |
+| **Wallet** | The wallet that signed it, with a link to it in [Wallets](https://docs.pollar.xyz/docs/operator-guide/wallets/user-wallets) |
+| **Blockchain** | Stellar, Solana or Polygon |
+| **Status** | The transaction's phase: `BUILDING`, `BUILT`, `SIGNING`, `SIGNED`, `SUBMITTING`, `SUBMITTED`, `SUCCESS` or `FAILED` (with the phase it failed at) |
+| **Fee** | The network fee with its unit, as the chain reports it |
+| **Date** | When it was recorded |
 
-Filter by type, asset, date range, or wallet ID. Export as CSV.
+Filter by **Status** and **Operation**, and search by hash or public key. **Live** keeps the list updating as new transactions arrive.
 
 ---
 
-## Transaction detail
+## Transaction details
 
-Click any transaction to see the full details, including the raw transaction (the Stellar XDR envelope, or the serialized Solana transaction) and a link to the chain's explorer for on-chain verification.
+Click a transaction to open its details:
+
+- for a contract call: the contract, method or host function, and the arguments
+- the error, and the contract error when there is one
+- the transaction envelopes (unsigned and signed XDR), with copy buttons
+- the raw details as JSON

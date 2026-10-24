@@ -2,9 +2,9 @@
 title: "Transactions"
 ---
 
-**Dashboard → Ramps → Transactions** · Chains: Stellar, Solana, Polygon
+**Dashboard > Ramps > Transactions** · Chains: Stellar, Solana, Polygon
 
-Every ramp order your users opened, on-ramp and off-ramp, with its provider, status and settlement chain. Use it to answer "where is this user's money" without opening the provider's own console.
+The ramp transactions your users started with SDKs older than 0.12 (SDK API v2). Ramps opened with `@pollar/core` 0.12 or later, or with `/v3/ramps`, are under [Orders](https://docs.pollar.xyz/docs/operator-guide/ramps/orders). On v2, starting a new ramp answers `410 SDK_RAMPS_MOVED_TO_V3`, so this list only follows the transactions already open.
 
 ---
 
@@ -12,24 +12,20 @@ Every ramp order your users opened, on-ramp and off-ramp, with its provider, sta
 
 | Column | Description |
 | --- | --- |
-| **Provider** | The ramp provider that handles the order (Bridge, Etherfuse, Stereum, PagFinance, Abroad, Anclap) |
-| **User** | Email or name of the user who opened the order |
-| **Direction** | On-ramp (fiat in, crypto out) or Off-ramp |
-| **Status** | `Created`, `Pending`, `Awaiting payment`, `Processing`, `Settling on-chain`, `Completed`, `Failed`, `Refunded` |
-| **Amount** | Fiat amount and currency, and the crypto amount and asset once known |
-| **Country / Rail** | The fiat corridor and payment rail (Pix, SPEI, bank transfer, QR) |
-| **Fee** | The provider's fee in its currency |
-| **Chain** | The chain the order settles on: Stellar, Solana or Polygon |
-| **Tx hash** | The on-chain settlement, linked to the chain's explorer once it exists |
-| **Wallet** | The user wallet credited or debited |
-| **Created** | When the order was opened |
+| **Date** | When the transaction was opened |
+| **User** | The user who opened it |
+| **Type** | On-ramp or Off-ramp |
+| **Provider** | The ramp provider that handled it |
+| **Amount** | The fiat amount and currency, and the crypto amount and asset once known |
+| **Route** | Country, rail and chain |
+| **Tx hash** | The on-chain settlement, once it exists |
+| **Status** | `Created`, `Pending`, `Awaiting payment`, `Processing`, `Settling on-chain`, `Completed`, `Failed`, `Refunded`, plus **In review** when Pollar is reviewing it |
 
-Filter by direction (**All**, **On-ramp**, **Off-ramp**). Orders flagged **reconciliation required** need a look from Pollar's side; they stay visible here so you know the user is waiting.
+Filter by type (**All**, **On-ramp**, **Off-ramp**). The list is paginated.
 
 ---
 
 ## Related
 
-- [Ramp providers](https://docs.pollar.xyz/docs/operator-guide/ramps/providers): which providers and corridors are enabled
-- [Rail wallets](https://docs.pollar.xyz/docs/operator-guide/wallets/rail-wallets): funds parked on an intermediate chain between two steps of a ramp
-- [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support): which providers settle on Solana
+- [Orders](https://docs.pollar.xyz/docs/operator-guide/ramps/orders): ramp orders from SDK 0.12 and the Server API
+- [Providers](https://docs.pollar.xyz/docs/operator-guide/ramps/providers): transactions under review by Pollar are also listed there

@@ -2,7 +2,7 @@
 title: "Card holders"
 ---
 
-**Dashboard → Cards → Card holders** · Chains: all
+**Dashboard > Cards > Card holders** · Chains: all
 
 Your users' cards: identity verification, the card and its credit line. Card numbers are never shown here; only the user reveals them, from the SDK.
 
@@ -13,13 +13,14 @@ Your users' cards: identity verification, the card and its credit line. Card num
 | Column | Description |
 | --- | --- |
 | **User** | Email or name of the holder |
-| **Provider** | The card provider the holder was created with |
 | **Verification** | The provider's identity check: pending, waiting for the user, approved, rejected |
 | **Card** | Whether a card has been issued, and its state |
-| **Credit line** | The balance available on the card and its recent movements (bank deposit, purchase adjustment, card issuance) |
-| **Created** | When the holder was created |
+| **Credit limit** | The card's credit line |
+| **Available** | What the holder can still spend |
+| **Balance due** | What the holder owes |
+| **Last movement** | The most recent movement on the card |
 
-Open a row to see the holder's timeline: each verification step, the issuance, and the funding movements that fed the credit line.
+Expand a row to see the card's movements: date, type (for example bank deposit, purchase, card issuance), merchant, amount and status.
 
 ---
 

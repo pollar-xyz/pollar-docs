@@ -2,7 +2,7 @@
 title: "Auth Policy"
 ---
 
-**Dashboard → Wallets → Auth Policy** · Chains: Stellar
+**Dashboard > Wallets > Auth Policy** · Chains: Stellar
 
 Controls which Soroban contracts and functions a custodial wallet may **authorize**. This is the signing allowlist for `SorobanAuthorizationEntry` — the authorization a user signs when your own contract is the transaction source and only needs the user's consent, not a full signed envelope.
 

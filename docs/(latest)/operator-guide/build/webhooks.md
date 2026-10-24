@@ -2,9 +2,9 @@
 title: "Webhooks `upcoming`"
 ---
 
-**Dashboard → Build → Webhooks** · Chains: Stellar
+**Dashboard > Build > Webhooks** · Chains: Stellar
 
-> 🚧 **Not yet available.** The Webhooks page exists in the dashboard but is gated behind a "coming soon" state — endpoints cannot be delivered to in production yet. Event types, signature verification, and the retry policy below describe the **planned** design. See the [Webhooks reference](https://docs.pollar.xyz/docs/sdk-reference/webhooks) for the current internal behavior.
+> **Not yet available.** The Webhooks page exists in the dashboard but is gated behind a "coming soon" state — endpoints cannot be delivered to in production yet. Event types, signature verification, and the retry policy below describe the **planned** design. See the [Webhooks reference](https://docs.pollar.xyz/docs/sdk-reference/webhooks) for the current internal behavior.
 
 Configure URLs where Pollar sends event notifications when things happen in your app.
 
@@ -40,4 +40,4 @@ Always respond with `200` immediately. Pollar retries failed deliveries with exp
 
 ## Event log
 
-**Dashboard → Build → Webhooks → Event log** shows every delivery attempt — timestamp, event type, response code, and latency. Use this to debug failed deliveries or verify that events are being received correctly.
+**Dashboard > Build > Webhooks > Event log** shows every delivery attempt — timestamp, event type, response code, and latency. Use this to debug failed deliveries or verify that events are being received correctly.

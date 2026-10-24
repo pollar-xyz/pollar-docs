@@ -1,13 +1,10 @@
 {
   "title": "Wallets",
-  "description": "User wallets on every chain, custody and creation settings, funding, rail wallets, chains, sponsorship, tokens, and signing policies.",
+  "description": "Wallet settings (chains, custody, creation, signature confirmation), user wallets on every chain, funding, sponsorship, tokens, and signing policies.",
   "pages": [
-    "user-wallets",
     "settings",
+    "user-wallets",
     "account-funding",
-    "funding-mode",
-    "rail-wallets",
-    "chains",
     "sponsorship",
     "tokens-trustlines",
     "transaction-policy",

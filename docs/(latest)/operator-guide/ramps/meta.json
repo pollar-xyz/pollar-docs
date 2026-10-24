@@ -1,8 +1,11 @@
 {
   "title": "Ramps",
-  "description": "Fiat on/off-ramp providers and the ramp transactions of your app.",
+  "description": "Fiat on/off-ramp providers, the routes they open, your ramp orders, who signs each leg, and the pre-0.12 ramp transactions.",
   "pages": [
     "providers",
+    "routes",
+    "orders",
+    "signing",
     "transactions"
   ]
 }

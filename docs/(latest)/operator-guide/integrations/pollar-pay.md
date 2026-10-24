@@ -1,9 +1,9 @@
 ---
-title: "Pollar Pay"
+title: "Pollar Pay `upcoming`"
 ---
 
-**Dashboard → Integrations → Pollar Pay** · Chains: Stellar
+**Dashboard > Integrations > Pollar Pay** · Chains: Stellar
 
-Configure the Pollar Pay integration for your app — Pollar's payments layer for collecting payments into your app.
+> **Not yet available.** The Pollar Pay page in the dashboard is gated behind a "coming soon" state.
 
-Use this section to enable and manage Pollar Pay for the current app. Details and the full payment flow are documented separately as the feature matures.
+Pollar Pay is Pollar's payments layer for collecting payments into your app. This page will enable and manage it for the current app; its configuration and payment flow will be documented when the page opens.

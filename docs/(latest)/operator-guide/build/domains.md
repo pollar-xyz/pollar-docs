@@ -2,7 +2,7 @@
 title: "Domains"
 ---
 
-**Dashboard → Build → Domains** · Chains: all
+**Dashboard > Build > Domains** · Chains: all
 
 Two separate allowlists live on this page:
 

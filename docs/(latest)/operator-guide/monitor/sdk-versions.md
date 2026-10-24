@@ -2,7 +2,7 @@
 title: "SDK versions"
 ---
 
-**Dashboard → Monitor → SDK versions** · Chains: all
+**Dashboard > Monitor > SDK versions** · Chains: all
 
 Which `@pollar/core` builds your app is running, and how many live sessions are still on each. Recorded at sign-in and on every session resume.
 

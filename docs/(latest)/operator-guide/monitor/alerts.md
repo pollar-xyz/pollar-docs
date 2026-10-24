@@ -2,7 +2,7 @@
 title: "Alerts"
 ---
 
-**Dashboard → Monitor → Alerts** `upcoming` · Chains: all
+**Dashboard > Monitor > Alerts** `upcoming` · Chains: all
 
 Configure notifications for low wallet balances so you never run out of funds unexpectedly.
 

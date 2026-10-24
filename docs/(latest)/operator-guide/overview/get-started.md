@@ -2,14 +2,16 @@
 title: "Get started"
 ---
 
-**Dashboard → Overview → Get started** · Chains: all (the funding steps are Stellar)
+**Dashboard > Overview > Get started** · Chains: all (the funding step is Stellar)
 
-A guided checklist shown on new apps that walks you through everything needed before going live. It tracks your progress and hides itself once your app is set up.
+A checklist shown on new apps. It tracks how many steps are completed and the sidebar hides it once every step is done.
 
-Typical steps:
+| Step | Badge | Done when |
+| --- | --- | --- |
+| **Configure API keys** ([API Keys](https://docs.pollar.xyz/docs/operator-guide/build/api-keys)) | Required | The app has a publishable key |
+| **Configure allowed domains** ([Domains](https://docs.pollar.xyz/docs/operator-guide/build/domains)) | Required | At least one allowed origin is listed |
+| **Fund app wallet** ([Account Funding](https://docs.pollar.xyz/docs/operator-guide/wallets/account-funding)) | Required | The app's Stellar wallet exists on-chain and holds more than 10 XLM. Each user wallet costs about 2 XLM of base reserve |
+| **Enable trustlines** ([Tokens & Trustlines](https://docs.pollar.xyz/docs/operator-guide/wallets/tokens-trustlines)) | Recommended | At least one asset is enabled. Without it users can only hold XLM |
+| **Create your first user wallet via SDK** ([Quickstart](https://docs.pollar.xyz/docs/getting-started/quickstart)) | Verification | At least one SDK user wallet exists |
 
-1. **Generate API keys** — create a publishable key to connect your SDK ([API Keys](https://docs.pollar.xyz/docs/operator-guide/build/api-keys))
-2. **Add allowed origins** — so the SDK can call Pollar from your app ([Domains](https://docs.pollar.xyz/docs/operator-guide/build/domains))
-3. **Fund your app wallet** — your funding wallet needs XLM to create user wallets ([Account Funding](https://docs.pollar.xyz/docs/operator-guide/wallets/account-funding)). On a Solana app, fund the Solana GAS wallet with SOL from [Chains](https://docs.pollar.xyz/docs/operator-guide/wallets/chains) instead
-4. **Enable tokens** — configure at least one token so user wallets can hold it ([Tokens & Trustlines](https://docs.pollar.xyz/docs/operator-guide/wallets/tokens-trustlines))
-5. **Install the SDK and create your first wallet** — confirm the integration end-to-end ([Quickstart](https://docs.pollar.xyz/docs/getting-started/quickstart))
+The funding step checks only the Stellar app wallet. On Solana or Polygon, fund the chain's GAS wallet from [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship); the checklist does not track it.

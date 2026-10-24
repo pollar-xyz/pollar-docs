@@ -2,39 +2,28 @@
 title: "Logs"
 ---
 
-**Dashboard → Monitor → Logs** · Chains: all
+**Dashboard > Monitor > Logs** · Chains: all
 
-API request logs, errors, and webhook delivery history for your app.
-
----
-
-## API logs
-
-Every request made to the Pollar Server using your app's keys is logged:
-
-| Column         | Description                                            |
-| -------------- | ------------------------------------------------------ |
-| **Timestamp**  | Request time                                           |
-| **Endpoint**   | HTTP method and path                                   |
-| **Key**        | Which API key made the request (publishable or secret) |
-| **Status**     | HTTP response code                                     |
-| **Latency**    | Response time in milliseconds                          |
-| **Error code** | Pollar error code if the request failed                |
-
-Logs are retained for **30 days**.
-
-Filter by key, status code, endpoint, or date range. Use this to:
-
-- Audit which key made which request
-
-- Identify unauthorized usage after a key is compromised
-
-- Debug integration issues
+The application logs Pollar's services write for your app: what happened when your users signed in, sent transactions or ramped, with the errors.
 
 ---
 
-## Webhook delivery logs
+## The table
 
-Every webhook delivery attempt is logged with the event type, destination URL, response code, and latency. Failed deliveries show the error and retry schedule.
+| Column | Description |
+| --- | --- |
+| **Timestamp** | When the entry was written |
+| **Level** | The severity (for example error, warning, info) |
+| **Message** | The log message. Open an entry to see its full content and highlights |
 
-Access webhook logs from **Dashboard → Build → Webhooks → Event log**.
+---
+
+## Finding entries
+
+- **Level**: show one severity or all.
+- **Search messages**: filter by text in the message.
+- **From** / **To**: a date range (**Clear dates** removes it).
+- **Rows to fetch**: how many entries to load.
+- **Live**: streams new entries as they are written ("Streaming live"); **Refresh** reloads.
+
+Use it to debug an integration: an error your users hit usually shows up here with the reason.

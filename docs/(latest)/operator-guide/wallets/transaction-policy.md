@@ -2,7 +2,7 @@
 title: "Transaction Policy"
 ---
 
-**Dashboard → Wallets → Transaction Policy** · Chains: Stellar
+**Dashboard > Wallets > Transaction Policy** · Chains: Stellar
 
 Control which sensitive Stellar operations custodial wallets are allowed to sign. Rules are enforced server-side — a custodial wallet refuses to sign anything the policy blocks.
 
@@ -24,3 +24,19 @@ The highest total fee a custodial wallet may sign for a single transaction.
 - **Max fee (XLM)** — allowed range **0.01 – 100 XLM**. Leave empty to use the **10 XLM** default.
 
 Expensive Soroban contract calls (e.g. DeFindex / Blend deposits) can exceed the default — raise the cap to allow them, or lower it for stricter spend control.
+
+---
+
+## Maximum operations per transaction
+
+The most operations a custodial wallet may sign in a single transaction.
+
+- **Max operations**: allowed range **1-100**. Leave empty to use the default of **5**.
+
+Transactions that bundle steps (for example a trustline plus a Soroban swap) can exceed the default; raise the cap to allow them, or lower it for stricter custody.
+
+---
+
+## Blocked operations
+
+Whatever the settings above, a custodial wallet never signs an operation that adds a signer or changes its master weight or thresholds: that would take the wallet out of Pollar's custody.

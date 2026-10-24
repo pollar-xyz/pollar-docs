@@ -2,7 +2,7 @@
 title: "Tokens & Trustlines"
 ---
 
-**Dashboard → Wallets → Tokens & Trustlines** · Chains: Stellar, Solana, Polygon
+**Dashboard > Wallets > Tokens & Trustlines** · Chains: Stellar, Solana, Polygon
 
 Configure which tokens your users' wallets hold, on every chain the app enables. One table lists them all, with a filter tab per chain (**All**, **Stellar**, **Solana**, **Polygon**) once more than one chain is on.
 
@@ -20,13 +20,33 @@ Each enabled token also carries a **sponsor transfers** switch on the [Sponsorsh
 
 ---
 
+## The table
+
+| Column | Description |
+| --- | --- |
+| **Code** / **Issuer** | The token's symbol and its issuer (Stellar) or contract / mint address (Polygon, Solana) |
+| **Valid** | Whether the asset checks out on-chain |
+| **Wallets** | Stellar only: how many user wallets have the trustline open |
+| **Balance** | Polygon and Solana: your app wallet's balance of the token |
+| **Added** / **Last modified** | When the token was added and last changed |
+| **Enabled** | Enabled or Disabled |
+
+---
+
 ## Adding a token
 
-1. Click **Add token** and pick the chain
-2. **Stellar**: choose from the catalog or search Horizon by code and issuer G-address. **Solana**: paste the SPL **mint address**; Pollar reads the symbol and decimals from the chain. **Polygon**: paste the token **contract address**
-3. Click **Save**
+Click **Add token** and pick the chain:
 
-The token is enabled on all wallets from this point. On Stellar, existing wallets get the trustline the next time they are touched; on Solana and Polygon the token is visible immediately.
+- **Stellar**: pick one of the **Recommended** assets (verified issuers, one click), or **Search on Stellar** by asset code or issuer public key and click a result.
+- **Solana and Polygon**: pick one of the **Recommended tokens** curated by the platform, or **Add a custom token** by its **Mint address** (Solana) or **Contract address** (Polygon). **Read from chain** fills in the symbol, name and decimals, or you type them. Then click **Enable token**.
+
+New accounts get the enabled tokens set up when they are created. On Stellar, existing accounts pick up an enable or disable on their next login, and each trustline operation consumes gas from the app wallet; on Solana and Polygon the token is visible immediately.
+
+---
+
+## Activating trustlines on existing wallets
+
+Expanding a Stellar token's row (**Show wallets**) shows how many wallets have its trustline active, how many are inactive, and why some cannot be activated (unfunded, external, or low XLM). **Activate N trustline(s)** opens the trustline on every eligible wallet at once. Each wallet pays its own 0.5 XLM base reserve.
 
 ---
 

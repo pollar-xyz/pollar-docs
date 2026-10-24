@@ -2,7 +2,7 @@
 title: "Sponsorship"
 ---
 
-**Dashboard → Wallets → Sponsorship** · Chains: Stellar, Solana, Polygon (one tab per enabled chain)
+**Dashboard > Wallets > Sponsorship** · Chains: Stellar, Solana, Polygon (one tab per enabled chain)
 
 Sponsorship decides which on-chain costs your app pays for its users, so a user wallet can hold tokens and move them with no XLM of its own. Every rule is evaluated server-side by Pollar on the signed transaction. The client SDK cannot widen it.
 
@@ -22,7 +22,18 @@ There are two mechanisms, and which one applies depends on the cost being covere
 | Network fees (fee bumps and sponsored trustlines) | The **GAS** wallet, or **GLOBAL** if the app has not been split |
 | Reserves (trustlines, account creation) | The **FUNDING** wallet, or **GLOBAL** if the app has not been split |
 
+On an app on [credits](https://docs.pollar.xyz/docs/operator-guide/billing/credits), Pollar's pool pays these instead and charges the app's credits.
+
 Keep the paying wallets funded with XLM. When a fee bump cannot be paid, the transaction is not rejected: it is submitted unsponsored and the user pays (see [When sponsorship does not apply](#when-sponsorship-does-not-apply)).
+
+---
+
+## The Polygon tab
+
+Polygon has no sponsorship, and cannot have one: an EVM account signs nothing unless it holds POL. The tab has one card, **Polygon gas**:
+
+- **The Polygon GAS wallet.** If the app has none yet, the card offers **Create Polygon wallet**. Once it exists, the card shows its address and POL balance (with **Refresh**), and warns in red while it is empty: until it holds POL, no user of this app can sign on Polygon.
+- **Top-up policy.** Each user wallet is topped up with a fixed amount of POL whenever it falls below the floor. Both numbers are set platform-wide by Pollar and shown on the card.
 
 ---
 
@@ -32,9 +43,9 @@ Solana has no fee bumps, trustlines or reserves, so its tab is smaller: one wall
 
 | Card | What it controls |
 |---|---|
-| **Solana fees** | The app's Solana wallet (the GAS wallet created from [Chains](https://docs.pollar.xyz/docs/operator-guide/wallets/chains)). It pays the fee of every sponsored Solana transfer as the transaction's **fee payer**, and Pollar tops every user wallet up from it, so a wallet that sends unsponsored transfers can still sign. While it holds no SOL, no user of this app can sign on Solana |
+| **Solana fees** | The app's Solana GAS wallet. If the app has none yet, the card offers **Create Solana wallet**. It pays the fee of every sponsored Solana transfer as the transaction's **fee payer**, and Pollar tops every user wallet up from it, so a wallet that sends unsponsored transfers can still sign. While it holds no SOL, no user of this app can sign on Solana |
 | **Top-up policy** | Each user wallet is topped up with a fixed amount of SOL whenever it falls below the floor. The floor also keeps every wallet above Solana's rent-exempt minimum, below which the network deletes the account. Both numbers are set platform-wide by Pollar |
-| **Token transfer sponsorship** | Per enabled token (plus the native SOL row): when on, the GAS wallet is the fee payer of the user's transfers of that token and pays the rent of the recipient's token account. Two extra switches extend it to **external wallets** (the user signs in Phantom, the app pays the fee) and to **co-signed wallets** (Turnkey 2-of-2) |
+| **Token transfer sponsorship** | Per enabled token (plus the native SOL row): when on, the GAS wallet is the fee payer of the user's transfers of that token and pays the rent of the recipient's token account. Two extra switches extend it to **external and self-custody wallets** (the user signs in Phantom, or with their Turnkey self-custody wallet, and the app pays the fee) and to **co-signed wallets** (Turnkey 2-of-2) |
 
 Everything below this section is about Stellar: fee bumps, sponsored reserves, swap and contract sponsorship, and signer rotation.
 
@@ -50,7 +61,7 @@ A Stellar [fee bump](https://developers.stellar.org/docs/learn/encyclopedia/tran
 
 What follows from this design:
 
-- **It works for external wallets.** Pollar never needs the user's key. The user's signature stays on the inner transaction untouched. External wallets are only covered when you turn on **Include external wallets** for that kind of transaction (see below).
+- **It works for external wallets.** Pollar never needs the user's key. The user's signature stays on the inner transaction untouched. External wallets are only covered when you turn on **Include external and self-custody wallets** for that kind of transaction (see below).
 - **The user's sequence number is used, not the sponsor's.** Many users can be sponsored at the same time without racing each other on the GAS wallet.
 - **It pays the fee, not reserves.** A fee bump cannot cover a new trustline or a new account. Those use the sponsor-as-source mechanism.
 - **The on-chain hash is the outer envelope's hash.** Transaction history records the transaction as sponsored, together with that fee-bump hash.
@@ -99,21 +110,21 @@ Not sponsored by a fee bump:
 
 ## Settings
 
-Each card has an **Include external wallets** sub-option. It appears once the card sponsors something (the toggle is on, or a venue, rule or token is selected), since before that there is nothing to extend.
+Each card has an **Include external and self-custody wallets** sub-option. It extends the card to wallets Pollar does not control: external wallets (Freighter, your own adapter) and Turnkey self-custody wallets, whose signatures Pollar cannot refuse. It appears once the card sponsors something (the toggle is on, or a venue, rule or token is selected), since before that there is nothing to extend.
 
 ### Trustline sponsorship
 
 **Sponsor trustlines** (on by default): when a user adds a trustline for a token enabled under Tokens & Trustlines, the FUNDING wallet pays the 0.5 XLM reserve and the GAS wallet pays the fee. When off, each wallet pays its own reserve and fee.
 
-**Include external wallets** (on by default): applies the same to wallets Pollar does not custody. For those, `POST /wallet/assets/trustline/build` returns a transaction already signed by the sponsor. The user adds their signature and submits it with `POST /tx/submit`. When sponsoring does not apply, the same endpoint returns a plain unsigned `change_trust` that the user pays for, so the client always calls one endpoint.
+**Include external and self-custody wallets** (on by default): applies the same to wallets Pollar does not custody. For those, `POST /wallet/assets/trustline/build` returns a transaction already signed by the sponsor. The user adds their signature and submits it with `POST /tx/submit`. When sponsoring does not apply, the same endpoint returns a plain unsigned `change_trust` that the user pays for, so the client always calls one endpoint.
 
 ### Swap sponsorship
 
-Pick the venues (SDEX, Soroswap, Aquarius) whose swaps your app pays the fee for. Only venues enabled under [Swap](https://docs.pollar.xyz/docs/operator-guide/treasury/swap) appear. **Include external wallets** extends it to wallets Pollar does not custody.
+Pick the venues (SDEX, Soroswap, Aquarius) whose swaps your app pays the fee for. Only venues enabled under [Swap](https://docs.pollar.xyz/docs/operator-guide/treasury/swap) appear. **Include external and self-custody wallets** extends it to wallets Pollar does not custody.
 
 ### Contract sponsorship rules
 
-Each rule whitelists a Soroban contract and the exact methods your app pays the fee for. **Sponsor all contracts** covers every contract call on any contract and method, and the individual rules are ignored while it is on. **Include external wallets** extends it to wallets Pollar does not custody.
+Each rule whitelists a Soroban contract and the exact methods your app pays the fee for. **Sponsor all contracts** covers every contract call on any contract and method, and the individual rules are ignored while it is on. **Include external and self-custody wallets** extends it to wallets Pollar does not custody.
 
 Because a fee-bumped user is the transaction source, a contract's `require_auth` for the user is satisfied by the source-account signature. No separate authorization entry needs to be signed.
 
@@ -121,7 +132,7 @@ Because a fee-bumped user is the transaction source, a contract's `require_auth`
 
 For account recovery of wallets Pollar does not custody: the user adds a new signer to their wallet and disables the old key (`setOptions`), keeping the same `G...` address. **Sponsor signer rotations** (off by default) lets your app pay for it. Each new signer is a ledger subentry with a 0.5 XLM reserve, so this uses the sponsor-as-source mechanism, not a fee bump: the FUNDING (or GLOBAL) wallet is the transaction source and pays both the reserve and the fee.
 
-Rotation exists only for wallets Pollar does not custody, so turn on both **Sponsor signer rotations** and its sub-option **Include external wallets**. Even then the settings alone sponsor nothing: a user is covered only while they hold a **grant**, which you give on request:
+Rotation exists only for wallets Pollar does not custody, so turn on both **Sponsor signer rotations** and its sub-option **Include external and self-custody wallets**. Even then the settings alone sponsor nothing: a user is covered only while they hold a **grant**, which you give on request:
 
 - From **Users > Accounts**: while both settings are on, the row menu of a user with an external wallet shows **Allow sponsored signer rotation**.
 - From your backend: `POST /v3/wallets/{publicKey}/signer-rotation` in the [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api).
@@ -132,7 +143,7 @@ Signer changes on **custodial** wallets are never allowed: a new signer would ta
 
 ### Token transfer sponsorship
 
-Pick which enabled tokens are sponsored when a user sends them. Only tokens enabled under [Tokens & Trustlines](https://docs.pollar.xyz/docs/operator-guide/wallets/tokens-trustlines) appear. **Include external wallets** extends it to wallets Pollar does not custody.
+Pick which enabled tokens are sponsored when a user sends them. Only tokens enabled under [Tokens & Trustlines](https://docs.pollar.xyz/docs/operator-guide/wallets/tokens-trustlines) appear. **Include external and self-custody wallets** extends it to wallets Pollar does not custody.
 
 ---
 
@@ -144,7 +155,7 @@ If you expected a transaction to be sponsored and it was not, check in this orde
 
 1. The operation is in the [What can be sponsored](#what-can-be-sponsored) table, and the transaction has exactly one operation.
 2. The matching setting is on: the token is selected, the venue is enabled, or the contract and method are listed.
-3. For an external wallet, **Include external wallets** is on for that kind of transaction.
+3. For an external wallet, **Include external and self-custody wallets** is on for that kind of transaction.
 4. The GAS (or GLOBAL) wallet holds enough XLM.
 
 ---

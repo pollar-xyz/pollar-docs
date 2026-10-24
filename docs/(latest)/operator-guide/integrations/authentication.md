@@ -2,9 +2,9 @@
 title: "Authentication"
 ---
 
-**Dashboard → Integrations → Authentication** · Chains: all
+**Dashboard > Integrations > Authentication** · Chains: all
 
-> 🚧 The per-app provider **configuration UI is upcoming** (the dashboard page is currently a "coming soon" stub). The providers below reflect what `login()` supports today.
+> The per-app provider **configuration UI is upcoming** (the dashboard page is currently a "coming soon" stub). The providers below reflect what `login()` supports today.
 
 Configure which authentication providers are available to your users.
 
@@ -20,7 +20,7 @@ Configure which authentication providers are available to your users.
 | **External wallet** | Freighter / Albedo built-in; more via adapters | Connects an existing Stellar wallet |
 | **Discord** `upcoming` | OAuth 2.0 | Not yet supported by `login()`       |
 
-Today `login()` accepts `google`, `github`, `email`, and any registered **wallet adapter** id. Freighter and Albedo are built-in (`login({ provider: WalletType.FREIGHTER })`); you can add every Stellar Wallets Kit wallet and Privy embedded wallets through the SDK's `walletAdapters` option — see [Wallet Adapters](https://docs.pollar.xyz/docs/sdk-reference/wallet-adapters). **Discord** (and other social providers such as Apple/X seen in config) are **not implemented yet** — they are inert until the provider work ships. Only enabled, supported providers appear in the `WalletButton` modal and are accepted by `login()`.
+Today `login()` accepts `google`, `github`, `email`, and any registered **wallet adapter** id. Freighter and Albedo are built-in (`login({ provider: WalletType.FREIGHTER })`); you can add every Stellar Wallets Kit wallet, Solana Wallet Standard wallets and your own adapters through the SDK's `walletAdapters` option (see [Wallet Adapters](https://docs.pollar.xyz/docs/sdk-reference/wallet-adapters)). **Discord** and other social providers such as Apple or X are **not implemented yet**: they are inert. Only enabled, supported providers appear in the `WalletButton` modal and are accepted by `login()`.
 
 ---
 
