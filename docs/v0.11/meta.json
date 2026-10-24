@@ -1,0 +1,12 @@
+{
+  "title": "SDK 0.11 / Server API v1",
+  "description": "Reference for @pollar 0.11.x (SDK API v2) and Server API v1.",
+  "root": true,
+  "pages": [
+    "pollar-react",
+    "pollar-core",
+    "wallet-adapters",
+    "error-codes",
+    "server-api"
+  ]
+}

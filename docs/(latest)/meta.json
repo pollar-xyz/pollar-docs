@@ -1,0 +1,13 @@
+{
+  "title": "Latest (SDK 0.12, API v3)",
+  "description": "Current docs: @pollar 0.12, SDK API v3 and Server API v3.",
+  "root": true,
+  "pages": [
+    "getting-started",
+    "core-concepts",
+    "sdk-reference",
+    "operator-guide",
+    "guides",
+    "smart-wallets"
+  ]
+}
