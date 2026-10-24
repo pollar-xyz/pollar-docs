@@ -13,7 +13,7 @@ Every modal in `@pollar/react` and the `<WalletButton>` read their colors, corne
 Each variable resolves from three sources. The first one that sets it wins:
 
 1. **Your stylesheet.** A rule in your app that sets the variable on a Pollar element.
-2. **Dashboard Branding.** The values configured in [Build → Branding](https://docs.pollar.xyz/docs/operator-guide/build/branding), loaded by the SDK at startup.
+2. **Dashboard Branding.** The values configured in [Build -> Branding](https://docs.pollar.xyz/docs/operator-guide/build/branding), loaded by the SDK at startup.
 3. **Theme defaults.** The Light set. If your page has `<html class="dark">` and Branding leaves the palette open (see [Dark mode](#dark-mode)), the Dark set is used instead.
 
 You only set what you want to change. Anything you leave out still comes from Branding, and then from the defaults.
@@ -104,14 +104,17 @@ html.dark .pollar-wallet-wrapper {
 | `--pollar-error-border` | theme only | `#fecaca` / `#7f1d1d` | Error banner border |
 | `--pollar-error-text` | theme only | `#dc2626` / `#f87171` | Error text and destructive actions |
 | `--pollar-success-text` | theme only | `#16a34a` / `#4ade80` | Success states |
-| `--pollar-modal-border-radius` | Corners → Modal | `16px` | Modal card corners |
-| `--pollar-buttons-border-radius` | Corners → Buttons | `6px` | Button corners, including `<WalletButton>` |
+| `--pollar-modal-border-radius` | Corners -> Modal | `16px` | Modal card corners |
+| `--pollar-buttons-border-radius` | Corners -> Buttons | `6px` | Button corners, including `<WalletButton>` |
 | `--pollar-overlay-z-index` | Stacking order | `50` | Stacking order of the modal overlay. Set it on `.pollar-overlay`. |
 | `--pollar-overlay-bg` | none | `rgba(0, 0, 0, 0.5)` | Backdrop behind a modal. Set it on `.pollar-overlay`. |
 | `--pollar-buttons-height` | none | `44px` | Height of the full-width buttons |
 | `--pollar-input-height` | none | `44px` | Height of text inputs |
-| `--pollar-input-border-radius` | none | `0.5rem` | Input corners |
+| `--pollar-input-border-radius` | Corners > Buttons | `var(--pollar-buttons-border-radius)` | Input corners. Inputs sit in the same column as the buttons, so they follow the button radius unless you set this |
 | `--pollar-card-border-radius` | none | `10px` | Inner cards and list items |
+| `--pollar-modal-padding` | none | `1.75rem`; `2rem` on the login modal and the ramp widget | Padding of the modal card |
+| `--pollar-modal-heading-size` | none | `1.375rem` | Login modal heading |
+| `--pollar-modal-subtitle-size` | none | `0.9rem` | Subtitles of the login, KYC, ramp and requirement form modals |
 | `--pollar-font-family` | none | not set: your page's font | Every text, button and input in the modals and `<WalletButton>` |
 | `--pollar-font-family-mono` | none | `ui-monospace, SFMono-Regular, Menlo, monospace` | Addresses, hashes, codes and XDR |
 

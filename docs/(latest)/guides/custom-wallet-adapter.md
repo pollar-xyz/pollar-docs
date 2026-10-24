@@ -4,7 +4,7 @@ title: "Build Your Own Wallet Adapter"
 
 This guide shows how to connect a wallet whose key **you** control (a key in the phone's secure storage, an MPC or HSM signer, an in-house wallet) to Pollar, so that Pollar handles login, transaction building, sponsorship and history while the key never leaves your side.
 
-A wallet adapter is a plain object that implements the `WalletAdapter` interface from `@pollar/core`. If the wallet you want is already supported (Freighter, Albedo, xBull, Lobstr, Privy and others), use the packages in [Wallet Adapters](https://docs.pollar.xyz/docs/sdk-reference/wallet-adapters) instead.
+A wallet adapter is a plain object that implements the `WalletAdapter` interface from `@pollar/core`. If the wallet you want is already supported (Freighter, Albedo, xBull, Lobstr, Phantom, Solflare and others), use the packages in [Wallet Adapters](https://docs.pollar.xyz/docs/sdk-reference/wallet-adapters) instead.
 
 ---
 
@@ -21,6 +21,8 @@ Pollar treats an adapter as a black box that can tell it an address and sign Ste
 5. The session is created and the adapter's `type` is stored with it.
 
 **Transactions**: every time the SDK needs the user's signature (`signTx`, `signAndSubmitTx`, `createAccount`, `setTrustline`, swaps, contract calls), it calls `signTransaction(xdr, { networkPassphrase, accountToSign })` and sends the result to `POST /tx/submit`. That is where the app's [sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship) is applied, so a fee-bumped transaction needs no extra code in the adapter.
+
+A transaction the user starts (`signTx`, `signAndSubmitTx`, a payment, a swap, a contract call) passes the app's [signature confirmation](https://docs.pollar.xyz/docs/sdk-reference/pollar-react#signature-confirmation) before the SDK calls `signTransaction`: under the default policy the user confirms it in `<ConfirmModal>` (or your `onConfirmationRequest` handler) first, and your adapter is only asked to sign once they do. The SEP-10 login challenge and the wallet's own setup (`createAccount`, a sponsored trustline) skip that step, so your wallet's own prompt is the only one.
 
 **Page reloads and app restarts**: the session is restored from storage and the adapter is looked up again **by `type`** in the client's `walletAdapters`. If no adapter with that `type` is registered, the session is still valid, but signing returns `Wallet not connected. Reconnect your wallet to sign.`
 

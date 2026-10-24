@@ -12,7 +12,9 @@ All payment functionality is exposed through the single `usePollar()` hook.
 
 ### Using `runTx('payment', ...)`
 
-`runTx` is the one-shot helper (build → sign → submit). The returned `SubmitOutcome` has a `status` of `'success'`, `'pending'`, or `'error'`.
+`runTx` is the one-shot helper (build, sign, submit). The returned `SubmitOutcome` has a `status` of `'success'`, `'pending'`, `'cosign_pending'` or `'error'`.
+
+Before anything is signed, the call passes the app's [signature confirmation](https://docs.pollar.xyz/docs/sdk-reference/pollar-react#signature-confirmation): by default the provider shows the payment in `<ConfirmModal>` and signs once the user confirms. A user who declines ends the call with `code: 'SDK_CONFIRMATION_DECLINED'` and nothing is signed. The dashboard can let a window of payments sign without asking (**Wallets > Wallet settings**).
 
 ```tsx
 'use client';
@@ -86,11 +88,11 @@ await sendPayment({
 });
 ```
 
-When the token is marked **sponsor transfers** under **Wallets → Sponsorship**, the app's GAS wallet pays the fee and creates the recipient's token account; the user's wallet needs no SOL. A user signed in with Phantom, Solflare or Backpack signs the transfer in their wallet; a Pollar-managed or co-signed wallet needs no interaction. Solana has no memo field.
+When the token is marked **sponsor transfers** under **Wallets > Sponsorship**, the app's GAS wallet pays the fee and creates the recipient's token account; the user's wallet needs no SOL. A user signed in with Phantom, Solflare or Backpack signs the transfer in their wallet; a co-signed wallet asks the user to approve it in `<CosignModal>`. Solana has no memo field.
 
 ### Pre-built send modal
 
-Pollar ships a ready-made send flow (network picker on a multichain app, asset selector, amount with Max, destination with Paste, confirmation; a memo field on Stellar). It sends on Stellar, Solana and Polygon. Open it programmatically — appearance is customizable from **Build → Branding**:
+Pollar ships a ready-made send flow (network picker on a multichain app, asset selector, amount with Max, destination with Paste, confirmation; a memo field on Stellar). It sends on Stellar, Solana and Polygon. Open it programmatically; appearance is customizable from **Build > Branding**:
 
 ```tsx
 const { openSendModal } = usePollar();
@@ -248,7 +250,7 @@ export function Balances() {
 
 ## Fiat on/off-ramp
 
-Ramps integrate third-party providers (configure them under **Ramps → Providers**). Open the pre-built widget with `openRampModal()`:
+Ramps integrate third-party providers (configure them under **Ramps > Providers**). A ramp is an order of one or more legs (the provider, a swap, a bridge) that Pollar runs server-side; see [Ramps](https://docs.pollar.xyz/docs/core-concepts/ramps). Open the pre-built widget with `openRampModal()`:
 
 ```tsx
 'use client';
@@ -261,6 +263,19 @@ export function FiatButton() {
 }
 ```
 
-For headless control over quotes and on/off-ramp creation, use `getClient().getRampsQuote()`, `createOnRamp()`, and `createOffRamp()` from [`@pollar/core`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core).
+For a headless flow, the client methods are `getRampRoutes(direction)`, `quoteRamp(...)`, `createRampOrder({ quoteId, payee })`, `pollRampOrder(id, { onUpdate, signal })` and `signRampLeg(orderId, actionId)`. A leg that needs a signature requires a signer registered with `registerRampSigningHandler(chain, encoding, handler)`; call `signRampLeg` only from a user action. See [`@pollar/core`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core).
 
-See [Fiat Ramps](https://docs.pollar.xyz/docs/operator-guide/ramps/providers) for setup.
+```tsx
+const client = getClient();
+const { quotes } = await client.quoteRamp({
+  direction: 'ONRAMP',
+  fiat: { currency: 'MXN', rail: 'SPEI', country: 'MX' },
+  asset: { code: 'USDC', identifier: 'GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN', chain: 'STELLAR' },
+  amount: { value: '500', denomination: 'in' }, // 'in': what the user sends; 'out': what they receive
+});
+// Quotes come best first. rampQuoteFields(quote) lists what to ask the user; send the answers as payee.
+const order = await client.createRampOrder({ quoteId: quotes[0].quoteId, payee: {} });
+// order.pendingAction says what the user does next: FIAT_PAYMENT, SIGNATURE, COSIGN_APPROVAL or KYC.
+```
+
+See [Ramp providers](https://docs.pollar.xyz/docs/operator-guide/ramps/providers) and [Routes](https://docs.pollar.xyz/docs/operator-guide/ramps/routes) for setup.
