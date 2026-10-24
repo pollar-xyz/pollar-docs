@@ -4,23 +4,23 @@ title: "Webhooks"
 
 Pollar uses webhooks in two directions:
 
-- **Inbound** — your backend receives a call from Pollar when an event occurs
+- **Inbound**: your backend receives a call from Pollar when an event occurs
 
-- **Outbound** — your backend calls Pollar to trigger an action (e.g. `POST /v3/wallets/fund`)
+- **Outbound**: your backend calls Pollar to trigger an action (e.g. `POST /v3/wallets/fund`)
 
 ---
 
 ## Inbound webhooks `upcoming`
 
-> 🚧 **Not yet available.** Inbound event webhooks are on the roadmap and **not implemented in production yet**. The dashboard configuration page is gated behind a "coming soon" state, and the semantic events, signature convention, and retry schedule documented below describe the **planned** design so you can prepare your integration — they are not live.
+> **Not yet available.** Pollar delivers no webhooks today, on any chain. The dashboard configuration page shows a "coming soon" state, and everything below (the signature, the delivery rules, the retry schedule and the events) is the **planned** design, documented so you can prepare your integration.
 >
-> What exists today is an internal, generic on-chain delivery: a single `stellar.tx` event carrying raw Stellar operation data, posted once (no retry/backoff) with an `X-Pollar-Signature: sha256=<hmac>` header. The structured `wallet.*` / `payment.*` events below are not emitted yet.
+> The first delivery is planned as a single generic `stellar.tx` event carrying the raw Stellar operation data, posted once with no retry; the structured `wallet.*` / `payment.*` events come after it.
 
-When available, you'll configure a webhook URL in **Build → Webhooks**. Pollar sends a `POST` request to your URL when an event occurs.
+When available, you'll configure a webhook URL in **Build > Webhooks**. Pollar sends a `POST` request to your URL when an event occurs.
 
 ### Authentication
 
-Every request includes an `X-Pollar-Signature` header — an HMAC-SHA256 signature of the raw request body using your webhook secret.
+Every request includes an `X-Pollar-Signature` header: an HMAC-SHA256 signature of the raw request body using your webhook secret.
 
 ```typescript
 import { createHmac } from 'crypto';
@@ -47,11 +47,11 @@ export async function POST(req: NextRequest) {
 }
 ```
 
-Always respond with `200` as quickly as possible. If your endpoint returns a non-2xx status or times out, Pollar retries with exponential backoff.
+Respond with `200` as quickly as possible: Pollar waits up to **10 seconds** for your answer. A non-2xx status or a timeout counts as a failed delivery, and the first release does not retry it (see the retry policy below).
 
 ### Retry policy `upcoming`
 
-> Planned design — there is **no retry/backoff implemented today**. The current internal delivery posts once and logs failures.
+> Planned for a later release. The first delivery posts each event once and does not retry.
 
 | Attempt | Delay      |
 | ------- | ---------- |
@@ -61,13 +61,13 @@ Always respond with `200` as quickly as possible. If your endpoint returns a non
 | 4       | 1 hour     |
 | 5       | 24 hours   |
 
-After 5 failed attempts the event is marked as failed and visible in **Build → Webhooks → Event log**.
+After 5 failed attempts the event is marked as failed and visible in **Build > Webhooks > Event log**.
 
 ---
 
 ## Events `upcoming`
 
-> These semantic event types are **planned, not yet emitted**. The server currently only delivers a generic `stellar.tx` payload with raw operation data.
+> These event types are **planned**: none is emitted today.
 
 ### `wallet.created`
 
@@ -197,4 +197,4 @@ Fired when any sponsorship wallet drops below its configured minimum threshold.
 
 Your backend calls Pollar to trigger actions. Currently:
 
-- `POST /v3/wallets/fund` — see [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api)
+- `POST /v3/wallets/fund`: see [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api)

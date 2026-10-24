@@ -7,9 +7,32 @@ The SDK API (`https://sdk.api.pollar.xyz`) is versioned in the path (`/v1/...`, 
 
 | API version | Status | `@pollar/core` |
 |---|---|---|
-| v1 | **Retired on 2026-11-30.** Answers `410 Gone` from then on. | 0.10.x and older |
-| v2 | Frozen (security fixes only) | 0.11.x |
+| v1 | **Retired on 2026-11-30.** Answers `410 Gone` from then on. Ramps already answer `410`. | 0.10.x and older |
+| v2 | Frozen (security fixes only). Ramps answer `410`. | 0.11.x |
 | v3 | Current | 0.12.0 and later |
+
+The reference for each release line is in the version selector at the top of the sidebar: **Latest** documents 0.12 and API v3, and **SDK 0.11 / Server API v1** keeps the [0.11 reference](https://docs.pollar.xyz/docs/v0.11/pollar-core) and the [Server API v1 reference](https://docs.pollar.xyz/docs/v0.11/server-api).
+
+---
+
+## Ramps run on v3 only
+
+Ramps are a v3 feature: routes with several legs, orders and per-leg approvals. On `/v1/ramps/*` and `/v2/ramps/*`, every call that starts a ramp answers `410 Gone` today, whatever SDK sent it:
+
+```json
+{
+  "code": "SDK_RAMPS_MOVED_TO_V3",
+  "success": false,
+  "message": "Ramps moved to /v3/ramps. Upgrade @pollar/core (and @pollar/react) to 0.12.0 or later.",
+  "migrationGuide": "https://docs.pollar.xyz/docs/sdk-reference/api-versions"
+}
+```
+
+`/ramps/transaction/*` stays open on both, so a ramp already under way can still be signed, completed and followed to its end. To offer ramps, upgrade to 0.12.0 (see [How to move](#how-to-move)).
+
+## KYC
+
+KYC lives on `/v3/kyc`, and also on `/v2/kyc` for 0.11.x. `/v1/kyc/*` retires with the rest of v1. A client of your own that calls `/v1/kyc` moves to `/v3/kyc`; the requests and answers are the same.
 
 ---
 
@@ -44,7 +67,7 @@ From **2026-11-30 23:59:59 UTC** every request to `/v1/*` answers `410 Gone`, `/
 }
 ```
 
-v2 and v3 keep working. For your users, this means an app still on v1 stops signing them in and stops sending transactions.
+v2 and v3 keep working (ramps aside, see above). For your users, this means an app still on v1 stops signing them in and stops sending transactions.
 
 ### Rehearsals before the date
 
@@ -79,7 +102,15 @@ The [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api), which y
 
 | Server API version | Status |
 |---|---|
-| v1 | Frozen (security fixes only). Keeps working; its retirement will be announced with its own date. |
-| v3 | Current. Same endpoints and answers as v1; new server-side features land here. |
+| v1 | Frozen (security fixes only). Keeps working; its retirement will be announced with its own date. [Reference](https://docs.pollar.xyz/docs/v0.11/server-api). |
+| v3 | Current; new server-side features land here. [Reference](https://docs.pollar.xyz/docs/sdk-reference/server-api). |
 
-There is no Server API v2: the Server API jumps to v3 so both APIs share the current version number. Moving a backend from `/v1` to `/v3` is a change of prefix.
+There is no Server API v2: the Server API jumps to v3 so both APIs share the current version number. v3 serves every v1 endpoint with the same requests and answers except three user routes, and adds two groups:
+
+| | v1 | v3 |
+|---|---|---|
+| `POST /users`, `POST /users/with-wallet`, `GET /users/{externalId}/balances` | Yes | No |
+| `/ramps` (server-side ramps, for a user named in `x-pollar-external-user-id`) | No | Yes |
+| `/billing` (credits, usage, statements, deposit addresses, distribution vault; read only) | No | Yes |
+
+A backend that does not call those three user routes moves from `/v1` to `/v3` by changing the prefix. One that does keeps them on `/v1`: in v3, a server-side user is your own id for that user, created by the first ramp call that names it.
