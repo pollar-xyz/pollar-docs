@@ -60,6 +60,17 @@ For a Pollar-managed wallet, Pollar's wallet service does hold the user's key, w
 
 ---
 
+## Data retention
+
+| Data | Retention |
+| --- | --- |
+| Application logs (**Monitor > Logs**) | 12 months; older entries cannot be read |
+| Transaction records (history) | At least 5 years |
+
+12 months of logs meets the longest log retention common audit frameworks ask for (PCI DSS keeps audit logs for a year), and 5 years of transaction records meets anti-money-laundering record keeping.
+
+---
+
 ## Attack surface
 
 | Vector | Risk | Mitigation |

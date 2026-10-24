@@ -27,3 +27,9 @@ The application logs Pollar's services write for your app: what happened when yo
 - **Live**: streams new entries as they are written ("Streaming live"); **Refresh** reloads.
 
 Use it to debug an integration: an error your users hit usually shows up here with the reason.
+
+---
+
+## Retention
+
+Logs are available for **12 months**. Entries older than that are not shown and cannot be queried, whatever date range you pick. Transaction records follow their own retention of at least 5 years (see [Transaction History](https://docs.pollar.xyz/docs/core-concepts/transaction-history)).

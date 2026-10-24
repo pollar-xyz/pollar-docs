@@ -25,7 +25,7 @@ flowchart LR
     classDef app fill:#e1f5ee,stroke:#1d9e75,color:#085041
 ```
 
-Pollar records a transaction when it handles it, on every chain: Stellar fee-bumps and sponsored operations, Solana and Polygon transfers, co-signed requests and ramp legs. A background reconcile then follows each record until the chain settles it. History is kept indefinitely.
+Pollar records a transaction when it handles it, on every chain: Stellar fee-bumps and sponsored operations, Solana and Polygon transfers, co-signed requests and ramp legs. A background reconcile then follows each record until the chain settles it. Transaction records are kept for at least 5 years, the period anti-money-laundering rules require for transaction records.
 
 A transaction an external wallet submits on its own, without going through Pollar, does not appear in the history.
 
