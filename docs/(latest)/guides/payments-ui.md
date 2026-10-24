@@ -55,11 +55,11 @@ export function SendForm() {
 }
 ```
 
-For a native XLM payment, use `asset: { type: 'native' }`. For step-by-step control over building and signing, use `buildTx()` then `signAndSubmitTx()` — see [`@pollar/core`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core).
+For a native XLM payment, use `asset: { type: 'native' }`. For step-by-step control over building and signing, use `buildTx()` then `signAndSubmitTx()`; see [`@pollar/core`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core).
 
 ### With memo
 
-Memos are useful for identifying payments on the recipient's side — common in remittance and payroll apps. Pass a `memo` in the third `options` argument:
+Memos are useful for identifying payments on the recipient's side, common in remittance and payroll apps. Pass a `memo` in the third `options` argument:
 
 ```tsx
 await runTx(
@@ -106,7 +106,7 @@ const { openSendModal } = usePollar();
 
 ### Showing the user's address
 
-The authenticated wallet is exposed as `wallet` — read its on-chain address from `wallet.address`:
+The authenticated wallet is exposed as `wallet`; read its on-chain address from `wallet.address`:
 
 ```tsx
 'use client';

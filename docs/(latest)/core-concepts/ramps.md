@@ -26,6 +26,8 @@ The providers registered today:
 | Stereum | Polygon | |
 | Etherfuse | Stellar | |
 
+Bridge and PagFinance are being integrated and are not offered on any route yet.
+
 Which routes an app offers depends on the providers and corridors it enables under **Ramps > Providers** and on the chains it serves. **Ramps > Routes** in the dashboard lists them leg by leg. Routes end only on chains the app serves.
 
 ---

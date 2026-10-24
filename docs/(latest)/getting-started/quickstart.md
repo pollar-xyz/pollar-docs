@@ -6,7 +6,7 @@ Get from zero to a working wallet with USDC payments in under 10 minutes. The st
 
 **Requirements:** Node.js 20+ · React 18+ · A publishable key from [dashboard.pollar.xyz](https://dashboard.pollar.xyz)
 
-> SDK requests are rate-limited per API key — plenty of headroom for development. See [API Keys](https://docs.pollar.xyz/docs/getting-started/api-keys).
+> SDK requests are rate-limited per API key, with plenty of headroom for development. See [API Keys](https://docs.pollar.xyz/docs/getting-started/api-keys).
 
 ---
 
@@ -40,7 +40,7 @@ export default function Root() {
 }
 ```
 
-`PollarProvider` already includes `"use client"` internally. Components that call `usePollar()` need `"use client"` because they use React hooks — that is a React requirement, not specific to Pollar.
+`PollarProvider` already includes `"use client"` internally. Components that call `usePollar()` need `"use client"` because they use React hooks; that is a React requirement, not specific to Pollar.
 
 #### Options
 
@@ -48,8 +48,8 @@ The `client` prop accepts either a `PollarClientConfig` (the provider builds the
 
 | Prop       | Type                              | Default | Description                                              |
 | ---------- | --------------------------------- | ------- | ------------------------------------------------------- |
-| `client`   | `PollarClientConfig \| PollarClient` | —    | **Required.** Client config (`{ apiKey }`) or instance. |
-| `appConfig` | `PollarConfig`                   | —       | Local **replacement** of the remote dashboard config: passing it skips the `/applications/config` fetch and nothing is merged in. Leave it out to keep branding, login methods and chains in sync with the dashboard. |
+| `client`   | `PollarClientConfig \| PollarClient` | -    | **Required.** Client config (`{ apiKey }`) or instance. |
+| `appConfig` | `PollarConfig`                   | -       | Local **replacement** of the remote dashboard config: passing it skips the `/applications/config` fetch and nothing is merged in. Leave it out to keep branding, login methods and chains in sync with the dashboard. |
 
 See [`@pollar/react`](https://docs.pollar.xyz/docs/sdk-reference/pollar-react) for the full prop list (`appConfig`, `adapters`, `onStorageDegrade`).
 
@@ -85,7 +85,7 @@ export function LoginButton() {
   }
 
   if (!wallet) return <p>Signed in, creating your wallet...</p>;
-  return <p>✓ Wallet ready — {wallet.address}</p>;
+  return <p>✓ Wallet ready: {wallet.address}</p>;
 }
 ```
 
@@ -127,7 +127,7 @@ export function SendButton() {
 }
 ```
 
-`runTx(operation, params)` is the one-shot helper that builds, signs, and submits in a single call (alias of `buildAndSignAndSubmitTx`). For step-by-step control — and to drive the transaction modal UI — use `buildTx()` then `signAndSubmitTx()`; see [`@pollar/core`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core). For a native XLM payment use `asset: { type: 'native' }`.
+`runTx(operation, params)` is the one-shot helper that builds, signs, and submits in a single call (alias of `buildAndSignAndSubmitTx`). For step-by-step control, and to drive the transaction modal UI, use `buildTx()` then `signAndSubmitTx()`; see [`@pollar/core`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core). For a native XLM payment use `asset: { type: 'native' }`.
 
 Before signing, the SDK shows the transaction in `<ConfirmModal>` and waits for the user: that is the default policy, set per app under **Wallets > Wallet settings > Signature confirmation** (always ask, ask once for a window, or never ask). Transaction fees are paid from your app's gas wallet, or from Pollar's pool on an [app on credits](https://docs.pollar.xyz/docs/core-concepts/credits). Users pay zero XLM.
 
@@ -164,7 +164,7 @@ export function History() {
 }
 ```
 
-> The simplest path is the built-in modal: call `openTxHistoryModal()` from `usePollar()` and Pollar renders the list for you — no state wiring needed.
+> The simplest path is the built-in modal: call `openTxHistoryModal()` from `usePollar()` and Pollar renders the list for you, with no state wiring.
 
 ---
 
@@ -190,7 +190,7 @@ function WalletDemo() {
 
   return (
     <div>
-      <p>✓ Wallet active — {wallet.address}</p>
+      <p>✓ Wallet active: {wallet.address}</p>
       <button
         onClick={() =>
           runTx('payment', {
@@ -218,4 +218,4 @@ export default function App() {
 
 ---
 
-> Both `@pollar/core` and `@pollar/react` ship with full TypeScript types — no `@types/` package needed.
+> Both `@pollar/core` and `@pollar/react` ship with full TypeScript types; no `@types/` package needed.

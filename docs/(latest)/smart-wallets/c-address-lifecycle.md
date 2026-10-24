@@ -2,11 +2,11 @@
 title: "How the C-Address Lifecycle Works"
 ---
 
-Pollar gives you a single passkey login call — `createSmartWallet()` / `loginSmartWallet()` — and handles the contract account underneath. This page explains what happens for **C-addresses**: useful when debugging, surfacing progress in your UI, or reasoning about costs.
+Pollar gives you a single passkey login call (`createSmartWallet()` / `loginSmartWallet()`) and handles the contract account underneath. This page explains what happens for **C-addresses**: useful when debugging, surfacing progress in your UI, or reasoning about costs.
 
 ## G-address vs C-address at a glance
 
-A **G-address** is a classic Stellar account controlled by an ed25519 keypair (in Pollar's custodial flow, that key is kept server-side by Pollar's wallet service, encrypted at rest). A **C-address** is a smart contract deployed on Soroban that *acts as an account* — its authorization logic lives in code, and in Pollar it is controlled by the user's **passkey** credential.
+A **G-address** is a classic Stellar account controlled by an ed25519 keypair (in Pollar's custodial flow, that key is kept server-side by Pollar's wallet service, encrypted at rest). A **C-address** is a smart contract deployed on Soroban that *acts as an account*: its authorization logic lives in code, and in Pollar it is controlled by the user's **passkey** credential.
 
 | Aspect           | G-address (custodial)     | C-address (passkey smart wallet)       |
 |------------------|---------------------------|----------------------------------------|
@@ -51,7 +51,7 @@ The practical implication: instead of a one-time reserve, there's a small *recur
 
 ### Holding assets: the SAC
 
-C-addresses don't use classic trustlines. They interact with assets through the **Stellar Asset Contract (SAC)** — a built-in contract that wraps each classic Stellar asset. A C-address can receive a SAC-wrapped asset without an explicit trustline step (provided the issuer isn't gating with authorization flags). Pollar routes payments through the SAC for you, so the transaction API looks identical to the classic flow from your side. (Manual `setTrustline` does not apply to smart wallets.)
+C-addresses don't use classic trustlines. They interact with assets through the **Stellar Asset Contract (SAC)**, a built-in contract that wraps each classic Stellar asset. A C-address can receive a SAC-wrapped asset without an explicit trustline step (provided the issuer isn't gating with authorization flags). Pollar routes payments through the SAC for you, so the transaction API looks identical to the classic flow from your side. (Manual `setTrustline` does not apply to smart wallets.)
 
 ### Signing: full transaction vs auth entries
 
@@ -59,11 +59,11 @@ For a custodial G-address, the server-side key signs the full transaction, which
 
 1. Pollar builds the contract invocation.
 2. It simulates the transaction to discover which **auth entries** need signatures.
-3. The user's **passkey** signs only those auth entries — the contract's `__check_auth` verifies them.
+3. The user's **passkey** signs only those auth entries; the contract's `__check_auth` verifies them.
 4. Pollar reassembles the transaction with the signed auth entries.
 5. Pollar's sponsor account signs the envelope as the fee source and submits it.
 
-You don't implement any of this — it's what `runTx` / `signAndSubmitTx` do internally for a smart wallet — but it's why smart-wallet transactions are contract invocations rather than classic payment ops.
+You don't implement any of this: it's what `runTx` / `signAndSubmitTx` do internally for a smart wallet. It is why smart-wallet transactions are contract invocations rather than classic payment ops.
 
 ## How Pollar abstracts all of this
 
@@ -78,7 +78,7 @@ The goal is that a passkey smart wallet is a login choice, not a rewrite. The di
 
 ## Cost considerations
 
-On testnet, rent and fees are effectively free. On mainnet, each smart wallet carries a small recurring cost to keep its storage TTL extended — this replaces the one-time XLM reserve of the classic model. Pollar's sponsor account covers it automatically; account for it when estimating per-user costs at scale.
+On testnet, rent and fees are effectively free. On mainnet, each smart wallet carries a small recurring cost to keep its storage TTL extended, which replaces the one-time XLM reserve of the classic model. Pollar's sponsor account covers it automatically; account for it when estimating per-user costs at scale.
 
 ## References
 

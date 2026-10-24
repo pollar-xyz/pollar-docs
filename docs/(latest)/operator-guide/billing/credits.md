@@ -41,7 +41,7 @@ In the SDK and the APIs these refusals are `402 SDK_CREDITS_INSUFFICIENT` and `4
 
 ## Top up
 
-Send **USDC or USDT** to the app's address on any of the chains listed; each address has a copy button. The balance updates once the deposit confirms; 1 USD buys 100 credits. Testnet charges the same prices, paid with testnet USDC. The same addresses are available from the [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api) and the [MCP Gateway](https://docs.pollar.xyz/docs/sdk-reference/mcp-gateway).
+Send a stablecoin to the app's address on any of the chains listed; each address has a copy button. On mainnet each address takes USDC, and the Polygon and Solana ones also take USDT; on testnet every address takes Circle's test USDC only. The balance updates once the deposit confirms; 1 USD buys 100 credits, and only the official contracts are credited. Testnet charges the same prices as mainnet. See [Credits](https://docs.pollar.xyz/docs/core-concepts/credits) for the full table. The same addresses are available from the [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api) and the [MCP Gateway](https://docs.pollar.xyz/docs/sdk-reference/mcp-gateway).
 
 ---
 

@@ -206,7 +206,7 @@ No route at all answers `422 SDK_RAMPS_NO_ROUTE` with `rejected`.
 POST /v3/ramps/orders
 {
   "quoteId": "<quoteId from the quote>",
-  "payee": { "pixKey": "user@example.com" }
+  "payee": { "pixKeyType": "EMAIL", "bankAccount": "user@example.com" }
 }
 ```
 

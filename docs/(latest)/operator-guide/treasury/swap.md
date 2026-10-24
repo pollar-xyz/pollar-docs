@@ -10,7 +10,7 @@ Choose which swap venues your users can use to exchange one asset for another. T
 
 ## Enabled venues
 
-Enable one or more DEX / AMM venues. **If none are enabled, the swap UI is hidden for your users** — `getSwapConfig()` returns an empty list and the SDK hides the swap surface.
+Enable one or more DEX / AMM venues. **If none are enabled, the swap UI is hidden for your users**: `getSwapConfig()` returns an empty list and the SDK hides the swap surface.
 
 ---
 

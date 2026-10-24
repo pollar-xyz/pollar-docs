@@ -30,7 +30,7 @@ const pollar = new PollarClient({
 
 | Option           | Type             | Default                          | Description                                                                |
 |------------------|------------------|----------------------------------|----------------------------------------------------------------------------|
-| `apiKey`         | `string`         | —                                | **Required.** Your Pollar publishable key.                                 |
+| `apiKey`         | `string`         | -                                | **Required.** Your Pollar publishable key.                                 |
 | `stellarNetwork` | `StellarNetwork` | `'testnet'`                      | Target Stellar network: `'testnet'` or `'mainnet'`.                        |
 | `baseUrl`        | `string`         | `'https://sdk.api.pollar.xyz'`   | Override the Pollar API base URL. Pass the origin only: the SDK appends `/v3`. Useful for self-hosted deployments. |
 | `confirmation`   | `'auto' \| 'prompt' \| { window: { seconds, maxUsd } }` | unset: the app's dashboard setting, which defaults to `'prompt'` | How a signing call treats the user, whatever the wallet's custody. Set, the stricter of this and the dashboard setting applies. A ramp leg always asks. See [Confirmation policy](#confirmation-policy). |
@@ -63,11 +63,11 @@ pollar.login({ provider: 'github' });
 // Email OTP (sends code automatically)
 pollar.login({ provider: 'email', email: 'user@example.com' });
 
-// Built-in external wallets — provider is the wallet id
+// Built-in external wallets: provider is the wallet id
 pollar.login({ provider: WalletType.FREIGHTER }); // 'freighter-native'
 pollar.login({ provider: WalletType.ALBEDO });    // 'albedo-native'
 
-// Any wallet registered via `walletAdapters` — provider is that adapter's id
+// Any wallet registered via `walletAdapters`: provider is that adapter's id
 pollar.login({ provider: 'xbull' });  // Stellar Wallets Kit
 ```
 
@@ -83,7 +83,7 @@ use their own ids (`'xbull'`, `'lobstr'`, ...).
 
 ---
 
-### Email OTP — step-by-step flow
+### Email OTP: step-by-step flow
 
 For use cases that require manual control over each step of the email OTP flow (e.g. custom UI), the following methods are available individually:
 
@@ -336,11 +336,11 @@ if (state?.step === 'built') {
 
 ### `pollar.signAuthEntry(entryXdr, { validUntilLedger })`
 
-Signs a single Soroban `SorobanAuthorizationEntry` — the user's authorization on its own, without a transaction envelope. Use it when your own contract is the transaction source (it sponsors the gas and submits), and all it needs from the user is consent to the invocation.
+Signs a single Soroban `SorobanAuthorizationEntry`: the user's authorization on its own, without a transaction envelope. Use it when your own contract is the transaction source (it sponsors the gas and submits), and all it needs from the user is consent to the invocation.
 
 For **external wallets** the adapter signs the entry directly. For **custodial wallets** Pollar signs server-side, and only if every contract and function in the entry's invocation tree is allowlisted for your app under **Wallets -> [Auth Policy](https://docs.pollar.xyz/docs/operator-guide/wallets/auth-policy)**. That allowlist is what keeps the custodial signer from being usable as a signing oracle, so an unconfigured app signs nothing. **Passkey smart accounts** (C-address sessions) are not supported by this method in the current build: they sign auth entries through their passkey ceremony, which this call does not run, so it resolves to `{ status: 'error' }` rather than signing with the wrong key.
 
-`validUntilLedger` is the absolute ledger the signature expires at — compute it from the network's latest ledger. Your app's validity window caps how far ahead it may be (120 ledgers by default, 300 at most).
+`validUntilLedger` is the absolute ledger the signature expires at; compute it from the network's latest ledger. Your app's validity window caps how far ahead it may be (120 ledgers by default, 300 at most).
 
 ```typescript
 const result = await pollar.signAuthEntry(entryXdr, { validUntilLedger: latestLedger + 100 });
@@ -352,7 +352,7 @@ if (result.status === 'signed') {
 }
 ```
 
-Resolves to `{ status: 'signed'; signedAuthEntry: string }` or `{ status: 'error'; details?: string }` — like the other transaction methods, it does not throw on a denial. The denial codes are listed under [Error Codes](https://docs.pollar.xyz/docs/sdk-reference/error-codes).
+Resolves to `{ status: 'signed'; signedAuthEntry: string }` or `{ status: 'error'; details?: string }`. Like the other transaction methods, it does not throw on a denial. The denial codes are listed under [Error Codes](https://docs.pollar.xyz/docs/sdk-reference/error-codes).
 
 ---
 
@@ -567,8 +567,8 @@ const status = await pollar.pollKycStatus('provider_id', { intervalMs: 3000, tim
 |------------------|----------|-----------|--------------------------------------------------|
 | `intervalMs`     | `number` | `3000`    | Polling interval in milliseconds.                |
 | `timeoutMs`      | `number` | `300000`  | Maximum wait time before throwing.               |
-| `corridorId`     | `string` | —         | Scope to a ramp route's steps.                   |
-| `cardProviderId` | `string` | —         | Scope to a card provider's steps.                |
+| `corridorId`     | `string` | -         | Scope to a ramp route's steps.                   |
+| `cardProviderId` | `string` | -         | Scope to a card provider's steps.                |
 
 **`KycStatus` values:** `'none'` · `'pending'` · `'approved'` · `'rejected'` · `'expired'`
 
@@ -653,7 +653,8 @@ Turns the quote the user accepted into an order and runs its first leg, so the a
 ```typescript
 const order = await pollar.createRampOrder({
   quoteId: quote.quoteId,
-  payee: { clabe: '012345678901234567', name: 'Ana Perez' },
+  // An Abroad payout to Brazil: the quote's requiredFields name these keys.
+  payee: { pixKeyType: 'EMAIL', bankAccount: 'ana@example.com' },
 });
 ```
 
@@ -845,10 +846,10 @@ with the Solana signature in `hash`.
 The app's dashboard-enabled assets paired with the authenticated wallet's
 on-chain trustline state.
 
-- `pollar.getEnabledAssetsState()` — current state snapshot.
-- `pollar.refreshAssets()` — refresh the enabled-assets state machine.
-- `pollar.onEnabledAssetsStateChange(cb)` — subscribe; returns an unsubscribe fn.
-- `pollar.setTrustline(asset, opts?)` — establish (omit `limit`) or remove
+- `pollar.getEnabledAssetsState()`: current state snapshot.
+- `pollar.refreshAssets()`: refresh the enabled-assets state machine.
+- `pollar.onEnabledAssetsStateChange(cb)`: subscribe; returns an unsubscribe fn.
+- `pollar.setTrustline(asset, opts?)`: establish (omit `limit`) or remove
   (`limit: '0'`) a trustline. The app covers the reserve and the fee whenever
   the dashboard sponsors trustlines; pass `{ skipSponsorship: true }` to make
   the user's wallet pay instead. Returns a `TrustlineOutcome`.
@@ -862,12 +863,12 @@ await pollar.setTrustline({ code: 'USDC', issuer: 'GABC...' });
 ## Swap
 
 Multi-venue asset swaps (SDEX / AMM). Empty `getSwapConfig()` means swap is
-disabled for the app — hide the UI.
+disabled for the app: hide the UI.
 
-- `pollar.getSwapConfig()` -> `Promise<SwapVenue[]>` — venues this app exposes.
-- `pollar.getSwapTokens()` -> `Promise<SwapToken[]>` — curated "buy" token catalog.
-- `pollar.getSwapQuote(params)` -> `Promise<SwapQuote[]>` — quotes ranked best-first.
-- `pollar.swap(quote, opts?)` -> `Promise<SubmitOutcome>` — execute a quote
+- `pollar.getSwapConfig()` -> `Promise<SwapVenue[]>`: venues this app exposes.
+- `pollar.getSwapTokens()` -> `Promise<SwapToken[]>`: curated "buy" token catalog.
+- `pollar.getSwapQuote(params)` -> `Promise<SwapQuote[]>`: quotes ranked best-first.
+- `pollar.swap(quote, opts?)` -> `Promise<SubmitOutcome>`: execute a quote
   (establishes the buy-asset trustline first when needed). Drives `TransactionState`.
 
 ---
@@ -875,11 +876,11 @@ disabled for the app — hide the UI.
 ## Earn
 
 Yield vaults (DeFindex) and lending pools (Blend). Empty `getEarnProviders()`
-means Earn is disabled — hide the UI.
+means Earn is disabled: hide the UI.
 
 - `pollar.getEarnProviders()` -> `Promise<EarnProviderId[]>`.
-- `pollar.getEarnOpportunities(provider)` -> `Promise<EarnOpportunity[]>` — vaults/pools with live APY.
-- `pollar.getEarnPosition(params)` -> `Promise<EarnPosition>` — the wallet's position.
+- `pollar.getEarnOpportunities(provider)` -> `Promise<EarnOpportunity[]>`: vaults/pools with live APY.
+- `pollar.getEarnPosition(params)` -> `Promise<EarnPosition>`: the wallet's position.
 - `pollar.earnDeposit(params)` -> `Promise<SubmitOutcome>`.
 - `pollar.earnWithdraw(params)` -> `Promise<SubmitOutcome>`.
 
@@ -887,7 +888,7 @@ means Earn is disabled — hide the UI.
 
 ## Token distribution
 
-- `pollar.listDistributionRules()` -> `Promise<DistributionRule[]>` — claimable rules for the app.
+- `pollar.listDistributionRules()` -> `Promise<DistributionRule[]>`: claimable rules for the app.
 - `pollar.claimDistributionRule(body)` -> claims a rule for the authenticated user.
 
 ---
@@ -897,9 +898,9 @@ means Earn is disabled — hide the UI.
 Manage the authenticated user's active sessions (devices).
 
 - `pollar.listSessions()` -> `Promise<SessionInfo[]>`.
-- `pollar.getSessionsState()` / `pollar.fetchSessions()` / `pollar.onSessionsStateChange(cb)` — the sessions state machine.
-- `pollar.revokeSession(familyId)` — revoke one session.
-- `pollar.logout({ everywhere: true })` or `pollar.logoutEverywhere()` — sign out everywhere.
+- `pollar.getSessionsState()` / `pollar.fetchSessions()` / `pollar.onSessionsStateChange(cb)`: the sessions state machine.
+- `pollar.revokeSession(familyId)`: revoke one session.
+- `pollar.logout({ everywhere: true })` or `pollar.logoutEverywhere()`: sign out everywhere.
 
 ---
 
@@ -909,8 +910,8 @@ Passkey-backed Soroban **C-address** login. Requires a `passkey` ceremony in
 `PollarClientConfig` (`@pollar/react` supplies one via `@simplewebauthn/browser`;
 browser-only for now).
 
-- `pollar.loginSmartWallet()` — log in with an existing passkey wallet.
-- `pollar.createSmartWallet()` — create + deploy a new passkey C-address.
+- `pollar.loginSmartWallet()`: log in with an existing passkey wallet.
+- `pollar.createSmartWallet()`: create + deploy a new passkey C-address.
 
 See [Smart Wallets](https://docs.pollar.xyz/docs/smart-wallets/overview) for the full flow.
 

@@ -16,6 +16,8 @@ Fiat-to-crypto and crypto-to-fiat providers for your users. The page lists the p
 | **Anclap** | SEP-24 | Hosted deposit and withdrawal on the anchor's own page |
 | **Etherfuse** | REST | MXN via SPEI, with the provider's own KYC |
 | **Stereum** | REST | BOB: buy by bank QR, sell to a bank account. Settles on Polygon |
+| **Bridge** `upcoming` | REST | Being integrated |
+| **PagFinance** `upcoming` | REST | Being integrated |
 
 The provider card is the source of truth for what it serves on your network.
 

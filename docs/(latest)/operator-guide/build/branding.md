@@ -34,4 +34,4 @@ Each setting maps to a CSS variable, and your app's own stylesheet takes precede
 
 The Dashboard shows a live preview of the branded surfaces as you make changes, with tabs for **Login**, **KYC**, **Transaction**, **Tx History**, **Balance**, **Ramp**, and **Button**. You can also **Export configuration**.
 
-Changes apply immediately — no SDK update or redeployment required.
+Changes apply immediately, with no SDK update or redeployment.

@@ -12,8 +12,8 @@ Configure notifications for low wallet balances so you never run out of funds un
 
 | Channel     | Setup                                                                         |
 | ----------- | ----------------------------------------------------------------------------- |
-| **Email**   | Add one or more email addresses — alerts are sent when a threshold is crossed |
-| **Webhook** | Add a webhook URL — Pollar sends a `sponsor.balance.low` event                |
+| **Email**   | Add one or more email addresses; alerts are sent when a threshold is crossed |
+| **Webhook** | Add a webhook URL; Pollar sends a `sponsor.balance.low` event                 |
 
 ---
 

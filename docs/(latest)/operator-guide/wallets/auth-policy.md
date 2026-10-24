@@ -4,11 +4,11 @@ title: "Auth Policy"
 
 **Dashboard > Wallets > Auth Policy** · Chains: Stellar
 
-Controls which Soroban contracts and functions a custodial wallet may **authorize**. This is the signing allowlist for `SorobanAuthorizationEntry` — the authorization a user signs when your own contract is the transaction source and only needs the user's consent, not a full signed envelope.
+Controls which Soroban contracts and functions a custodial wallet may **authorize**. This is the signing allowlist for `SorobanAuthorizationEntry`: the authorization a user signs when your own contract is the transaction source and only needs the user's consent, not a full signed envelope.
 
 A custodial key lives on Pollar's side, so the allowlist is the only thing standing between your users and a signing oracle: without it, anyone holding a session could have the platform authorize any contract to move that user's tokens. Pollar signs an entry **only** when every contract and function in it is allowlisted here, and refuses everything else.
 
-This page governs `POST /tx/sign-auth-entry` (`pollar.signAuthEntry()` in the SDK), and only for **custodial** wallets — the ones your users get from social or email login. It does not affect ordinary payments. External wallets like Freighter sign the entry themselves, in the wallet, so the user approves each one and no allowlist applies. Passkey smart accounts (C-addresses) cannot use this method at all in the current SDK build.
+This page governs `POST /tx/sign-auth-entry` (`pollar.signAuthEntry()` in the SDK), and only for **custodial** wallets, the ones your users get from social or email login. It does not affect ordinary payments. External wallets like Freighter sign the entry themselves, in the wallet, so the user approves each one and no allowlist applies. Passkey smart accounts (C-addresses) cannot use this method at all in the current SDK build.
 
 ---
 
@@ -23,7 +23,7 @@ Each row allowlists **one contract** and the **exact functions** a custodial wal
 | **Label** | Optional, for humans. E.g. `RouterV1 settlement`. |
 | **Enabled** | A disabled row authorizes nothing. Only enabled rows are read at signing time. |
 
-Add **every contract in the call tree**, not just the entry point. Pollar walks the whole invocation tree — the root and every sub-invocation — and each contract it finds needs its own row. A settlement contract that swaps through an AMM and then moves a token needs three rows.
+Add **every contract in the call tree**, not just the entry point. Pollar walks the whole invocation tree (the root and every sub-invocation), and each contract it finds needs its own row. A settlement contract that swaps through an AMM and then moves a token needs three rows.
 
 ### Function names are matched exactly
 
@@ -38,11 +38,11 @@ The dashboard checks each name against the deployed contract when you save the r
 
 ## Allow any contract and function
 
-A single switch that authorizes **every** contract and function, ignoring the rows below it entirely. While it is on, no row can deny a signature — including a row for the very same contract.
+A single switch that authorizes **every** contract and function, ignoring the rows below it entirely. While it is on, no row can deny a signature, not even a row for the very same contract.
 
 Use it only while you still control transaction construction end to end, typically during an integration spike. An explicit allowlist is what makes the custodial signer safe to expose; the switch removes that protection for every wallet in the app at once. Turn it off before you take the app to mainnet.
 
-The switch reads **on** only when it is actually bypassing. If it shows off after you turned it on, the underlying row was disabled or edited through the API — turn it on again to restore it.
+The switch reads **on** only when it is actually bypassing. If it shows off after you turned it on, the underlying row was disabled or edited through the API; turn it on again to restore it.
 
 ---
 
@@ -59,12 +59,12 @@ The caller computes `validUntilLedger` from the network's latest ledger; Pollar 
 
 ## What a denial means
 
-Every rejection answers `403` (or `400` for a malformed request) with a code, plus `applicationId` and `applicationName` — the app the decision was made against.
+Every rejection answers `403` (or `400` for a malformed request) with a code, plus `applicationId` and `applicationName`: the app the decision was made against.
 
 | Code | What happened | What to do |
 | --- | --- | --- |
 | `SOROBAN_AUTH_NO_POLICY` | This app has no enabled rows at all | Add a row, or check that the API key belongs to the app you configured |
-| `SOROBAN_AUTH_CONTRACT_NOT_ALLOWED` | A contract in the tree has no row | Add it — remember the sub-invocations |
+| `SOROBAN_AUTH_CONTRACT_NOT_ALLOWED` | A contract in the tree has no row | Add it, and remember the sub-invocations |
 | `SOROBAN_AUTH_FUNCTION_NOT_ALLOWED` | The contract is allowed, the function is not | Check the exact spelling and case against the contract |
 | `SOROBAN_AUTH_ADDRESS_MISMATCH` | The entry authorizes a different address than the caller's wallet | Build the entry for the session's own address |
 | `SOROBAN_AUTH_ENTRY_INVALID` | Not a valid `SorobanAuthorizationEntry`, or not address-credentials | See below |
@@ -76,19 +76,19 @@ Full list, with the save-time codes: [Error Codes](https://docs.pollar.xyz/docs/
 
 ## Troubleshooting
 
-**"Allow any" is on and I am still denied.** Confirm the switch reads on after a page reload — if it does not, the row behind it is disabled or was edited through the API, and turning it on again restores it. Then confirm the request reached the app you are looking at: read `applicationId` in the error body.
+**"Allow any" is on and I am still denied.** Confirm the switch reads on after a page reload. If it does not, the row behind it is disabled or was edited through the API, and turning it on again restores it. Then confirm the request reached the app you are looking at: read `applicationId` in the error body.
 
-**`SOROBAN_AUTH_NO_POLICY`, but I can see my rows.** The allowlist belongs to one application, and so does each API key. Configuring one app while signing with another app's key produces exactly this error, with the rows visibly present in the dashboard. The `applicationName` in the response body is the app your key actually resolves to — if it is not the one on screen, that is the answer. Apps also come in testnet and mainnet pairs with separate allowlists.
+**`SOROBAN_AUTH_NO_POLICY`, but I can see my rows.** The allowlist belongs to one application, and so does each API key. Configuring one app while signing with another app's key produces exactly this error, with the rows visibly present in the dashboard. The `applicationName` in the response body is the app your key actually resolves to; if it is not the one on screen, that is the answer. Apps also come in testnet and mainnet pairs with separate allowlists.
 
 **`SOROBAN_AUTH_FUNCTION_NOT_ALLOWED` on a function I allowlisted.** Compare the two strings character for character. `Transfer` against `transfer` is the usual answer; so is a trailing space, or `transfer()` written with parentheses. Re-saving the row will now refuse a name the contract does not have.
 
-**`SOROBAN_AUTH_ENTRY_INVALID` on an entry that looks right.** Send the `SorobanAuthorizationEntry` itself, base64-encoded. A `HashIDPreimage` — the structure that gets hashed and signed, which some tooling exposes under a similar name — is a different type and is refused. Source-account entries are also refused here: they are covered by the transaction envelope's signature, not by this endpoint.
+**`SOROBAN_AUTH_ENTRY_INVALID` on an entry that looks right.** Send the `SorobanAuthorizationEntry` itself, base64-encoded. A `HashIDPreimage` (the structure that gets hashed and signed, which some tooling exposes under a similar name) is a different type and is refused. Source-account entries are also refused here: they are covered by the transaction envelope's signature, not by this endpoint.
 
 ---
 
 ## Related
 
-- [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship) — who pays the fee for these transactions
-- [Transaction Policy](https://docs.pollar.xyz/docs/operator-guide/wallets/transaction-policy) — limits on ordinary transactions
-- [Security Model](https://docs.pollar.xyz/docs/core-concepts/security-model) — how custodial keys are held
-- [`pollar.signAuthEntry()`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core) — the client method this page governs
+- [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship): who pays the fee for these transactions
+- [Transaction Policy](https://docs.pollar.xyz/docs/operator-guide/wallets/transaction-policy): limits on ordinary transactions
+- [Security Model](https://docs.pollar.xyz/docs/core-concepts/security-model): how custodial keys are held
+- [`pollar.signAuthEntry()`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core): the client method this page governs

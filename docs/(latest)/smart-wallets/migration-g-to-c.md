@@ -4,7 +4,7 @@ title: "G-Addresses vs C-Addresses"
 
 Pollar supports two account types side by side: **custodial G-addresses** (social / email login) and **passkey C-addresses** (smart wallets). This page covers how they relate, what your integration shares between them, and what differs.
 
-> There is **no `walletType` switch and no in-place upgrade.** An account's custody is fixed when it is created: a user who signs up with a passkey gets a C-address; a user who signs up with social / email gets a custodial G-address. You cannot convert one into the other — they are different account types.
+> There is **no `walletType` switch and no in-place upgrade.** An account's custody is fixed when it is created: a user who signs up with a passkey gets a C-address; a user who signs up with social / email gets a custodial G-address. You cannot convert one into the other: they are different account types.
 
 ## Offering both
 
@@ -41,7 +41,7 @@ const isSmart = wallet?.custody === 'smart';
 
 ### 3. Onboarding is a contract deploy
 
-Custodial onboarding creates an account (and optionally trustlines). Smart onboarding runs a passkey ceremony and deploys a contract, extending its TTL. The auth states differ — `creating_passkey` / `deploying_smart_account` — see the [lifecycle explainer](https://docs.pollar.xyz/docs/smart-wallets/c-address-lifecycle).
+Custodial onboarding creates an account (and optionally trustlines). Smart onboarding runs a passkey ceremony and deploys a contract, extending its TTL. The auth states differ (`creating_passkey` / `deploying_smart_account`); see the [lifecycle explainer](https://docs.pollar.xyz/docs/smart-wallets/c-address-lifecycle).
 
 ### 4. Assets use the SAC, not trustlines
 
@@ -53,8 +53,8 @@ Some SDK surfaces are **not yet available** for smart wallets: **Swap**, **Earn*
 
 ## When to use which
 
-- **Custodial G-addresses** — the broadest reach; social / email onboarding with zero device requirements. Fully supported across all SDK features.
-- **Passkey C-addresses** — non-custodial, device-bound, programmable authorization; browser-only today, with Swap/Earn/trustlines still to come.
+- **Custodial G-addresses**: the broadest reach; social / email onboarding with zero device requirements. Fully supported across all SDK features.
+- **Passkey C-addresses**: non-custodial, device-bound, programmable authorization; browser-only today, with Swap/Earn/trustlines still to come.
 
 ## Next steps
 

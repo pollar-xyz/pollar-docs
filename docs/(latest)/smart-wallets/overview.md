@@ -2,20 +2,20 @@
 title: "Smart Wallets (C-Addresses)"
 ---
 
-**Smart wallets** let a user onboard with a **passkey** (WebAuthn — Face ID / Touch ID / a security key) that controls a Stellar **smart contract account**, a *C-address*, instead of a classic ed25519 account (a *G-address*). The account's authorization logic lives in a Soroban contract rather than in a fixed signature scheme.
+**Smart wallets** let a user onboard with a **passkey** (WebAuthn: Face ID / Touch ID / a security key) that controls a Stellar **smart contract account**, a *C-address*, instead of a classic ed25519 account (a *G-address*). The account's authorization logic lives in a Soroban contract rather than in a fixed signature scheme.
 
 Unlike Pollar's custodial login (social / email -> platform-custodied G-address), a smart wallet is a **non-custodial, passkey-controlled** account: the user signs with their device credential, and Pollar sponsors the on-chain deploy and fees.
 
-> **Availability:** implemented in `@pollar/core` / `@pollar/react` **0.10.1**. It is **browser-only** for now — `@pollar/react` wires the WebAuthn ceremony automatically on web; React Native needs a native passkey provider. Some features (Swap, Earn, and manual trustlines) are **not yet supported** for smart wallets.
+> **Availability:** implemented in `@pollar/core` / `@pollar/react` **0.10.1**. It is **browser-only** for now: `@pollar/react` wires the WebAuthn ceremony automatically on web; React Native needs a native passkey provider. Some features (Swap, Earn, and manual trustlines) are **not yet supported** for smart wallets.
 
 ---
 
 ## How you use it
 
-Smart wallet login is a distinct entry point — there is no `walletType` switch. Turn on the option and the SDK exposes it:
+Smart wallet login is a distinct entry point; there is no `walletType` switch. Turn on the option and the SDK exposes it:
 
 1. **Enable it in the dashboard:** **Build -> Branding -> Smart Wallet (passkey)**. This surfaces a passkey option in the login modal (`styles.smartWallet`).
-2. **From the built-in modal:** `openLoginModal()` then renders a **Smart Wallet (passkey)** option with two actions — sign in (returning user) and create (new user).
+2. **From the built-in modal:** `openLoginModal()` then renders a **Smart Wallet (passkey)** option with two actions: sign in (returning user) and create (new user).
 3. **Headless:** call the client directly:
 
 ```typescript
@@ -32,7 +32,7 @@ usePollar().wallet;
 // { custody: 'smart', address: 'C…', provider: 'passkey', existsOnStellar, fundingMode }
 ```
 
-Payments use the **same** transaction API as any other wallet (`runTx` / `buildTx` + `signAndSubmitTx`) — for a smart wallet the SDK signs the Soroban **auth entries** with the passkey credential under the hood.
+Payments use the **same** transaction API as any other wallet (`runTx` / `buildTx` + `signAndSubmitTx`); for a smart wallet the SDK signs the Soroban **auth entries** with the passkey credential under the hood.
 
 ---
 

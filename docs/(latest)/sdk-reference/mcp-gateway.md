@@ -17,7 +17,7 @@ Personal Access Tokens (PATs) are **account-level** credentials: they belong to 
 1. In the dashboard, open **Personal Access Tokens** in the account sidebar (the one you see outside an app, next to **Account** and **Billing**).
 2. Click **Create token** and give it a **name**.
 3. Pick its **scopes** (see below), or toggle **Full access** for all scopes.
-4. (Optional) Restrict it to **specific applications**. Left unrestricted, it covers every app you own.
+4. (Optional) Restrict it to **specific applications**. Left unrestricted, it reaches every app your account can open in the dashboard, yours and the ones you are a member of, with the same role you have there; a scope it lacks is refused on every app.
 5. (Optional) Set an **expiry date**.
 6. Copy the token (`pat_...`) immediately: it is shown only once.
 

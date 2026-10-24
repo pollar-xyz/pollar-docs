@@ -30,7 +30,16 @@ Every billable event (a wallet, a sponsored reserve or fee, a co-signed signatur
 
 ### Topping up
 
-Each app has deposit addresses on several chains. Send **USDC or USDT** to one of them; the balance updates once the deposit confirms. Read them in the dashboard, with `GET /v3/billing/deposit-addresses` on the [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api), or from the MCP gateway.
+Each app has a deposit address of its own on Stellar, Polygon and Solana, on the app's network. Send a stablecoin it accepts; the balance updates once the deposit confirms, at par (1 USDC or 1 USDT = 100 credits):
+
+| Network | Stellar | Polygon | Solana |
+| --- | --- | --- | --- |
+| Mainnet | USDC | USDC, USDT | USDC, USDT |
+| Testnet | USDC (Circle's test USDC) | USDC (Circle's test USDC) | USDC (Circle's test USDC) |
+
+Only the official contracts count (Circle's USDC, Tether's USDT); any other token sent to the address is not credited. A Stellar address is listed once its account and trustlines exist, which Pollar opens at its own cost.
+
+ Read them in the dashboard, with `GET /v3/billing/deposit-addresses` on the [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api), or from the MCP gateway.
 
 ### When credits run out
 

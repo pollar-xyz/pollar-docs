@@ -38,7 +38,7 @@ export default function Root() {
 
 ## 3. Sign the user in with a passkey
 
-The simplest path is the built-in modal — with Smart Wallet enabled it shows a **passkey** option (create for new users, sign-in for returning ones):
+The simplest path is the built-in modal: with Smart Wallet enabled it shows a **passkey** option (create for new users, sign-in for returning ones):
 
 ```tsx
 'use client';
@@ -47,7 +47,7 @@ import { usePollar } from '@pollar/react';
 export function LoginButton() {
   const { isAuthenticated, wallet, openLoginModal } = usePollar();
 
-  if (isAuthenticated) return <p>✓ Smart wallet ready — {wallet?.address}</p>;
+  if (isAuthenticated) return <p>✓ Smart wallet ready: {wallet?.address}</p>;
   return <button onClick={openLoginModal}>Sign in</button>;
 }
 ```
@@ -99,7 +99,7 @@ const contractUrl = `https://testnet.stellar.expert/contract/${wallet?.address}`
 
 ## 6. Send a payment
 
-Once authenticated, send assets with the **same** transaction API as any wallet — the SDK signs the Soroban auth entries with the passkey credential internally:
+Once authenticated, send assets with the **same** transaction API as any wallet; the SDK signs the Soroban auth entries with the passkey credential internally:
 
 ```typescript
 await getClient().runTx('payment', {

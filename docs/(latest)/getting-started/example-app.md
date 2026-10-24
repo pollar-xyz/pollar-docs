@@ -2,93 +2,70 @@
 title: "Example App"
 ---
 
-A fully working Next.js demo that shows Pollar's complete onboarding-to-payment flow. Clone it, run it in under 5 minutes, and use it as a starting point for your own integration
+The Pollar demo is a Next.js app that exercises the SDK feature by feature, each page next to the code that drives it. Use it to see a feature working before you build it, and to copy the patterns into your own app.
 
-**Repository:** <https://github.com/pollar-xyz/demo-nextjs>
+**Repository:** <https://github.com/pollar-xyz/demo>
+
+**Live:** [demo.pollar.xyz](https://demo.pollar.xyz)
 
 ---
 
-## What it demonstrates
+## What it shows
 
-| Feature                        | Description                                                                                                              | Status        |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------ | ------------- |
-| Social login                   | Google, GitHub, and email OTP via `usePollar().login()`                                                                  | ✓             |
-| Wallet creation                | Stellar G-address created on login, its key encrypted at rest (AES-256-GCM) by Pollar's wallet service                                                            | ✓             |
-| Deferred mode — KYC simulation | A button triggers a Next.js API route that calls `POST /v3/wallets/fund` with the secret key, simulating a backend KYC approval | ✓             |
-| Send USDC                      | Transfer USDC to any Stellar address with zero fee UX                                                                    | ✓             |
-| Receive                        | QR code (SEP-7 format) and shareable payment link                                                                        | `coming soon` |
-| Transaction history            | Full paginated history via `txHistory` hook                                                                              | ✓             |
-| Testnet funding                | Claimable distribution rules from the distribution wallet                                                    | `coming soon` |
-| Passkeys                       | Biometric auth with Face ID / Touch ID                                                                                   | `coming soon` |
-| SEP-24 fiat deposit            | Fiat on-ramp via Anclap testnet                                                                                          | `coming soon` |
+The sidebar groups the pages in sections:
+
+| Section | Pages |
+| --- | --- |
+| Products | Authentication (login, logout, sessions), Wallet (send, receive, balance, chains, assets, history, distribution, signer rotation), Transactions (build and sign, sign an XDR) |
+| Integrations | KYC, ramps, swap, earn and cards, each with an overview and its implementation |
+| Wallet adapters | Stellar Wallets Kit and other wallets plugged in as login providers |
+| Adapters | Third-party protocols wired in with `createPollarAdapterHook` (Trustless Work escrows, among others) |
+| Built with Pollar | Apps built on Pollar alongside another technology |
+
+Pages marked **Soon** are not live yet. A few groups still in testing open only with a passcode.
 
 ---
 
 ## Live demo
 
-[demo-nextjs.pollar.xyz](https://demo-nextjs.pollar.xyz) — runs on Stellar testnet. Complete a full onboarding flow and test every feature without touching mainnet funds.
+The live demo runs with Pollar's own demo keys on testnet and mainnet. To try it against your own app, pass your publishable key in the URL:
+
+```
+https://demo.pollar.xyz/?apiKey=pub_testnet_xxxxxxxxxxxxxxxxxxxx
+```
+
+The network follows the key's prefix (`pub_testnet_` or `pub_mainnet_`). Your app must list the demo's origin under **Build > [Domains](https://docs.pollar.xyz/docs/operator-guide/build/domains)**, or the SDK refuses the requests.
 
 ---
 
 ## Run locally
 
 ```bash
-git clone https://github.com/pollar-xyz/demo-nextjs
-cd demo-nextjs
-npm install
+git clone https://github.com/pollar-xyz/demo
+cd demo
+pnpm install
 cp .env.example .env.local
+pnpm dev
 ```
 
-Add your keys to `.env.local`:
+Open <http://localhost:3080>.
 
-```bash
-# Publishable — used in the frontend
-NEXT_PUBLIC_POLLAR_PUBLISHABLE_KEY=pub_testnet_xxxxxxxxxxxxxxxxxxxx
+The Pollar pages need no variables: they use the demo keys, or the key you pass with `?apiKey=`. When you use your own key, add `http://localhost:3080` to your app's domains. `.env.example` documents the rest:
 
-# Secret — used only in API routes, never exposed to the browser
-POLLAR_SECRET_KEY=sec_testnet_xxxxxxxxxxxxxxxxxxxx
-```
-
-```bash
-npm run dev
-```
-
-Open <http://localhost:3000>.
+| Variable | Used by |
+| --- | --- |
+| `NEXT_PUBLIC_POLLAR_BASE_URL` | Points the SDK at another sdk-api (a local or self-hosted one). Empty uses `https://sdk.api.pollar.xyz` |
+| `NEXT_PUBLIC_TW_API_KEY` | The Trustless Work escrow page |
+| `ABROAD_API_KEY` | The Abroad ramp page (server-side only) |
+| `*_PASSCODE` | Unlocks the groups that are still in testing |
 
 ---
 
-## App structure
+## Provider setup
 
-```
-demo-nextjs/
-├── app/
-│   ├── layout.tsx              # PollarProvider wraps the app
-│   ├── page.tsx                # Route: login vs wallet view
-│   │
-│   ├── api/
-│   │   └── activate/
-│   │       └── route.ts        # POST /api/activate — calls Pollar Server with secret key
-│   │
-│   └── components/
-│       ├── LoginButton.tsx     # OAuth + email OTP
-│       ├── WalletCard.tsx      # Balance and address display
-│       ├── SendPaymentForm.tsx # runTx('payment', ...)
-│       ├── ReceiveView.tsx     # QR code + shareable link
-│       ├── TxHistoryList.tsx   # txHistory hook
-│       └── KycGate.tsx         # Calls /api/activate to simulate KYC approval
-│
-├── .env.example
-└── package.json
-```
-
----
-
-## Key patterns
-
-### Provider setup
+Every page of the demo runs inside one `<PollarProvider>`. In your own app the same setup reads the key from an environment variable:
 
 ```tsx
-// app/layout.tsx
 import { PollarProvider } from '@pollar/react';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -104,147 +81,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 }
 ```
 
-### Deferred mode — KYC simulation
-
-The demo includes a Next.js API route that simulates a KYC provider calling your backend after a user is verified. The frontend calls this route — the route calls Pollar's `POST /v3/wallets/fund` using the secret key server-side. The endpoint authenticates with the `x-pollar-api-key` header and takes the wallet's `publicKey` (its `G…` address).
-
-```ts
-// app/api/activate/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-
-export async function POST(req: NextRequest) {
-  const { publicKey } = await req.json();
-
-  const response = await fetch('https://server.api.pollar.xyz/v3/wallets/fund', {
-    method: 'POST',
-    headers: {
-      'x-pollar-api-key': process.env.POLLAR_SECRET_KEY!,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ publicKey }),
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    return NextResponse.json(error, { status: response.status });
-  }
-
-  return NextResponse.json({ activated: true });
-}
-```
-
-The frontend `KycGate` component calls this route — the secret key never leaves the server:
-
-```tsx
-// app/components/KycGate.tsx
-'use client';
-import { usePollar } from '@pollar/react';
-
-export function KycGate() {
-  const { isAuthenticated, wallet } = usePollar();
-
-  if (!isAuthenticated) return null;
-
-  async function handleActivate() {
-    await fetch('/api/activate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ publicKey: wallet?.address }),
-    });
-  }
-
-  return (
-    <div>
-      <p>Complete identity verification to activate your wallet.</p>
-      <button onClick={handleActivate}>
-        Simulate KYC approval
-      </button>
-    </div>
-  );
-}
-```
-
-In a real app, `/api/activate` would be called by your KYC provider's webhook — not by a button in the UI. See [Deferred Flow Guide](https://docs.pollar.xyz/docs/guides/deferred-flow-guide) for the full production setup.
-
-### Distribution — claiming assets `coming soon`
-
-> An app-initiated push helper (`fund()`) is **not available yet**. Today, distribution works through **claimable rules**: you configure rules under **Treasury -> Token Distribution**, and users claim them from the SDK.
-
-The available flow uses the distribution-rules modal and client methods exposed by `usePollar()` / `@pollar/core`:
-
-```tsx
-'use client';
-import { usePollar } from '@pollar/react';
-
-export function ClaimButton() {
-  const { openDistributionRulesModal } = usePollar();
-
-  return (
-    <button onClick={openDistributionRulesModal}>
-      Claim tokens
-    </button>
-  );
-}
-```
-
-For headless control, use `getClient().listDistributionRules()` and `getClient().claimDistributionRule(...)`. Configured assets, amounts, and rate limits (per claim / period) are set per asset under **Treasury -> Token Distribution**, which debits the app's **distribution wallet** — separate from the funding and gas wallets.
-
-### Receive — QR code and shareable link
-
-```tsx
-'use client';
-import { usePollar } from '@pollar/react';
-
-export function ReceiveView() {
-  const { wallet } = usePollar();
-
-  // coming soon: SEP-7 payment request URI
-  // web+stellar:pay?destination=GXXX&asset_code=USDC&asset_issuer=GXXX
-  const paymentLink = `https://pay.pollar.xyz/${wallet?.address}`;
-
-  return (
-    <div>
-      {/* QR code component renders wallet.address */}
-      <QRCode value={paymentLink} />
-      <button onClick={() => navigator.clipboard.writeText(paymentLink)}>
-        Copy payment link
-      </button>
-    </div>
-  );
-}
-```
-
-The QR code currently encodes the user's G-address as a payment link. SEP-7 support (which allows pre-filling asset, amount, and memo in any compatible Stellar wallet) is coming soon. The simplest path is the built-in `openReceiveModal()`.
+See [`@pollar/react`](https://docs.pollar.xyz/docs/sdk-reference/pollar-react) for the provider's props and the modals it mounts.
 
 ---
 
-## Funding modes in the demo
+## Funding modes
 
-Switch from **Dashboard -> Wallets -> Account Funding** (Stellar tab) — no code changes needed.
-
-| Mode          | Behavior in the demo                                      |
-| ------------- | --------------------------------------------------------- |
-| **Immediate** | Wallet funded on login. KYC gate hidden.                  |
-| **Deferred**  | Wallet unfunded until "Simulate KYC approval" is clicked. |
-
-> A wallet in either mode can always be funded manually from **Wallets -> Wallets** (the **Fund** action on not-yet-funded Pollar-managed wallets).
+The demo has no backend of its own, so it shows the **Immediate** flow: the wallet is set up at login. For **Deferred**, where your backend opens each account after a business event (KYC approved, first deposit), see the [Deferred Flow Guide](https://docs.pollar.xyz/docs/guides/deferred-flow-guide), which has the API route and the frontend gate.
 
 ---
 
-## Other templates
+## Templates
 
-| Template            | Repository                                                                  |
-| ------------------- | --------------------------------------------------------------------------- |
-| Next.js             | [pollar-xyz/template-nextjs](https://github.com/pollar-xyz/template-nextjs) |
-| Expo / React Native | `coming soon`                                                               |
-| TrueLayer           | `coming soon`                                                               |
+Starting points for a whole app, each built on the SDK:
 
----
+| Template | What it is |
+| --- | --- |
+| [pollar-neobank-template](https://github.com/pollar-xyz/pollar-neobank-template) | A consumer banking app: account home, receive with a QR, send, history |
+| [pollar-commerce-template](https://github.com/pollar-xyz/pollar-commerce-template) | A shop that charges in USDC, with the commerce core apart from the storefront |
+| [pollar-telegram-shop-template](https://github.com/pollar-xyz/pollar-telegram-shop-template) | The commerce template as a Telegram Mini App |
+| [pollar-crowdfunding-template](https://github.com/pollar-xyz/pollar-crowdfunding-template) | Milestone crowdfunding on Trustless Work escrows |
 
-## Deploy
-
-```bash
-npx vercel
-```
-
-Set `NEXT_PUBLIC_POLLAR_PUBLISHABLE_KEY` and `POLLAR_SECRET_KEY` in Vercel environment variables. The secret key is used only in API routes and is never exposed to the browser.
+[pollar-apps](https://github.com/pollar-xyz/pollar-apps) lists the apps open for contributors to build on these templates.
