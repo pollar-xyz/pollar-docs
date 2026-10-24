@@ -2,31 +2,33 @@
 title: "Architecture"
 ---
 
-Pollar sits between your app and the chains it serves: Stellar, Solana and Polygon. This page explains how the three components interact and how requests flow from your frontend to the blockchain. The diagram shows Stellar; a Solana-enabled app adds Pollar's Solana wallet service behind the same server, with its own encrypted keystore per cluster (devnet for a testnet app, mainnet-beta for a mainnet one). See [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support).
+Pollar sits between your app and the chains it serves: Stellar, Solana and Polygon. This page explains how its components interact and how requests flow from your frontend to the blockchain. See [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support) for what each chain supports.
 
 ---
 
-## The three components
+## The components
 
 ```mermaid
 flowchart TD
-    A("Your App\nRemittances · Neobank · Wallet"):::external
+    A("Your App\nRemittances, Neobank, Wallet"):::external
 
     subgraph pollar["Pollar"]
-        B("1. SDK\n@pollar/core · @pollar/react"):::sdk
-        C("2. Pollar Server\nsdk.api.pollar.xyz · server.api.pollar.xyz"):::server
+        B("1. SDK\n@pollar/core, @pollar/react, @pollar/react-native"):::sdk
+        C("2. Pollar Server\nsdk.api.pollar.xyz, server.api.pollar.xyz"):::server
         D("3. Dashboard\ndashboard.pollar.xyz"):::dashboard
     end
 
-    E("Stellar Network\nTestnet · Mainnet"):::external
-    F("AWS KMS\nKey management"):::infra
-    G("PostgreSQL\nTransaction history"):::infra
+    E("Stellar, Solana, Polygon\nTestnet and Mainnet"):::external
+    F("Wallet services\nPollar-managed keys, encrypted"):::infra
+    T("Turnkey\nUser-held keys"):::infra
+    G("PostgreSQL\nApps, users, transaction history"):::infra
 
     A -->|"calls"| B
     B -->|"HTTP"| C
     C -->|"submits transactions"| E
-    C -->|"encrypts / decrypts keys"| F
-    C -->|"persists tx history"| G
+    C -->|"signs Pollar-managed wallets"| F
+    C -->|"relays the user's votes"| T
+    C -->|"persists"| G
     D -.->|"configures"| C
 
     classDef external fill:#f1efe8,stroke:#b4b2a9,color:#444441
@@ -36,107 +38,91 @@ flowchart TD
     classDef infra fill:#e6f1fb,stroke:#378add,color:#0c447c
 ```
 
-| Component                                 | Runs where                                 | Your responsibility                                                |
-| ----------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------ |
-| **SDK** (`@pollar/core`, `@pollar/react`) | Your frontend                              | Install and configure with your publishable key                    |
-| **Pollar Server**                         | Hosted by Pollar at `sdk.api.pollar.xyz` (SDK) and `server.api.pollar.xyz` (backend) | Nothing — you call it via the SDK or REST API                      |
-| **Dashboard**                             | Hosted by Pollar at `dashboard.pollar.xyz` | Configure your app settings, funding mode, and sponsorship wallets |
+| Component | Runs where | Your responsibility |
+| --- | --- | --- |
+| **SDK** (`@pollar/core`, `@pollar/react`, `@pollar/react-native`) | Your frontend | Install and configure with your publishable key |
+| **Pollar Server** | Hosted by Pollar at `sdk.api.pollar.xyz` (SDK API) and `server.api.pollar.xyz` (Server API) | Nothing: you call it through the SDK or the REST API |
+| **Dashboard** | Hosted by Pollar at `dashboard.pollar.xyz` | Configure your app: chains, custody, funding, sponsorship, ramps, billing |
+
+Behind the server, Pollar's wallet services hold the encrypted keys of Pollar-managed wallets, one service per chain and network. Turnkey holds the keys of co-signed and self-custody wallets, which only the user's device can propose a signature for. See [Security Model](https://docs.pollar.xyz/docs/core-concepts/security-model).
 
 ---
+
 ## Networks
 
-| Network     | Notes                                               |
-| ----------- | --------------------------------------------------- |
-| **Testnet** | Development and testing. Free, resets periodically. |
-| **Mainnet** | Production. Real XLM required.                      |
+| Network | Notes |
+| --- | --- |
+| **Testnet** | Development and testing. Stellar testnet, Solana devnet, Polygon Amoy. |
+| **Mainnet** | Production. Real assets. A new app starts on testnet; mainnet access is requested from the dashboard and approved by Pollar. |
 
 Futurenet is not supported by default. If your project requires it, [contact us](mailto:hello@pollar.xyz).
 
-Each network has its own set of API keys — see [API Keys](https://docs.pollar.xyz/docs/getting-started/api-keys) for prefixes and usage rules.
+Each network has its own API keys: see [API Keys](https://docs.pollar.xyz/docs/getting-started/api-keys) for prefixes and usage rules.
 
 > Full details on Stellar networks at [developers.stellar.org/docs/networks](https://developers.stellar.org/docs/networks).
+
 ---
 
-## App wallets
+## Who pays for the chain
 
-When you create an app in the Dashboard, Pollar provisions a set of Stellar accounts
-that cover costs on behalf of your users — not user funds, but the infrastructure
-costs of running wallets on Stellar. There are three distinct roles:
+Running wallets costs XLM reserves, network fees and starting balances. Each app pays them one of two ways, its **billing model**:
 
-| Wallet                  | Covers                                       | Charged when               |
-| ----------------------- | -------------------------------------------- | -------------------------- |
-| **Funding wallet**      | XLM reserve for new user wallets             | Once per wallet activation |
-| **Gas wallet**          | Transaction fees for all on-chain operations | Every transaction          |
-| **Distribution wallet** | Assets sent via distribution rules           | Every claim                |
+| Billing model | Who pays the chain | What the app keeps funded |
+| --- | --- | --- |
+| **Own wallets** (`LEGACY_WALLETS`) | The app's own operator wallets, which Pollar signs for | XLM, SOL or POL in those wallets |
+| **Credits** (`CREDITS`) | Pollar's pool, which charges the app in credits (100 credits = 1 USD) | A credit balance, topped up with USDC or USDT |
 
-By default a single wallet is created when you create your app and covers all three
-roles. This is fine for development and early-stage apps.
+On an app on credits, a paid flow answers **402 `SDK_CREDITS_INSUFFICIENT`** (or `SDK_BILLING_OVERDUE` for an overdue postpaid statement) when the credits do not cover it. See [Credits and Billing Models](https://docs.pollar.xyz/docs/core-concepts/credits).
 
-As your app scales, separating them into three distinct wallets gives you independent
-balance tracking, separate funding schedules, and tighter control over each cost
-center. For example, your gas wallet gets topped up frequently in small amounts while
-your funding wallet is replenished in larger batches tied to user growth. Mixing them
-in a single wallet makes it harder to monitor and plan each cost independently.
+### Operator wallets
 
-For configuration and recommended minimum balances see
-[Operator guide/Configuration/App Wallets](https://docs.pollar.xyz/docs/operator-guide/wallets/account-funding).
+An app on its own wallets has Stellar accounts that cover costs on behalf of its users: not user funds, but the infrastructure costs of running wallets.
+
+| Role | Covers | Charged when |
+| --- | --- | --- |
+| **Funding** | XLM reserve and starting balance for new user wallets | Once per wallet activation |
+| **Gas** | Transaction fees (fee-bumps) | Every sponsored transaction |
+| **Distribution** | Assets sent through distribution rules | Every claim |
+
+A new app has one wallet, the **global** wallet, that covers all three roles. An app that was split earlier keeps a separate wallet per role. Solana and Polygon each have a GAS wallet of their own, created from the dashboard. On an app on credits, distribution claims pay from the app's distribution vault instead.
+
+For balances and funding see [Account Funding](https://docs.pollar.xyz/docs/operator-guide/wallets/account-funding).
 
 ---
 
 ## Request lifecycle
 
-What happens from the moment a user calls `login()` to the moment their wallet is ready:
+What happens from the moment a user calls `login()` to the moment their wallet is ready, on an app that creates wallets at login:
 
 ```mermaid
 sequenceDiagram
     participant App as Your App
     participant SDK as Pollar SDK
     participant Server as Pollar Server
-    participant KMS as AWS KMS
-    participant Stellar as Stellar Network
+    participant Keys as Wallet service or Turnkey
+    participant Chain as Stellar
 
     App->>SDK: login({ provider: 'google' })
-    SDK->>Server: POST /wallets/create
-    Server->>KMS: generateDataKey()
-    KMS-->>Server: encryptedKey
-    Server->>Stellar: createAccount + changeTrust
-    Note over Server,Stellar: Fees and XLM reserve paid by your sponsorship wallet(s)
-    Stellar-->>Server: G-address confirmed
-    Server-->>SDK: { address, status }
-    SDK-->>App: wallet available in usePollar()
+    SDK->>Server: POST /v3/auth/login
+    Server->>Keys: create the user's wallet
+    Server-->>SDK: session, wallet with provisioning: 'CREATING'
+    SDK-->>App: isAuthenticated, wallet in usePollar()
+    Server->>Chain: createAccount (and trustlines), sponsored
+    Note over Server,Chain: Reserve and fees paid by the app's wallets or by Pollar's pool
+    SDK-->>App: wallet ready (provisioning cleared)
 ```
 
-For the deferred funding flow see [Funding Modes](https://docs.pollar.xyz/docs/core-concepts/funding-modes).
-
----
-
-## Security boundary
-
-All private keys — user wallets and your app's sponsorship wallets — are managed through AWS KMS and never stored in plaintext anywhere in Pollar's infrastructure.
-
-When the Pollar Server needs to sign a transaction, it requests a decryption from KMS. Every request leaves an immutable CloudTrail audit record.
-
-By design, the Pollar Server can only:
-
-- Sign fee-bump transactions (to cover transaction fees on behalf of users)
-
-- Execute account sponsorship sequences (to fund new wallets)
-
-The Pollar Server cannot move user funds — the sponsorship wallet only covers fees and XLM reserves and has no authority to transfer a user's assets.
-
-For the full security model see [Security Model](https://docs.pollar.xyz/docs/core-concepts/security-model).
+Provisioning runs after the login returns: until the account exists on-chain the wallet reports `provisioning: 'CREATING'` and a send answers `SDK_WALLET_NOT_READY`. On a Turnkey wallet the account creation is a request the user approves. An app can also create wallets on demand (`createWallet()`, `POST /v3/wallet/provision`) or never; see [Wallet Creation](https://docs.pollar.xyz/docs/core-concepts/wallet-creation). For the deferred funding flow see [Funding Modes](https://docs.pollar.xyz/docs/core-concepts/funding-modes).
 
 ---
 
 ## Data persistence
 
-| Data                         | Where it lives    | Retention         |
-| ---------------------------- | ----------------- | ----------------- |
-| Transaction history (recent) | Stellar RPC       | 7 days            |
-| Transaction history (full)   | Pollar PostgreSQL | Indefinite        |
-| Encrypted private keys       | AWS KMS           | Per key lifecycle |
-| App configuration            | Pollar PostgreSQL | Per app lifecycle |
+| Data | Where it lives | Retention |
+| --- | --- | --- |
+| Transaction history | Pollar PostgreSQL (`tx_records`) | Indefinite |
+| Pollar-managed private keys | Wallet service databases, AES-256-GCM encrypted | Per key lifecycle |
+| Co-signed and self-custody keys | Turnkey enclaves | Per wallet lifecycle |
+| App configuration | Pollar PostgreSQL | Per app lifecycle |
 
-The Pollar Server intercepts every fee-bump transaction it signs and persists it to PostgreSQL. Because Pollar processes all fee-bumps for your app, it has full visibility into your transaction history without indexing the entire blockchain.
-
-For details on querying history see [Transaction History](https://docs.pollar.xyz/docs/core-concepts/transaction-history).
+Pollar records every transaction it builds, signs, sponsors or submits for your app, on every chain, and serves history from those records. It does not index the whole blockchain. For details see [Transaction History](https://docs.pollar.xyz/docs/core-concepts/transaction-history).

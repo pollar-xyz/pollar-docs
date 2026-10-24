@@ -13,7 +13,7 @@ A fully working Next.js demo that shows Pollar's complete onboarding-to-payment 
 | Feature                        | Description                                                                                                              | Status        |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------ | ------------- |
 | Social login                   | Google, GitHub, and email OTP via `usePollar().login()`                                                                  | ✓             |
-| Wallet creation                | Stellar G-address created and encrypted with AWS KMS on login                                                            | ✓             |
+| Wallet creation                | Stellar G-address created on login, its key encrypted at rest (AES-256-GCM) by Pollar's wallet service                                                            | ✓             |
 | Deferred mode — KYC simulation | A button triggers a Next.js API route that calls `POST /v3/wallets/fund` with the secret key, simulating a backend KYC approval | ✓             |
 | Send USDC                      | Transfer USDC to any Stellar address with zero fee UX                                                                    | ✓             |
 | Receive                        | QR code (SEP-7 format) and shareable payment link                                                                        | `coming soon` |
@@ -34,7 +34,7 @@ A fully working Next.js demo that shows Pollar's complete onboarding-to-payment 
 
 ```bash
 git clone https://github.com/pollar-xyz/demo-nextjs
-cd template-nextjs
+cd demo-nextjs
 npm install
 cp .env.example .env.local
 ```
@@ -60,7 +60,7 @@ Open <http://localhost:3000>.
 ## App structure
 
 ```
-template-nextjs/
+demo-nextjs/
 ├── app/
 │   ├── layout.tsx              # PollarProvider wraps the app
 │   ├── page.tsx                # Route: login vs wallet view
@@ -168,7 +168,7 @@ In a real app, `/api/activate` would be called by your KYC provider's webhook �
 
 ### Distribution — claiming assets `coming soon`
 
-> An app-initiated push helper (`fund()`) is **not available yet**. Today, distribution works through **claimable rules**: you configure rules under **Treasury → Token Distribution**, and users claim them from the SDK.
+> An app-initiated push helper (`fund()`) is **not available yet**. Today, distribution works through **claimable rules**: you configure rules under **Treasury -> Token Distribution**, and users claim them from the SDK.
 
 The available flow uses the distribution-rules modal and client methods exposed by `usePollar()` / `@pollar/core`:
 
@@ -187,7 +187,7 @@ export function ClaimButton() {
 }
 ```
 
-For headless control, use `getClient().listDistributionRules()` and `getClient().claimDistributionRule(...)`. Configured assets, amounts, and rate limits (per claim / period) are set per asset under **Treasury → Token Distribution**, which debits the app's **distribution wallet** — separate from the funding and gas wallets.
+For headless control, use `getClient().listDistributionRules()` and `getClient().claimDistributionRule(...)`. Configured assets, amounts, and rate limits (per claim / period) are set per asset under **Treasury -> Token Distribution**, which debits the app's **distribution wallet** — separate from the funding and gas wallets.
 
 ### Receive — QR code and shareable link
 
@@ -220,14 +220,14 @@ The QR code currently encodes the user's G-address as a payment link. SEP-7 supp
 
 ## Funding modes in the demo
 
-Switch from **Dashboard → Wallets → Account Funding** (Stellar tab) — no code changes needed.
+Switch from **Dashboard -> Wallets -> Account Funding** (Stellar tab) — no code changes needed.
 
 | Mode          | Behavior in the demo                                      |
 | ------------- | --------------------------------------------------------- |
 | **Immediate** | Wallet funded on login. KYC gate hidden.                  |
 | **Deferred**  | Wallet unfunded until "Simulate KYC approval" is clicked. |
 
-> A wallet in either mode can always be funded manually from **Wallets → Wallets** (the **Fund 2 XLM** action on not-yet-funded wallets).
+> A wallet in either mode can always be funded manually from **Wallets -> Wallets** (the **Fund** action on not-yet-funded Pollar-managed wallets).
 
 ---
 

@@ -2,9 +2,9 @@
 title: "Overview"
 ---
 
-**Pollar** is the onboarding-to-payment infrastructure layer for consumer apps on **Stellar and Solana**. The full stack that takes a new user from clicking **Continue with Google** to sending USDC — without ever showing them a seed phrase, a wallet address, a transaction fee, a trustline prompt or a rent-exempt minimum.
+**Pollar** is the onboarding-to-payment infrastructure layer for consumer apps on **Stellar, Solana and Polygon**: the full stack that takes a new user from clicking **Continue with Google** to sending USDC, without ever showing them a seed phrase, a wallet address, a transaction fee, a trustline prompt or a rent-exempt minimum.
 
-One login gives the user a wallet on every chain your app enables. Solana is fully supported for the whole wallet lifecycle: managed and co-signed wallets, Sign In With Solana for Phantom, Solflare and Backpack, SOL and SPL balances, sponsored transfers with the recipient's token account created for them, history, and fiat ramps. See [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support) for the feature matrix.
+One login gives the user a wallet on every chain your app enables. Solana is fully supported for the whole wallet lifecycle: managed, co-signed and self-custody wallets, Sign In With Solana for Phantom, Solflare and Backpack, SOL and SPL balances, sponsored transfers with the recipient's token account created for them, and history. See [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support) for the feature matrix.
 
 ---
 
@@ -66,7 +66,7 @@ export default function Root() {
 }
 ```
 
-In a handful of lines: OAuth authentication, a funded Stellar wallet, and USDC payments. No seed phrases. No fee prompts. No trustline configuration. (`runTx` is the one-shot build → sign → submit helper; see the [SDK Reference](https://docs.pollar.xyz/docs/sdk-reference/pollar-react) for the split `buildTx` / `signAndSubmitTx` flow.)
+In a handful of lines: OAuth authentication, a funded Stellar wallet, and USDC payments. No seed phrases. No fees for the user. No trustline configuration. The SDK asks the user to confirm each signature unless the app's dashboard says otherwise. (`runTx` is the one-shot build, sign and submit helper; see the [SDK Reference](https://docs.pollar.xyz/docs/sdk-reference/pollar-react) for the split `buildTx` / `signAndSubmitTx` flow.)
 
 The same app on Solana: the login is identical, and the payment is one call.
 
@@ -98,4 +98,4 @@ A user who already has Phantom, Solflare or Backpack signs in with **Sign In Wit
 | Built for startups    | No (enterprise) | Yes   | Yes     | Partial              | **Yes**          |
 | Full onboarding stack | No              | No    | No      | No                   | **Yes**          |
 
-> Pollar also **integrates** with several of these: first-party adapters let you use Privy embedded wallets or any Stellar Wallets Kit wallet as a login method on top of Pollar's stack. See [Wallet Adapters](https://docs.pollar.xyz/docs/sdk-reference/wallet-adapters).
+> Pollar also **integrates** with wallets users already have: first-party adapters let any Stellar Wallets Kit wallet or Solana Wallet Standard wallet be a login method on top of Pollar's stack. See [Wallet Adapters](https://docs.pollar.xyz/docs/sdk-reference/wallet-adapters).

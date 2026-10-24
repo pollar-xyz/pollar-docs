@@ -4,7 +4,7 @@ title: "Wallet Creation"
 
 By default every user gets a wallet the first time they sign in. **Wallet creation** decides *when* that wallet exists; [Funding Modes](https://docs.pollar.xyz/docs/core-concepts/funding-modes) decide when it is funded once it does.
 
-Configure it from **Dashboard → Wallets → Wallet settings**. No code changes are needed to keep the default.
+Configure it from **Dashboard -> Wallets -> Wallet settings**. No code changes are needed to keep the default.
 
 ---
 
@@ -72,6 +72,10 @@ if (!pollar.hasWallet()) {
 `createWallet()` calls `POST /v3/wallet/provision`. It creates the wallet on every chain your app serves, funds it per your [funding mode](https://docs.pollar.xyz/docs/core-concepts/funding-modes) and sets up your enabled trustlines, exactly as a login does in **At login** mode. It updates the session, so `usePollar()`, `getWallet()` and `onWalletStateChange` all see the new wallet. Calling it again returns the same wallet.
 
 In React, `<WalletButton>` offers **Create wallet** to a signed-in user without one, and `usePollar()` exposes `hasWallet` and `createWallet`.
+
+### When the user picks the custody
+
+An app whose wallet custody is set to let each user choose (a mode the dashboard keeps for apps that already use it) also completes the login without a wallet, in any creation mode. The user picks co-signed or self-custody, and `createWallet({ custody: 'COSIGNED' })` or `createWallet({ custody: 'SELF_CUSTODY' })` carries the choice. `<WalletButton>` offers both and creates a self-custody wallet only after the user accepts its risks. See [Co-signed and Self-custody Wallets](https://docs.pollar.xyz/docs/core-concepts/co-signed-wallets).
 
 ### Who cannot get one
 

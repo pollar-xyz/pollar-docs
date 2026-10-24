@@ -14,7 +14,7 @@ A passkey login flow that ends with a deployed C-address, verifiable on Stellar 
 
 ## 1. Enable Smart Wallet in the dashboard
 
-Go to **Build → Branding** and turn on **Smart Wallet (passkey)**. This adds the passkey option (`styles.smartWallet`) to the SDK login modal.
+Go to **Build -> Branding** and turn on **Smart Wallet (passkey)**. This adds the passkey option (`styles.smartWallet`) to the SDK login modal.
 
 ## 2. Install and mount the provider
 

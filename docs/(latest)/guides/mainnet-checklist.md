@@ -2,40 +2,58 @@
 title: "Mainnet Checklist"
 ---
 
-Before switching your app to Mainnet, verify every item in this checklist. There are no approval requirements from Pollar — this is a technical checklist you verify independently.
+Every app starts on testnet. Mainnet access is requested from the dashboard and approved by Pollar; the approval creates the app's mainnet counterpart in the same project. Before you request it, and before you send real users to it, verify every item below.
+
+---
+
+## Mainnet access
+
+- [ ] Requested mainnet access from **Build > Settings > Request Mainnet access** (or the network control in the top bar). Only the app's owner or an admin can request it.
+
+- [ ] The request is approved, and the mainnet app appears in the project. A rejected request carries Pollar's review note; fix what it says and resubmit.
+
+- [ ] Generated `pub_mainnet_` and `sec_mainnet_` keys in the mainnet app.
 
 ---
 
 ## Dashboard configuration
 
-- [ ] Created a separate Mainnet app in the Dashboard (do not reuse your Testnet app)
+- [ ] Added your production domain(s) in **Build > Domains**
 
-- [ ] Generated `pub_mainnet_` and `sec_mainnet_` keys
+- [ ] **Wallets > Wallet settings > Wallet custody** set to **Co-signed with Turnkey (2-of-2)** or **Self-custody with Turnkey (1-of-1)**. Pollar custody is not available on mainnet. See [Co-signed and Self-custody Wallets](https://docs.pollar.xyz/docs/core-concepts/co-signed-wallets).
 
-- [ ] Added your production domain(s) in **Dashboard → Build → Domains**
+- [ ] **Wallets > Wallet settings > Signature confirmation** set to the policy you want (always ask, ask once for a window, or never ask). Ramp legs always ask.
 
-- [ ] Funding mode configured correctly for your use case
+- [ ] Funding mode configured for your use case. Deferred funding applies to Pollar-managed wallets only; with Turnkey wallets, use Immediate. See [Funding Modes](https://docs.pollar.xyz/docs/core-concepts/funding-modes).
 
-- [ ] At least one asset configured in **Tokens / Trustlines**
+- [ ] At least one asset configured in **Wallets > Tokens & Trustlines**
 
-- [ ] Branding & UI configured with your production logo and colors
+- [ ] Branding configured with your production logo and colors
 
 ---
 
-## App Wallets
+## Paying for the chain
 
-- [ ] Funding wallet active on Stellar Mainnet with sufficient XLM
+Check which [billing model](https://docs.pollar.xyz/docs/core-concepts/credits) the app is on (**Billing > Credits** says it).
+
+**On credits:**
+
+- [ ] A credit balance that covers your expected activations and transactions, topped up at one of the app's deposit addresses (USDC or USDT)
+
+- [ ] The low-balance alert on **Billing > Credits** set, so you hear about it before paid flows start answering 402
+
+**On your own wallets:**
+
+- [ ] Funding wallet active on Stellar mainnet with sufficient XLM
   - Recommended minimum: 50 XLM to start
-
-  - Calculate based on expected activations: `activations × (1 + assets × 0.5) XLM`
+  - Calculate based on expected activations: `activations x (1 + assets x 0.5) XLM`, plus the starting balance
 
 - [ ] Gas wallet active and funded
   - Recommended minimum: 10 XLM
 
-- [ ] Distribution wallet funded (if distributing tokens)
+- [ ] Solana or Polygon GAS wallet created and funded under **Wallets > Sponsorship**, if the app enables those chains
 
-- [ ] Low-balance alerts configured in **Dashboard → Monitor → Alerts**
-  - At minimum: email alert for funding wallet below 20 XLM
+- [ ] Distribution wallet funded (if distributing tokens)
 
 ---
 
@@ -55,51 +73,55 @@ Before switching your app to Mainnet, verify every item in this checklist. There
 
 - [ ] `POST /v3/wallets/fund` endpoint deployed to production
 
-- [ ] Endpoint uses `sec_mainnet_` secret key
+- [ ] Endpoint uses the `sec_mainnet_` secret key
 
 - [ ] Endpoint validates input before calling Pollar
 
-- [ ] `409 Conflict` response handled as success (wallet already active)
+- [ ] `409 WALLET_ALREADY_FUNDED` handled as success
 
-- [ ] `402 Payment Required` triggers an alert — your funding wallet needs a top-up
+- [ ] `402 SDK_CREDITS_INSUFFICIENT` / `SDK_BILLING_OVERDUE` (apps on credits: top up the credits) and `502 FUND_XLM_FAILED` (apps on their own wallets: the funding wallet needs XLM) trigger an alert
 
 ---
 
 ## SDK integration
 
-- [ ] `PollarProvider` uses production publishable key (`client={{ apiKey: 'pub_mainnet_...' }}`)
+- [ ] `@pollar/core`, `@pollar/react` or `@pollar/react-native` **0.12.0 or later**: Turnkey wallets and the signature confirmation need it
+
+- [ ] `PollarProvider` uses the production publishable key (`client={{ apiKey: 'pub_mainnet_...' }}`)
+
+- [ ] A headless integration subscribes to `onConfirmationRequest()`; with a prompt due and nothing subscribed, signatures end with `SDK_CONFIRMATION_UNAVAILABLE`
+
+- [ ] Users can add a recovery method (a passkey, an email code or another device) before they receive funds: until they do, a Turnkey wallet signs only its own setup and answers `SDK_WALLET_RECOVERY_REQUIRED`. `@pollar/react` shows `<RecoveryModal>` for it
 
 - [ ] No hardcoded testnet addresses or amounts
 
-- [ ] Error handling implemented for transaction (`runTx` / `signAndSubmitTx`) failures — inspect the returned `SubmitOutcome.status`
+- [ ] Error handling implemented for transaction (`runTx` / `signAndSubmitTx`) failures: inspect the returned `SubmitOutcome.status`
 
-- [ ] Unfunded wallets handled in the UI (Deferred mode — wallet exists but not yet activated)
+- [ ] Wallets still being provisioned handled in the UI (`wallet.provisioning === 'CREATING'`, `SDK_WALLET_NOT_READY`)
 
-- [ ] Token distribution rules configured in Dashboard if used
+- [ ] Token distribution rules configured in the dashboard if used
 
 ---
 
 ## Testing
 
-- [ ] Full onboarding flow tested end-to-end on Mainnet with a real user account
+- [ ] Full onboarding flow tested end-to-end on mainnet with a real user account, including approving the wallet setup and adding a recovery method
 
 - [ ] At least one real USDC payment sent and confirmed
 
-- [ ] Transaction appears in **Dashboard → Monitor → Transactions**
+- [ ] Transaction appears in **Monitor > Transactions**
 
 - [ ] Wallet visible on [Stellar Expert](https://stellar.expert)
-
-- [ ] Webhook events received correctly (if configured)
 
 ---
 
 ## Observability
 
-- [ ] **Dashboard → Monitor → Logs** monitored after first real users
+- [ ] **Monitor > Logs** watched after the first real users
 
 - [ ] Error alerting set up (Sentry, Datadog, or similar) for your backend
 
-- [ ] Sponsorship wallet balances checked after first day of real usage
+- [ ] Credit balance, or operator wallet balances, checked after the first day of real usage
 
 ---
 

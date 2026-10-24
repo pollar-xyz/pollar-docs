@@ -2,25 +2,22 @@
 title: "Transaction History"
 ---
 
-Pollar provides complete transaction history for every wallet through two complementary layers — one from the Stellar network and one from Pollar's own database.
+Pollar keeps the transaction history of every wallet in its own database. It does not read history from the chain at request time and does not index the whole blockchain.
 
 ---
 
-## Two-layer architecture
+## Where history comes from
 
 ```mermaid
 flowchart LR
-    subgraph sources["Data sources"]
-        A("Stellar RPC\nLast 7 days"):::stellar
-        B("Pollar PostgreSQL\nFull history"):::db
-    end
-
+    A("Every transaction Pollar builds,\nsigns, sponsors or submits"):::stellar
+    B("Pollar PostgreSQL\ntx_records"):::db
     C("Pollar Server"):::server
-    D("Your App\nSDK · REST API"):::app
+    D("Your App\nSDK, REST API"):::app
 
-    A -->|"recent txs"| C
-    B -->|"full history"| C
-    C -->|"merged, paginated"| D
+    A -->|"recorded"| B
+    B -->|"paginated"| C
+    C --> D
 
     classDef stellar fill:#faeeda,stroke:#ba7517,color:#633806
     classDef db fill:#e6f1fb,stroke:#378add,color:#0c447c
@@ -28,18 +25,13 @@ flowchart LR
     classDef app fill:#e1f5ee,stroke:#1d9e75,color:#085041
 ```
 
-| Layer  | Source            | Retention  |
-| ------ | ----------------- | ---------- |
-| Recent | Stellar RPC       | 7 days     |
-| Full   | Pollar PostgreSQL | Indefinite |
+Pollar records a transaction when it handles it, on every chain: Stellar fee-bumps and sponsored operations, Solana and Polygon transfers, co-signed requests and ramp legs. A background reconcile then follows each record until the chain settles it. History is kept indefinitely.
 
-The Pollar Server captures every transaction at fee-bump signing time and persists it to PostgreSQL. Because Pollar processes all fee-bumps for your app, it has full visibility without indexing the entire blockchain.
-
-> Horizon (the older Stellar API) is formally deprecated by SDF. Pollar uses Stellar RPC exclusively.
+A transaction an external wallet submits on its own, without going through Pollar, does not appear in the history.
 
 ---
 
-## SDK — React hook
+## SDK: React hook
 
 `txHistory` is a reactive state machine (`TxHistoryState`). Trigger a load with `fetchTxHistory()` on the underlying client; the provider keeps `txHistory` in sync.
 
@@ -71,7 +63,7 @@ export function TxHistory() {
 
 > The simplest path is the built-in modal: call `openTxHistoryModal()` from `usePollar()`.
 
-## SDK — Core client
+## SDK: Core client
 
 ```typescript
 await pollar.fetchTxHistory({ limit: 20, offset: 0 });
@@ -100,10 +92,11 @@ GET https://sdk.api.pollar.xyz/v3/tx/history?limit=20&offset=0
 
 | Parameter | Type     | Default | Description                          |
 | --------- | -------- | ------- | ------------------------------------ |
-| `limit`   | `number` | —       | Records per page.                    |
+| `limit`   | `number` | `20`    | Records per page, 1 to 50.           |
 | `offset`  | `number` | `0`     | Offset for pagination.               |
-| `network` | `string` | session | `testnet` or `mainnet`.              |
 | `chain`   | `'STELLAR' \| 'SOLANA' \| 'POLYGON'` | all | Only this chain's records. |
+
+The network is the one of the API key; there is no `network` parameter. A `limit` outside 1 to 50 answers `400 VALIDATION_ERROR`.
 
 **Response (`content`):**
 
@@ -117,7 +110,7 @@ GET https://sdk.api.pollar.xyz/v3/tx/history?limit=20&offset=0
       "network": "testnet",
       "status": "SUCCESS",
       "operation": "payment",
-      "fee": { "amount": "100", "unit": "stroops" },
+      "fee": { "amount": "0.00001", "unit": "XLM" },
       "details": {},
       "summary": "Sent 10.00 USDC",
       "createdAt": "2026-03-15T10:30:00Z"
@@ -151,7 +144,7 @@ History uses **offset-based** pagination. Increase `offset` by `limit` to page f
 async function getAllTransactions() {
   const all = [];
   let offset = 0;
-  const limit = 100;
+  const limit = 50;
 
   for (;;) {
     await pollar.fetchTxHistory({ limit, offset });
@@ -176,7 +169,7 @@ Each record carries a `status` reflecting its lifecycle:
 | --------- | -------------------------------------------- |
 | `PENDING` | Built/submitted, not yet confirmed on-chain. |
 | `SUCCESS` | Confirmed on-chain.                          |
-| `FAILED`  | Rejected by Stellar.                         |
+| `FAILED`  | Rejected by the chain, or failed before submission. |
 
 The human-readable `operation` and `summary` fields describe what the transaction did.
 
@@ -192,7 +185,7 @@ type TxHistoryRecord = {
   network: 'testnet' | 'mainnet';
   status: 'PENDING' | 'SUCCESS' | 'FAILED';
   operation: string;
-  fee?: { amount: string; unit: string }; // stroops, lamports, wei
+  fee?: { amount: string; unit: string }; // XLM on Stellar, lamports on Solana, wei on Polygon
   resultCode?: string;
   details: Record<string, unknown>;
   summary: string;

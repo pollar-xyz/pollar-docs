@@ -2,7 +2,7 @@
 title: "Quickstart"
 ---
 
-Get from zero to a working wallet with USDC payments in under 10 minutes. The steps below use Stellar; a Solana app follows the same steps with Solana enabled under [Chains](https://docs.pollar.xyz/docs/operator-guide/wallets/chains) and `sendPayment({ chain: 'SOLANA', ... })` for the payment (see [Payments UI](https://docs.pollar.xyz/docs/guides/payments-ui#on-solana)).
+Get from zero to a working wallet with USDC payments in under 10 minutes. The steps below use Stellar; a Solana app follows the same steps with Solana enabled under **Wallets > Wallet settings > Enabled chains** ([Wallet settings](https://docs.pollar.xyz/docs/operator-guide/wallets/settings)) and `sendPayment({ chain: 'SOLANA', ... })` for the payment (see [Payments UI](https://docs.pollar.xyz/docs/guides/payments-ui#on-solana)).
 
 **Requirements:** Node.js 20+ · React 18+ · A publishable key from [dashboard.pollar.xyz](https://dashboard.pollar.xyz)
 
@@ -92,12 +92,12 @@ export function LoginButton() {
 When `login()` is called, Pollar:
 
 1. Authenticates the user via OAuth (Google or GitHub) or email OTP and opens the session
-2. Creates a managed wallet on every chain the app enables (a Stellar G-address, a Solana address, ...), with the key encrypted at rest
+2. Creates a wallet on every chain the app enables (a Stellar G-address, a Solana address, ...). On testnet it is a Pollar-managed wallet whose key Pollar's wallet service keeps encrypted at rest; on mainnet it is a [co-signed or self-custody](https://docs.pollar.xyz/docs/core-concepts/co-signed-wallets) Turnkey wallet whose key only the user's device can use
 3. In the background, activates the Stellar account on-chain, enables trustlines for the assets configured in your Dashboard, and funds it per your [funding mode](https://docs.pollar.xyz/docs/core-concepts/funding-modes); on Solana, sends the starting SOL you configured
 
 `isAuthenticated` turns true at step 1. `wallet` is `null` until the wallet exists, and on an app with [on-demand wallet creation](https://docs.pollar.xyz/docs/core-concepts/wallet-creation) it stays `null` until you call `createWallet()`. A payment sent while the Stellar account is still being activated returns `SDK_WALLET_NOT_READY`; retry once `wallet.provisioning` is `READY`.
 
-The user never sees a seed phrase, a wallet address, or a trustline prompt.
+The user never sees a seed phrase. On a Pollar-managed wallet there is no trustline prompt either; on a Turnkey wallet the user approves the account creation and each trustline, and adds a recovery method (a passkey, an email code or another device) before the wallet signs anything else. See [Passkeys and wallet recovery](https://docs.pollar.xyz/docs/guides/passkeys-guide).
 
 ---
 
@@ -129,7 +129,7 @@ export function SendButton() {
 
 `runTx(operation, params)` is the one-shot helper that builds, signs, and submits in a single call (alias of `buildAndSignAndSubmitTx`). For step-by-step control — and to drive the transaction modal UI — use `buildTx()` then `signAndSubmitTx()`; see [`@pollar/core`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core). For a native XLM payment use `asset: { type: 'native' }`.
 
-Transaction fees are paid from your app's sponsorship wallet configured in the Dashboard. Users pay zero XLM.
+Before signing, the SDK shows the transaction in `<ConfirmModal>` and waits for the user: that is the default policy, set per app under **Wallets > Wallet settings > Signature confirmation** (always ask, ask once for a window, or never ask). Transaction fees are paid from your app's gas wallet, or from Pollar's pool on an [app on credits](https://docs.pollar.xyz/docs/core-concepts/credits). Users pay zero XLM.
 
 ---
 

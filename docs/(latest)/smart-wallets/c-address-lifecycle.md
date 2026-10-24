@@ -6,12 +6,12 @@ Pollar gives you a single passkey login call — `createSmartWallet()` / `loginS
 
 ## G-address vs C-address at a glance
 
-A **G-address** is a classic Stellar account controlled by an ed25519 keypair (in Pollar's custodial flow, that key is managed server-side via KMS). A **C-address** is a smart contract deployed on Soroban that *acts as an account* — its authorization logic lives in code, and in Pollar it is controlled by the user's **passkey** credential.
+A **G-address** is a classic Stellar account controlled by an ed25519 keypair (in Pollar's custodial flow, that key is kept server-side by Pollar's wallet service, encrypted at rest). A **C-address** is a smart contract deployed on Soroban that *acts as an account* — its authorization logic lives in code, and in Pollar it is controlled by the user's **passkey** credential.
 
 | Aspect           | G-address (custodial)     | C-address (passkey smart wallet)       |
 |------------------|---------------------------|----------------------------------------|
 | Identifier       | Starts with `G`           | Starts with `C`                        |
-| Controlled by    | KMS key (server-side)     | User passkey (WebAuthn)                |
+| Controlled by    | Server-side key (encrypted) | User passkey (WebAuthn)                |
 | Authorization    | Native ed25519 signature  | `__check_auth` in the contract         |
 | Creation         | `createAccount` operation | `InvokeHostFunction` (contract deploy) |
 | Holding an asset | `changeTrust` trustline   | SAC balance (no classic trustline)     |
@@ -55,7 +55,7 @@ C-addresses don't use classic trustlines. They interact with assets through the 
 
 ### Signing: full transaction vs auth entries
 
-For a custodial G-address, the KMS key signs the full transaction, which Pollar wraps in a fee-bump. For a C-address the signing model changes:
+For a custodial G-address, the server-side key signs the full transaction, which Pollar wraps in a fee-bump. For a C-address the signing model changes:
 
 1. Pollar builds the contract invocation.
 2. It simulates the transaction to discover which **auth entries** need signatures.

@@ -10,7 +10,7 @@ Pollar supports two account types side by side: **custodial G-addresses** (socia
 
 You don't pick one globally. You enable the login methods you want, and each user's choice determines their account type:
 
-- Turn on **Build → Branding → Smart Wallet (passkey)** to show the passkey option.
+- Turn on **Build -> Branding -> Smart Wallet (passkey)** to show the passkey option.
 - Keep social / email enabled for custodial G-address users.
 
 The login modal then shows both; some users end up with C-addresses, others with G-addresses. Existing G-address users are unaffected.
@@ -33,9 +33,9 @@ The login modal then shows both; some users end up with C-addresses, others with
 
 ```typescript
 const { wallet } = usePollar();
-// custody: 'internal' → custodial G-address (provider: 'google' | 'github' | 'email' | …)
-// custody: 'smart'    → passkey C-address (provider: 'passkey')
-// custody: 'external' → user-connected wallet via an adapter
+// custody: 'internal' -> custodial G-address (provider: 'google' | 'github' | 'email' | …)
+// custody: 'smart'    -> passkey C-address (provider: 'passkey')
+// custody: 'external' -> user-connected wallet via an adapter
 const isSmart = wallet?.custody === 'smart';
 ```
 
