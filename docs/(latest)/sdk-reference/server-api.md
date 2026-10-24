@@ -58,11 +58,11 @@ Reads the on-chain balance of any address. `?chain=stellar|polygon|solana` is op
 
 ### `POST /v3/wallets/fund`
 
-Opens a custodial Stellar wallet on-chain, the same way the SDK login does: a CAP-33 sponsored createAccount whose sponsor locks the base reserve, seeding the wallet with the app's configured starting balance. Used in Deferred mode when a business event happens (KYC approved, first deposit, etc.).
+Opens a Deferred wallet's Stellar account when a business event happens (KYC approved, first deposit, etc.). A custodial wallet is funded on-chain the same way the SDK login does it: a CAP-33 sponsored createAccount whose sponsor locks the base reserve, seeding the wallet with the app's configured starting balance.
 
 The sponsor is the app's funding wallet (its global wallet when the app has no split wallets). For an app on credits, Pollar's pool sponsors the account and the app's credits pay for it (see [Credits](https://docs.pollar.xyz/docs/core-concepts/credits)).
 
-Only wallets Pollar holds the key for are funded. A wallet your user brings, or a co-signed or self-custody (Turnkey) wallet, is refused: those are opened from the device, where the user approves the account creation.
+A co-signed or self-custody (Turnkey) wallet needs its user's vote, so the call opens the account creation request instead and answers `202` with its `requestId`. The user approves it in their next session (the SDK shows it like any setup request), and the account is created with the same sponsor and starting balance. Calling again while it is pending answers the same request. A wallet your user brings is refused (`400 TX_EXTERNAL_WALLET_SERVER_SIGN`).
 
 ```bash
 POST https://server.api.pollar.xyz/v3/wallets/fund
@@ -81,7 +81,8 @@ Content-Type: application/json
 | Code | Meaning |
 | --- | --- |
 | `200 OK` | Wallet funded (`SERVER_WALLET_FUNDED`). Its reserve is sponsored on-chain. |
-| `400 Bad Request` | Missing or malformed `publicKey` (`VALIDATION_ERROR`). |
+| `202 Accepted` | Turnkey wallet: the account creation waits for the user's approval (`SERVER_WALLET_ACCOUNT_REQUESTED`, content `{ publicKey, requestId }`). |
+| `400 Bad Request` | Missing or malformed `publicKey` (`VALIDATION_ERROR`), or a wallet your user brings (`TX_EXTERNAL_WALLET_SERVER_SIGN`). |
 | `402 Payment Required` | App on credits: its credits do not cover the account (`SDK_CREDITS_INSUFFICIENT`), or a postpaid statement is overdue (`SDK_BILLING_OVERDUE`). Top up from **Billing > Credits**. |
 | `403 Forbidden` | `publicKey` belongs to a wallet owned by another app (`FORBIDDEN`). |
 | `404 Not Found` | `publicKey` is not a known wallet (`WALLET_NOT_FOUND`), or the app has no funding or global wallet to sponsor it (`APP_WALLET_NOT_FOUND`). |

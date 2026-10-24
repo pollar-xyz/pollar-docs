@@ -24,7 +24,7 @@ Every app starts on testnet. Mainnet access is requested from the dashboard and 
 
 - [ ] **Wallets > Wallet settings > Signature confirmation** set to the policy you want (always ask, ask once for a window, or never ask). Ramp legs always ask.
 
-- [ ] Funding mode configured for your use case. Deferred funding applies to Pollar-managed wallets only; with Turnkey wallets, use Immediate. See [Funding Modes](https://docs.pollar.xyz/docs/core-concepts/funding-modes).
+- [ ] Funding mode configured for your use case. In Deferred mode on mainnet, `POST /v3/wallets/fund` opens each Turnkey wallet's account creation and the user approves it in their next session (`202`). See [Funding Modes](https://docs.pollar.xyz/docs/core-concepts/funding-modes).
 
 - [ ] At least one asset configured in **Wallets > Tokens & Trustlines**
 
@@ -78,6 +78,8 @@ Check which [billing model](https://docs.pollar.xyz/docs/core-concepts/credits) 
 - [ ] Endpoint validates input before calling Pollar
 
 - [ ] `409 WALLET_ALREADY_FUNDED` handled as success
+
+- [ ] `202 SERVER_WALLET_ACCOUNT_REQUESTED` handled as pending: the account opens once the user approves it
 
 - [ ] `402 SDK_CREDITS_INSUFFICIENT` / `SDK_BILLING_OVERDUE` (apps on credits: top up the credits) and `502 FUND_XLM_FAILED` (apps on their own wallets: the funding wallet needs XLM) trigger an alert
 

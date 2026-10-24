@@ -215,6 +215,7 @@ SDK only. Every signing call passes the app's confirmation policy first (see [Si
 | `TX_BAD_SEQUENCE` (409)    | Sequence number race                                    | Safe to retry                                       |
 | `TX_IDEMPOTENCY_CONFLICT` (409) | A conflicting submission is already in flight      | Wait and check transaction status                   |
 | `TX_FEE_LIMIT_EXCEEDED` (422) | The fee is above the app's limit                     | Check the app's transaction policy                  |
+| `TX_EXTERNAL_WALLET_SERVER_SIGN` (400) | The server was asked to sign for a wallet whose key it does not hold | Sign on the device, through the wallet's adapter |
 
 When the network refuses a transaction for a known reason, the code names it (all 422):
 

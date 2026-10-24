@@ -35,7 +35,7 @@ flowchart TD
 | **Immediate** | About 1 to 2 XLM locked per registration | Automatic after login | Apps without compliance requirements |
 | **Deferred** | About 1 to 2 XLM locked per funded wallet only | A call from your backend | Neobanks, remittance apps, KYC-gated products |
 
-Deferred funding applies to **Pollar-managed wallets**. A co-signed or self-custody wallet (every new wallet on mainnet) has its account created by a request the user approves, which Pollar opens after login in Immediate mode; `POST /v3/wallets/fund` refuses those wallets, since Pollar cannot sign for them. Use Immediate on an app whose wallets live in Turnkey.
+A co-signed or self-custody wallet (every new wallet on mainnet) has its account created by a request the user approves. In Immediate mode Pollar opens it after login; in Deferred mode `POST /v3/wallets/fund` opens it (`202` with the request id) and the user approves it in their next session. A Pollar-managed wallet is funded by that call directly.
 
 > **How the reserve is covered:** every Stellar account needs a base reserve of **1 XLM**, and each trustline (asset) you configure in the dashboard adds **0.5 XLM**. Pollar sponsors these reserves (CAP-33): the XLM stays **locked in the sponsor's account** while it sponsors the user wallet; it is not transferred to the user. The sponsor is your app's funding wallet, or Pollar's pool on an [app on credits](https://docs.pollar.xyz/docs/core-concepts/credits), which charges the reserve in credits.
 >

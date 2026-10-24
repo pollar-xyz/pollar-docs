@@ -39,7 +39,7 @@ Controls when new Stellar wallets get their account on-chain. Switching applies 
 | **Immediate** | When the user logs in, automatically | Apps without compliance requirements |
 | **Deferred** | When your backend calls `POST /v3/wallets/fund` after a business event (KYC approved, first deposit) | Neobanks, remittance apps, KYC-gated products |
 
-In Deferred mode the user has an address at registration, but its account is not created on-chain, and nothing is paid, until your backend funds it. `POST /v3/wallets/fund` funds Pollar-custody wallets only: it refuses co-signed, self-custody and external wallets. See the [Deferred Flow Guide](https://docs.pollar.xyz/docs/guides/deferred-flow-guide).
+In Deferred mode the user has an address at registration, but its account is not created on-chain, and nothing is paid, until your backend funds it. `POST /v3/wallets/fund` funds a Pollar-custody wallet directly; for a co-signed or self-custody wallet it opens the account creation request the user approves in their next session. External wallets are refused. See the [Deferred Flow Guide](https://docs.pollar.xyz/docs/guides/deferred-flow-guide).
 
 **Starting XLM balance** (Immediate mode): extra XLM added to each new wallet on top of the sponsored reserve, paid by the funding wallet. From 0 to 100 XLM, up to 7 decimals; 0 (the default) means wallets start empty.
 
