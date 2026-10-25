@@ -69,6 +69,8 @@ await runTx(
 );
 ```
 
+A memo is `text` (up to 28 bytes), `id` (an unsigned 64-bit integer, as a string) or `hash` (32 bytes as 64 hex characters, for example a SHA-256 you want on the ledger; see [Anchor a receipt on Stellar](https://docs.pollar.xyz/docs/guides/x402-payments#anchor-a-receipt-on-stellar)).
+
 ### On Solana
 
 `runTx` builds Stellar transactions. On Solana use `sendPayment` with `chain: 'SOLANA'`; it is the same one-shot call and resolves to the same `SubmitOutcome`. Amounts are integer base units: lamports for SOL, the mint's smallest unit for an SPL token (USDC has 6 decimals).

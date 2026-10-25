@@ -224,7 +224,7 @@ The login modal also offers Freighter and Albedo when the application enables th
 - `<CosignModal>`, `<RecoveryModal>`, `<CustodyMigrationModal>`: the Turnkey wallet screens the provider opens by itself.
 - Feature modals: `SendModal`, `ReceiveModal`, `EnabledAssetsModal`, `SessionsModal`, `SwapModal`, `EarnModal`, `DistributionRulesModal` (or `FeatureModal` with a `feature` name).
 - Templates: `LoginModalTemplate`, `TransactionModalTemplate`, `KycModalTemplate`, `RampWidgetTemplate`, `TxHistoryModalTemplate`, `WalletBalanceModalTemplate`, `WalletButtonTemplate`, `CosignModalTemplate`, `RecoveryModalTemplate`, `CustodyMigrationModalTemplate`: the presentational layer of each component, to build your own container around it.
-- `createPollarAdapterHook(key)`: builds a typed hook over an adapter passed to `PollarProvider`. Each method builds the transaction and then signs and submits it.
+- `createPollarAdapterHook(key)`: builds a typed hook over an adapter passed to `PollarProvider`. Each method builds the transaction and then signs and submits it, or, for a method that returns `{ unsignedAuthEntry, validUntilLedger, complete }`, signs the entry without submitting and resolves to what `complete` returned (see [Pay for APIs with x402](https://docs.pollar.xyz/docs/guides/x402-payments)).
 
 Components are styled with `StyleSheet`; there is no stylesheet to import. Theme, accent color, logo and login methods come from the dashboard and can be overridden with the `styles` prop.
 

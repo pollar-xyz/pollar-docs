@@ -8,7 +8,7 @@ Controls which Soroban contracts and functions a custodial wallet may **authoriz
 
 A custodial key lives on Pollar's side, so the allowlist is the only thing standing between your users and a signing oracle: without it, anyone holding a session could have the platform authorize any contract to move that user's tokens. Pollar signs an entry **only** when every contract and function in it is allowlisted here, and refuses everything else.
 
-This page governs `POST /tx/sign-auth-entry` (`pollar.signAuthEntry()` in the SDK), and only for **custodial** wallets, the ones your users get from social or email login. It does not affect ordinary payments. External wallets like Freighter sign the entry themselves, in the wallet, so the user approves each one and no allowlist applies. Passkey smart accounts (C-addresses) cannot use this method at all in the current SDK build.
+This page governs `POST /tx/sign-auth-entry` (`pollar.signAuthEntry()` in the SDK, and the [x402](https://docs.pollar.xyz/docs/guides/x402-payments) signer built on it) for **custodial** and **co-signed** wallets, the ones your users get from social or email login. A co-signed wallet passes the same checks before the user's device is asked to approve. It does not affect ordinary payments. External wallets like Freighter sign the entry themselves, in the wallet, so the user approves each one and no allowlist applies. Passkey smart accounts (C-addresses) cannot use this method at all in the current SDK build.
 
 ---
 

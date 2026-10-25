@@ -338,7 +338,7 @@ if (state?.step === 'built') {
 
 Signs a single Soroban `SorobanAuthorizationEntry`: the user's authorization on its own, without a transaction envelope. Use it when your own contract is the transaction source (it sponsors the gas and submits), and all it needs from the user is consent to the invocation.
 
-For **external wallets** the adapter signs the entry directly. For **custodial wallets** Pollar signs server-side, and only if every contract and function in the entry's invocation tree is allowlisted for your app under **Wallets -> [Auth Policy](https://docs.pollar.xyz/docs/operator-guide/wallets/auth-policy)**. That allowlist is what keeps the custodial signer from being usable as a signing oracle, so an unconfigured app signs nothing. **Passkey smart accounts** (C-address sessions) are not supported by this method in the current build: they sign auth entries through their passkey ceremony, which this call does not run, so it resolves to `{ status: 'error' }` rather than signing with the wrong key.
+For **external wallets** the adapter signs the entry directly. For **custodial wallets** Pollar signs server-side, and only if every contract and function in the entry's invocation tree is allowlisted for your app under **Wallets -> [Auth Policy](https://docs.pollar.xyz/docs/operator-guide/wallets/auth-policy)**. That allowlist is what keeps the custodial signer from being usable as a signing oracle, so an unconfigured app signs nothing. **Co-signed wallets** pass the same checks, then the user's device votes: it recomputes the entry's hash itself before approving, and the call resolves once the vote is in. With `cosignManual` it resolves to `{ status: 'cosign_pending', request }` instead, for your app to vote through `pollar.cosign`. **Passkey smart accounts** (C-address sessions) are not supported by this method in the current build: they sign auth entries through their passkey ceremony, which this call does not run, so it resolves to `{ status: 'error' }` rather than signing with the wrong key.
 
 `validUntilLedger` is the absolute ledger the signature expires at; compute it from the network's latest ledger. Your app's validity window caps how far ahead it may be (120 ledgers by default, 300 at most).
 
@@ -352,7 +352,9 @@ if (result.status === 'signed') {
 }
 ```
 
-Resolves to `{ status: 'signed'; signedAuthEntry: string }` or `{ status: 'error'; details?: string }`. Like the other transaction methods, it does not throw on a denial. The denial codes are listed under [Error Codes](https://docs.pollar.xyz/docs/sdk-reference/error-codes).
+Resolves to `{ status: 'signed'; signedAuthEntry: string }`, `{ status: 'cosign_pending'; request }` (co-signed wallet, manual voting) or `{ status: 'error'; code?: string; details?: string }`. Like the other transaction methods, it does not throw on a denial. The denial codes are listed under [Error Codes](https://docs.pollar.xyz/docs/sdk-reference/error-codes).
+
+A library that signs auth entries itself (stellar-sdk's contract client, x402's `ExactStellarScheme`) takes `pollar.stellar.authEntrySigner()` instead: a SEP-43 signer whose every signature goes through this method. See [Pay for APIs with x402](https://docs.pollar.xyz/docs/guides/x402-payments).
 
 ---
 
@@ -923,6 +925,7 @@ Ownership proofs signed by the user's Stellar wallet, custodial or external:
 
 - `pollar.stellar.sep53.signMessage(message)` -> `{ status: 'signed', signature, signerAddress, scheme: 'sep53' }` or `{ status: 'error', code?, details? }`. SEP-53 message signing.
 - `pollar.stellar.sep10.sign({ challengeXdr, homeDomains?, webAuthDomain? })` -> `{ status: 'signed', signedXdr, signerAddress }` or an error. Signs a SEP-10 web-auth challenge from your own anchor.
+- `pollar.stellar.authEntrySigner({ validUntilLedger? })` -> a SEP-43 signer `{ address, signAuthEntry(authEntry, opts?) }` over the user's wallet, for stellar-sdk's contract client and x402. Given a Soroban authorization preimage it returns the raw signature, as stellar-sdk expects; given an entry, the signed entry, which needs the `validUntilLedger` option (a function returning the absolute ledger the signature expires at). It throws on a refusal or a pending co-sign vote. See [Pay for APIs with x402](https://docs.pollar.xyz/docs/guides/x402-payments).
 
 ---
 

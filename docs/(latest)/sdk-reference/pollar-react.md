@@ -386,6 +386,8 @@ The user's side of a Turnkey wallet, for an app that renders its own approval UI
 
 Builds a hook over a transaction adapter registered through the `adapters` prop: each adapter method becomes `(params) => Promise<SubmitOutcome>` that builds through the adapter and then calls `signAndSubmitTx`.
 
+A method may instead return `{ unsignedAuthEntry, validUntilLedger, complete }` when someone else submits (an x402 facilitator, a contract that pays the gas). The hook then signs the entry with `signAuthEntry`, submits nothing, and calls `complete(signedAuthEntry)`; the method resolves to `{ status: 'completed', result }` with what `complete` returned, or to the `error` / `cosign_pending` outcome of the signature. Example in [Pay for APIs with x402](https://docs.pollar.xyz/docs/guides/x402-payments).
+
 ---
 
 ## Components
