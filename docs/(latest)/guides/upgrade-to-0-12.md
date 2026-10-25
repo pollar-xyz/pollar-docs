@@ -9,6 +9,19 @@ Releases before 0.11.0 call SDK API v1, which is **retired on 2026-11-30**: from
 
 ---
 
+## Let the tool do the mechanical part
+
+`@pollar/migrate` reads your project, works out the release you are on, and lists every change below that applies to it, file by file, with a link to its section. With `--fix` it makes the mechanical ones (renames, the provider props, `loginWallet`, a versioned `baseUrl`, the package ranges) and leaves the rest for you.
+
+```bash
+npx @pollar/migrate          # report only
+npx @pollar/migrate --fix    # apply the mechanical changes
+```
+
+Commit your work first so you can review the diff. `--json` prints the same report for scripts and coding agents. The rest of this guide explains each change, for what the tool leaves to do by hand.
+
+---
+
 ## 1. Find the release you are on
 
 Look at `@pollar/core` (and `@pollar/react` or `@pollar/react-native`) in your `package.json` or lockfile. **Monitor > SDK versions** in the dashboard lists the builds your users run ([guide](https://docs.pollar.xyz/docs/operator-guide/monitor/sdk-versions)); builds older than 0.11.4 show as not reporting.
