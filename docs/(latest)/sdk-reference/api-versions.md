@@ -88,7 +88,7 @@ The exact times are sent by email to the owners of apps still on v1 and shown in
    npm install @pollar/core@latest @pollar/react@latest
    ```
 
-   Read the `UPGRADE.md` shipped with the package for every version you skip: 0.9.0 renamed `session.wallet.publicKey` to `session.wallet.address`, 0.11.0 made balances multichain, and 0.12.0 moves the SDK to API v3.
+   Then follow [Upgrade to SDK 0.12](https://docs.pollar.xyz/docs/guides/upgrade-to-0-12): it lists every change between your release and 0.12, with what to search for in your code.
 2. **Deploy your frontend.** Users pick up the new SDK on their next page load. Their sessions are kept.
 3. **Confirm** on **Monitor > SDK versions** that no live session remains on a build below 0.11.0, and that the banner on Home is gone.
 
