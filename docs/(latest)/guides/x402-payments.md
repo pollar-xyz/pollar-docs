@@ -72,6 +72,17 @@ if (header) console.log(decodePaymentResponseHeader(header).transaction);
 
 The first request comes back `402`; `payFetch` reads the requirements, has the wallet sign the USDC transfer, and retries with the payment. Your code only sees the final response.
 
+### Try it against Nirium
+
+[Nirium](https://github.com/nirium-protocol) runs paid x402 endpoints you can call to check your setup. Each call costs 0.05 USDC, the server asks for a 300-second signature (60 ledgers, inside the default window), and the facilitator pays the fee:
+
+| Network | Endpoint |
+| --- | --- |
+| Testnet | `https://nirium-agent.fly.dev/api/v1/premium/market` |
+| Mainnet | `https://nirium-agent-mainnet.fly.dev/api/v1/premium/market` |
+
+The [Nirium example app](https://github.com/pollar-xyz/pollar-apps/tree/main/apps/adapters/nirium) is a complete Pollar app that pays these endpoints ([live demo](https://nirium-pollar-x402-demo.vercel.app)). It uses [`nirium-pollar-adapter`](https://www.npmjs.com/package/nirium-pollar-adapter), whose `createPollarSigner(pollar)` does what `pollar.stellar.authEntrySigner()` does, for apps on an SDK version without it.
+
 Inside the signer, x402 (through stellar-sdk) hands over the entry's authorization preimage and expects the raw signature back. Pollar signs the whole entry instead, because the allowlist check needs to read the contract and function. The signer rebuilds the entry from the preimage, signs it through `pollar.signAuthEntry()` (see [`@pollar/core`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core)), and returns the signature. It throws instead of returning a signature when:
 
 - the payment is for another network than the client's;
