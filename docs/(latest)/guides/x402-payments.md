@@ -78,6 +78,7 @@ Inside the signer, x402 (through stellar-sdk) hands over the entry's authorizati
 - Pollar refuses the entry (the error carries the code, for example `SOROBAN_AUTH_FUNCTION_NOT_ALLOWED`);
 - a co-signed wallet has not approved yet;
 - the entry comes back signed to a different expiration, which would be a signature over a different hash.
+- the wallet signs with a key other than its address. A wallet that moved from Pollar's custody to a co-signed one keeps its address and signs with its new key; the network accepts that, but stellar-sdk's `signAuthEntries` (which x402 uses) only takes a bare signature and checks it against the address. For such a wallet, sign the entry with `pollar.signAuthEntry()`, which returns the entry with the right key in it, and put it in the transaction yourself.
 
 ---
 
