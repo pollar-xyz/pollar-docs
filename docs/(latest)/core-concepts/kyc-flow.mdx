@@ -1,0 +1,10 @@
+---
+title: "KYC Flow, Step by Step"
+description: "An interactive walk through Pollar's KYC orchestrator: the steps a user completes, what each provider checks, what is stored and what is charged."
+---
+
+Pollar runs identity verification as ordered steps: every step is required, and Pollar talks to the providers so your app does not. This page plays a verification end to end. Pick who asks for the steps, which steps they are, the user's document and the outcome: the diagram rebuilds the flow for that combination.
+
+Your app's own KYC takes Didit and form steps, configured under [Integrations > KYC](https://docs.pollar.xyz/docs/operator-guide/integrations/kyc). A ramp route or a card provider can also require a SEGIP check of a Bolivian ID card, set per corridor under [Ramps > Providers](https://docs.pollar.xyz/docs/operator-guide/ramps/providers#mandatory-kyc-per-corridor). Prices come from your app's price list, see [Credits](https://docs.pollar.xyz/docs/core-concepts/credits).
+
+<KycFlow />

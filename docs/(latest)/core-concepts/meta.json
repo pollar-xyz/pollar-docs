@@ -1,6 +1,6 @@
 {
   "title": "Core Concepts",
-  "description": "Architecture, chain support, funding modes, wallet creation, Stellar primitives, security model, co-signed and self-custody wallets, ramps, credits, and transaction history.",
+  "description": "Architecture, chain support, funding modes, wallet creation, Stellar primitives, security model, co-signed and self-custody wallets, ramps, KYC, credits, and transaction history.",
   "pages": [
     "architecture",
     "chain-support",
@@ -11,6 +11,7 @@
     "co-signed-wallets",
     "ramps",
     "ramp-flow",
+    "kyc-flow",
     "credits",
     "transaction-history"
   ]
