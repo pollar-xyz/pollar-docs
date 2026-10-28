@@ -1,0 +1,10 @@
+---
+title: "Ramp Flow, Step by Step"
+description: "An interactive walk through a ramp across chains: which wallets Pollar creates, who signs each step, and when a rail wallet appears."
+---
+
+A ramp provider settles on its own chain, and your app may serve users on another one. This page plays a buy or a sell end to end so you can see how the funds get from one to the other. Pick the chains your app enables in the dashboard, the wallet custody, the currency and the direction: the diagram rebuilds the flow for that combination.
+
+The route shown is a provider that settles USDT on Polygon. When the app does not enable Polygon, Pollar creates a **rail wallet** for the user there, and Circle's bridge moves the USDC between Polygon and the user's chain. For how routes, quotes and orders work in the API, see [Ramps](https://docs.pollar.xyz/docs/core-concepts/ramps).
+
+<RampFlow />

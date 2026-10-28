@@ -10,6 +10,7 @@
     "security-model",
     "co-signed-wallets",
     "ramps",
+    "ramp-flow",
     "credits",
     "transaction-history"
   ]
