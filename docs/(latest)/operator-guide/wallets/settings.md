@@ -80,7 +80,7 @@ When the SDK asks your users to confirm a signature your app requests.
 | Option | What happens |
 | --- | --- |
 | **Always ask** (default) | Every signature shows the transaction and waits for the user. |
-| **Ask, then remember for a while** | A confirmed signature opens a window: the next payments sign without asking until the time runs out or their total reaches the limit. Anything the SDK cannot value in USD (swaps, contract calls, raw transactions) still asks. |
+| **Ask, then remember for a while** | A confirmed signature opens a window: the next payments sign without asking until the time runs out or their total reaches the limit. An [x402](https://docs.pollar.xyz/docs/guides/x402-payments) payment in a priced Stellar asset counts too. Anything the SDK cannot value in USD (swaps, contract calls, raw transactions) still asks. |
 | **Never ask** | Signatures go through without a prompt: your app's own call is the consent. |
 
 For **Ask, then remember for a while** set the **Window** (1 to 60 minutes, default 5) and the **Limit per window** in USD (above 0 and up to 10,000, default 50).

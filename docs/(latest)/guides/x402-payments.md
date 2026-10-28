@@ -23,7 +23,8 @@ In the dashboard, for the app whose API key you use:
 
 2. **Signature validity window** (same page). x402 asks the signature to last the `maxTimeoutSeconds` the server sends in its `402`, converted to ledgers (about 5 seconds each). It must fit in the app's window, 120 ledgers by default and 300 at most, or the signature is refused with `SOROBAN_AUTH_EXPIRATION_TOO_LONG`.
 3. **Wallets > [Tokens & Trustlines](https://docs.pollar.xyz/docs/operator-guide/wallets/tokens-trustlines).** Enable USDC, so your users' wallets hold the trustline they pay from.
-4. **Mainnet.** A mainnet app has to be approved first; see the [Mainnet Checklist](https://docs.pollar.xyz/docs/guides/mainnet-checklist). Your users need USDC on the wallet to pay.
+4. **Wallets > Settings > Signature confirmation.** An x402 payment is a signature like any other, so it follows this setting: under **Always ask** the user confirms each payment in `<ConfirmModal>`, which shows the destination, amount and asset. An agent that pays with no one in front of it sets **Never ask**, or **Ask, then remember for a while** with a USD limit, so payments sign without asking until the limit is spent. With nothing to show the prompt (a headless client under **Always ask**), the payment fails with `SDK_CONFIRMATION_UNAVAILABLE`.
+5. **Mainnet.** A mainnet app has to be approved first; see the [Mainnet Checklist](https://docs.pollar.xyz/docs/guides/mainnet-checklist). Your users need USDC on the wallet to pay.
 
 ---
 
@@ -157,6 +158,8 @@ Horizon returns a hash memo as the base64 of those 32 bytes, so compare it with 
 | `SOROBAN_AUTH_FUNCTION_NOT_ALLOWED` | The row does not name `transfer` | Name it in lowercase |
 | `SOROBAN_AUTH_CONTRACT_NOT_ALLOWED` | The server charges in another token, or on another network's contract | Check the `asset` in the server's `402` against your row |
 | `SOROBAN_AUTH_EXPIRATION_TOO_LONG` | The server's `maxTimeoutSeconds` is longer than the app's window | Raise the window (up to 300 ledgers) or ask for a shorter timeout |
+| `SDK_CONFIRMATION_UNAVAILABLE` | The app asks before every signature and nothing shows the prompt | Mount the provider, subscribe with `onConfirmationRequest`, or set the confirmation to **Never ask** or **Ask, then remember for a while** for an agent |
+| `SDK_CONFIRMATION_DECLINED` | The user declined the payment in the prompt | Nothing was signed |
 | `SDK_WALLET_RECOVERY_REQUIRED` | A co-signed wallet with no recovery method signs nothing that moves funds | Have the user set up recovery first |
 | `TX_EXTERNAL_WALLET_SERVER_SIGN` | The session's wallet signs on its own (external or passkey) | External wallets sign through their adapter; passkey accounts cannot pay with x402 yet |
 

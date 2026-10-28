@@ -343,6 +343,8 @@ Signs a single Soroban `SorobanAuthorizationEntry`: the user's authorization on 
 
 For **external wallets** the adapter signs the entry directly. For **custodial wallets** Pollar signs server-side, and only if every contract and function in the entry's invocation tree is allowlisted for your app under **Wallets -> [Auth Policy](https://docs.pollar.xyz/docs/operator-guide/wallets/auth-policy)**. That allowlist is what keeps the custodial signer from being usable as a signing oracle, so an unconfigured app signs nothing. **Co-signed wallets** pass the same checks, then the user's device votes: it recomputes the entry's hash itself before approving, and the call resolves once the vote is in. With `cosignManual` it resolves to `{ status: 'cosign_pending', request }` instead, for your app to vote through `pollar.cosign`. **Passkey smart accounts** (C-address sessions) are not supported by this method in the current build: they sign auth entries through their passkey ceremony, which this call does not run, so it resolves to `{ status: 'error' }` rather than signing with the wrong key.
 
+Like every signature, it passes the app's [signature confirmation](https://docs.pollar.xyz/docs/sdk-reference/pollar-react#signature-confirmation) first (`kind: 'sign_auth_entry'`). A token `transfer` of a priced Stellar asset shows its destination, amount and asset and counts its USD value against an open window; any other entry asks.
+
 `validUntilLedger` is the absolute ledger the signature expires at; compute it from the network's latest ledger. Your app's validity window caps how far ahead it may be (120 ledgers by default, 300 at most).
 
 ```typescript
