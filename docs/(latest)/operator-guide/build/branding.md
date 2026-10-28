@@ -20,6 +20,7 @@ Customize the appearance of every modal in `@pollar/react` (login, KYC, transact
 | **Modal title** | Heading of the **login** modal only. Empty: the application's name. |
 | **Corners** | Border radius of the modal card and, separately, of its buttons |
 | **Stacking order** | z-index of the modal overlay (default 50). Raise it when a layer of your own app renders on top of the modal. |
+| **Language** | Language of every modal: **User's device language** (default), **English**, **Spanish** or **Portuguese**. With the device language, the modals follow the `locale` your code passes to the SDK, else the user's browser or phone. Any other choice applies to every user, whatever the code passes. |
 | **Logo** | Logo displayed in the login modal (PNG, JPG, SVG, WEBP, max 1 MB) |
 | **Login methods** | Toggle **Email** login on/off. **Social providers** are marked _Coming soon_ and are not individually toggleable yet. |
 | **Wallets** | **Embedded wallets** and **Smart Wallet (passkey)** options |

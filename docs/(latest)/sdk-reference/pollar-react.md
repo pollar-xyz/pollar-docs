@@ -47,6 +47,7 @@ import { PollarProvider } from '@pollar/react';
 | `stellarNetwork` | `StellarNetwork` | `'testnet'`                      | Target network: `'testnet'` or `'mainnet'`. |
 | `baseUrl`        | `string`         | `'https://sdk.api.pollar.xyz'`   | Override the Pollar API origin. Pass the origin only: the SDK appends `/v3`. |
 | `confirmation`   | `'prompt' \| 'auto' \| { window: { seconds, maxUsd } }` | unset: the app's dashboard setting, which defaults to `'prompt'` | How a signing call treats the user. See [Signature confirmation](#signature-confirmation). |
+| `locale`         | `string`         | unset: the browser language      | Language of the modals, as a BCP 47 tag. See [Language](#language). |
 
 Every other `PollarClientConfig` option (`walletAdapters`, `cosignManual`, `recoveryPasskey`, `loginTimeoutMs`, `storage`, `passkey`, ...) is documented in [`@pollar/core`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core).
 
@@ -59,6 +60,23 @@ The app's policy is set in the dashboard, under **Wallets > Wallet settings > Si
 - Inside a window, a signature signs without asking while the USD total of the window stays within `maxUsd`. Only a payment the SDK builds itself (`sendPayment`, `runTx('payment', ...)`) has a value it can read; any other signature (a raw `signTx`, a swap, a contract call) asks, and so does an asset with no price. The window closes on logout.
 - A ramp leg always asks, whatever the policy.
 - A declined prompt ends the call with `SDK_CONFIRMATION_DECLINED`; nothing was signed.
+
+### Language
+
+Every modal is in English, Spanish and Portuguese. The provider picks the language once, in this order:
+
+1. The language pinned in the dashboard, **Build > Branding > Language** ([guide](https://docs.pollar.xyz/docs/operator-guide/build/branding)). With **User's device language** (the default) nothing is pinned.
+2. The `language` prop of a modal that takes one (`<RampWidget>`, `<KycModal>`, `<RequirementFormModal>`, `<RegistryCheckModal>`, `<ProviderRegistrationModal>`).
+3. The client's `locale`.
+4. The browser language.
+
+English when none of them is a language the modals have. To keep the modals in your app's language, pass it as `locale`:
+
+```tsx
+<PollarProvider client={{ apiKey: 'pub_testnet_xxxxxxxxxxxxxxxxxxxx', locale: i18n.language }}>
+```
+
+`locale` is read when the client is built; the dashboard setting arrives with `/applications/config` on each mount.
 
 ---
 
@@ -435,6 +453,7 @@ import { KycModal } from '@pollar/react';
 | `country`    | `string`     | `'MX'`    | ISO 3166-1 alpha-2 country code to filter providers.    |
 | `level`      | `KycLevel`   | `'basic'` | Fallback for backends without named options.            |
 | `onApproved` | `() => void` | none      | Called when KYC is successfully approved.               |
+| `language`   | `string`     | none      | Language of the modal as a BCP 47 tag. See [Language](#language). |
 
 ---
 
@@ -477,8 +496,11 @@ import { RequirementFormModal } from '@pollar/react';
 | `progress`    | `{ position: number; total: number }` | none    | Shown as "Step n of total".                                        |
 | `onClose`     | `() => void`                          | none    | **Required.** Called when the user dismisses the modal.            |
 | `onSubmitted` | `() => void`                          | none    | **Required.** Called once the answers are stored. Quote again.     |
+| `language`    | `string`                              | none    | Language of the modal as a BCP 47 tag. See [Language](#language).  |
 
 A 422 `KYC_FORM_INVALID_ANSWERS` is shown per field; numbers and dates are checked locally before the request.
+
+Labels, help and options show in the modal's language; a form without the Portuguese text shows the Spanish one, then the English one. A field with `showIf` appears only while the earlier field it depends on has one of its values (a select's option, a multiselect containing it, or a checkbox checked or not), and is neither checked nor sent while hidden; `required` applies only while it is shown.
 
 ---
 
@@ -503,6 +525,7 @@ import { RegistryCheckModal } from '@pollar/react';
 | `progress`   | `{ position: number; total: number }` | none    | Shown as "Step n of total".                                             |
 | `onClose`    | `() => void`                          | none    | **Required.** Called when the user dismisses the modal.                 |
 | `onApproved` | `() => void`                          | none    | **Required.** Called once the registry confirmed the data. Quote again. |
+| `language`   | `string`                              | none    | Language of the modal as a BCP 47 tag. See [Language](#language).       |
 
 `prefill.applies === false` (the document is not one the registry checks) shows a notice and only lets the user close. A 409 `KYC_REGISTRY_IDENTITY_REQUIRED` means the KYC step before it is not complete.
 
@@ -530,6 +553,7 @@ import { ProviderRegistrationModal } from '@pollar/react';
 | `progress`     | `{ position: number; total: number }` | none    | Shown as "Step n of total".                                                  |
 | `onClose`      | `() => void`                          | none    | **Required.** Called when the user dismisses the modal.                      |
 | `onRegistered` | `() => void`                          | none    | **Required.** Called once the user is registered with the provider. Quote again. |
+| `language`     | `string`                              | none    | Language of the modal and the steps it opens, as a BCP 47 tag. See [Language](#language). |
 
 A 409 `KYC_REGISTRATION_STEPS_PENDING` means an earlier step is still open; a 422 `KYC_REGISTRATION_MISSING_DATA` lists the fields the identity or the forms lack.
 
@@ -537,7 +561,7 @@ A 409 `KYC_REGISTRATION_STEPS_PENDING` means an earlier step is still open; a 42
 
 ### `<CardModal>`
 
-The Cards flow: provider steps (KYC, forms, registry check, provider registration), the provider's own KYC form with terms, verification polling, issuing, the card face with limit / available / to pay, recent activity, **Reveal** (decrypted on the device, auto-hidden after 30 s) and **Add funds** (from the user's Stellar wallet, shown as "Step n of 4" until credited, or a deposit address for another wallet).
+The Cards flow: provider steps (KYC, forms, registry check, provider registration), the provider's own KYC form with terms, verification polling, issuing, the card face with limit / available / to pay, recent activity, **Reveal** (decrypted on the device, auto-hidden after 30 s; the number and CVC can be copied while shown, the expiry date always) and **Add funds** (from the user's Stellar wallet, shown as "Step n of 4" until credited, or a deposit address for another wallet).
 
 ```tsx
 import { CardModal } from '@pollar/react';
@@ -613,6 +637,7 @@ import { RampWidget } from '@pollar/react';
 | Prop      | Type         | Description                                              |
 |-----------|--------------|----------------------------------------------------------|
 | `onClose` | `() => void` | **Required.** Called when the user dismisses the widget. |
+| `language` | `string`    | Language of the widget and the verification steps it opens, as a BCP 47 tag. See [Language](#language). |
 
 Signing a leg only runs on a user press; polling never signs. When the app registered no signer for a leg (`registerRampSigningHandler` in `@pollar/core`), the widget signs with the user's connected wallet after checking the payload: a Stellar XDR must run every operation as the connected account (`assertRampStellarSigner`), and a Solana transfer must be built from the connected Solana wallet (signed through `signSolanaTransaction`).
 
@@ -639,6 +664,8 @@ import { WalletBalanceModal } from '@pollar/react';
 ## Template components
 
 Template components handle rendering only: they receive all data and callbacks as props and contain no internal logic. Use them to build fully custom UI while reusing Pollar's layout and visual structure.
+
+Each takes an optional `language` (`'en' | 'es' | 'pt'`). Without it, a template under `<PollarProvider>` uses the provider's language (see [Language](#language)) and one outside it the browser's.
 
 | Component                      | Description                                                  |
 |--------------------------------|--------------------------------------------------------------|

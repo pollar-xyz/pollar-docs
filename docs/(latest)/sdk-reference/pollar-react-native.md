@@ -233,6 +233,8 @@ Components are styled with `StyleSheet`; there is no stylesheet to import. Theme
 
 The package also exports building blocks for a whole app: `AppShell`, `FeatureCatalog`, `FeaturePanel` and `FeatureExample`, `AccountOnboarding`, panels per feature (`AuthPanel`, `WalletPanel`, `SendPanel`, `ReceivePanel`, `AssetsPanel`, `HistoryPanel`, `SessionsPanel`, `SwapPanel`, `EarnPanel`, `DistributionPanel`, `RampPanel`, `ChainsPanel`, ...) and layout primitives (`PollarUIProvider`, `ScreenLayout`, `Card`, `ActionButton`, `Field`, ...).
 
+The modals and these building blocks pick their language as in `@pollar/react` (the dashboard's pin, a modal's `language` prop, the client's `locale`, then the device language): see [Language](https://docs.pollar.xyz/docs/sdk-reference/pollar-react#language). `AppShell`'s `settings.language` and `AccountOnboarding` take `'en'`, `'es'` or `'pt'`.
+
 ### Ramps
 
 `<RampWidget>` and `RampPanel` run the v3 ramps API: they list the routes (`getRampRoutes(direction)`), quote them leg by leg, ask for the fields a quote needs, create the order and follow it at the pace the server suggests. The order's pending action shows as it comes: a payment QR or bank details, **Authorize** for a signature, the co-sign approval or a verification link. The widget keeps the order in `usePollar().ramp` while it is closed.
