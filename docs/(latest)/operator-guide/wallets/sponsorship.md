@@ -45,6 +45,7 @@ Solana has no fee bumps, trustlines or reserves, so its tab is smaller: one wall
 |---|---|
 | **Solana fees** | The app's Solana GAS wallet. If the app has none yet, the card offers **Create Solana wallet**. It pays the fee of every sponsored Solana transfer as the transaction's **fee payer**, and Pollar tops every user wallet up from it, so a wallet that sends unsponsored transfers can still sign. While it holds no SOL, no user of this app can sign on Solana |
 | **Top-up policy** | Each user wallet is topped up with a fixed amount of SOL whenever it falls below the floor. The floor also keeps every wallet above Solana's rent-exempt minimum, below which the network deletes the account. Both numbers are set platform-wide by Pollar |
+| **Swap sponsorship** | Solana swaps follow the Stellar tab's [Swap sponsorship](#swap-sponsorship): a swap on Jupiter or Titan is sponsored when that venue is picked there, and the GAS wallet is its fee payer. It also pays the rent of the user's token account for the token bought, when the user has none yet |
 | **Token transfer sponsorship** | Per enabled token (plus the native SOL row): when on, the GAS wallet is the fee payer of the user's transfers of that token and pays the rent of the recipient's token account. Two extra switches extend it to **external and self-custody wallets** (the user signs in Phantom, or with their Turnkey self-custody wallet, and the app pays the fee) and to **co-signed wallets** (Turnkey 2-of-2) |
 
 Everything below this section is about Stellar: fee bumps, sponsored reserves, swap and contract sponsorship, and signer rotation.
@@ -120,7 +121,7 @@ Each card has an **Include external and self-custody wallets** sub-option. It ex
 
 ### Swap sponsorship
 
-Pick the venues (SDEX, Soroswap, Aquarius) whose swaps your app pays the fee for. Only venues enabled under [Swap](https://docs.pollar.xyz/docs/operator-guide/treasury/swap) appear. **Include external and self-custody wallets** extends it to wallets Pollar does not custody.
+Pick the venues (SDEX, Soroswap, Aquarius, and on Solana Jupiter and Titan) whose swaps your app pays the fee for. Only venues enabled under [Swap](https://docs.pollar.xyz/docs/operator-guide/treasury/swap) appear. **Include external and self-custody wallets** extends it to wallets Pollar does not custody.
 
 ### Contract sponsorship rules
 

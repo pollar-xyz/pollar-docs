@@ -165,6 +165,7 @@ const {
 
   // swap, earn, distribution
   getSwapConfig, getSwapTokens, getSwapQuote, swap,
+  getSolanaSwapConfig, getSolanaSwapQuote, swapSolana, // Solana swaps; the Swap panel is Stellar-only
   getEarnProviders, getEarnOpportunities, getEarnPosition, earnDeposit, earnWithdraw,
   listDistributionRules, claimDistributionRule,
 

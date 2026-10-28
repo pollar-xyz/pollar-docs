@@ -873,6 +873,34 @@ disabled for the app: hide the UI.
 - `pollar.swap(quote, opts?)` -> `Promise<SubmitOutcome>`: execute a quote
   (establishes the buy-asset trustline first when needed). Drives `TransactionState`.
 
+### Swap on Solana
+
+Jupiter and Titan, on a mainnet app only. Amounts are integer base units of each
+mint; SOL is swapped as wrapped SOL (`So11111111111111111111111111111111111111112`).
+
+- `pollar.getSolanaSwapConfig()` -> `Promise<SolanaSwapVenue[]>`: the Solana venues
+  this app exposes (`'jupiter'`, `'titan'`); empty means no swap on Solana.
+- `pollar.getSolanaSwapQuote({ inputMint, outputMint, amount, provider?, slippageBps? })`
+  -> `Promise<SolanaSwapQuote[]>`: quotes for the user's Solana wallet, best output
+  first. Each has `provider`, `inAmount`, `outAmount`, `minOut`, `priceImpactPct`
+  (null when the venue does not report it) and `route.hops`. A quote carries no
+  transaction.
+- `pollar.swapSolana(quote, { slippageBps? })` -> `Promise<SubmitOutcome>`: asks the
+  user to confirm, then has Pollar build the quoted route for the user's wallet.
+  The route is fetched again, so the amounts can move a little from the quote, and
+  Pollar refuses one whose simulation pays the user less than its minimum. A
+  co-signed or self-custody wallet approves it on the device; an external wallet
+  (Phantom, Solflare, Backpack) signs it in the wallet. A Pollar-managed (custodial)
+  Solana wallet cannot swap. Drives `TransactionState`.
+
+```ts
+const SOL = 'So11111111111111111111111111111111111111112';
+const USDC = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
+
+const [best] = await pollar.getSolanaSwapQuote({ inputMint: SOL, outputMint: USDC, amount: '100000000' }); // 0.1 SOL
+if (best) await pollar.swapSolana(best);
+```
+
 ---
 
 ## Earn

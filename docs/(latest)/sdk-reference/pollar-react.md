@@ -4,7 +4,7 @@ title: "@pollar/react"
 
 React hooks and pre-built UI components for Pollar, for Stellar and Solana applications. Built on top of `@pollar/core`.
 
-The modals are multichain: Send, Receive, Wallet balance, Enabled assets and Transaction history carry a network picker on an app with more than one chain, and each scopes its rows to the selected chain (Solana rows link to explorer.solana.com and show fees in lamports). Swap and Earn are Stellar modals. See [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support).
+The modals are multichain: Send, Receive, Wallet balance, Enabled assets and Transaction history carry a network picker on an app with more than one chain, and each scopes its rows to the selected chain (Solana rows link to explorer.solana.com and show fees in lamports). Swap offers Stellar and, on a mainnet app with Jupiter or Titan enabled, Solana, with a Network selector when the app has both. Earn is a Stellar modal. See [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support).
 
 **Version:** `0.12.0`. It requires `@pollar/core@^0.12.0` and talks to SDK API v3. For 0.11.x, see the [0.11 reference](https://docs.pollar.xyz/docs/v0.11/pollar-react).
 
@@ -248,7 +248,10 @@ The transaction modal opens automatically when `buildTx` is called. Each signing
 | `getSwapTokens`  | `() => Promise<SwapToken[]>`                                    | Curated "buy" token catalog.                             |
 | `getSwapQuote`   | `(params: SwapQuoteParams) => Promise<SwapQuote[]>`            | Quotes ranked best-first.                                |
 | `swap`           | `(quote: SwapQuote, opts?: { autoTrustline? }) => Promise<SubmitOutcome>` | Executes a quote; drives `tx`.                  |
-| `openSwapModal`  | `() => void`                                                   | Opens the swap modal.                                    |
+| `getSolanaSwapConfig` | `() => Promise<SolanaSwapVenue[]>`                         | Solana venues this app exposes (Jupiter, Titan; mainnet). |
+| `getSolanaSwapQuote`  | `(params: SolanaSwapQuoteParams) => Promise<SolanaSwapQuote[]>` | Solana quotes in base units, best first.            |
+| `swapSolana`          | `(quote: SolanaSwapQuote, opts?: { slippageBps? }) => Promise<SubmitOutcome>` | Runs a Solana swap; drives `tx`.     |
+| `openSwapModal`  | `() => void`                                                   | Opens the swap modal. On an app that offers swaps on Stellar and Solana it shows a Network selector. |
 
 ---
 

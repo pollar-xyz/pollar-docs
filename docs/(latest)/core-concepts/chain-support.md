@@ -4,7 +4,7 @@ title: "Chain Support"
 
 Pollar is multichain. An app enables the chains it wants under **Wallets > Wallet settings > Enabled chains** ([Wallet settings](https://docs.pollar.xyz/docs/operator-guide/wallets/settings)), and every user gets **one wallet per enabled chain** from the same login. This page is the single place that says what works where.
 
-**Solana is fully supported** for the product's core: sign-in, Pollar-managed, co-signed and self-custody wallets, SOL and SPL token balances, sponsored transfers and history. Stellar additionally carries the on-chain DeFi features (swap, earn), token distribution and the Soroban policies. Polygon has wallets, balances, token sends and ramps. Ramps reach Solana through a Circle CCTP bridge leg.
+**Solana is fully supported** for the product's core: sign-in, Pollar-managed, co-signed and self-custody wallets, SOL and SPL token balances, sponsored transfers, history and, on mainnet, swaps through Jupiter and Titan. Stellar additionally carries earn, token distribution and the Soroban policies. Polygon has wallets, balances, token sends and ramps. Ramps reach Solana through a Circle CCTP bridge leg.
 
 ---
 
@@ -63,7 +63,7 @@ Legend: **Yes** = works today on that chain. **n/a** = the chain has no such con
 
 | Feature | Stellar | Solana | Polygon | Where |
 |---|:---:|:---:|:---:|---|
-| Swap (SDEX, Soroswap, Aquarius) | Yes | No | No | [Swap](https://docs.pollar.xyz/docs/operator-guide/treasury/swap) |
+| Swap | Yes (SDEX, Soroswap, Aquarius) | Yes, mainnet only (Jupiter, Titan) | No | [Swap](https://docs.pollar.xyz/docs/operator-guide/treasury/swap) |
 | Earn (DeFindex, Blend) | Yes | No | No | [Earn](https://docs.pollar.xyz/docs/operator-guide/treasury/earn) |
 | Token distribution (claimable rules) | Yes | No | No | [Token Distribution](https://docs.pollar.xyz/docs/operator-guide/treasury/token-distribution) |
 | Transaction policy (account merge, max fee) | Yes | n/a | n/a | [Transaction Policy](https://docs.pollar.xyz/docs/operator-guide/wallets/transaction-policy) |
@@ -81,6 +81,7 @@ A Solana-enabled app gets the whole wallet lifecycle without any Solana-specific
 - **Funding.** Solana has no sponsored reserve, so the app's **Solana GAS wallet** (or Pollar's pool, on an [app on credits](https://docs.pollar.xyz/docs/core-concepts/credits)) sends each new wallet its starting SOL (0, or at least the platform floor that keeps the account above the rent-exempt minimum) and tops it up whenever it falls below the floor.
 - **Payments.** `sendPayment({ chain: 'SOLANA', destination, amount, mint? })` sends SOL or any SPL token. Amounts are integer base units (lamports, or the mint's smallest unit). When the token is marked **sponsor transfers**, the GAS wallet is the fee payer and the recipient's associated token account is created in the same transaction.
 - **History.** Every Solana transaction lands in the same history as Stellar ones, with its own reconcile job and explorer link; the dashboard's Monitor shows the fee in lamports.
+- **Swap.** On a mainnet app, `getSolanaSwapQuote` prices a swap on Jupiter and Titan and `swapSolana` runs the picked route; the swap modal offers Solana next to Stellar. A co-signed or self-custody wallet approves the swap on the device, an external wallet signs it in the connected wallet, and Pollar refuses any route whose simulation pays the user less than its minimum. Neither aggregator has devnet liquidity, so a testnet app has no Solana swap.
 - **Ramps.** No ramp provider settles natively on Solana. A route reaches a Solana wallet by adding a Circle CCTP bridge leg to a provider that settles USDC on Stellar or Polygon, so the user receives USDC on Solana. See [Ramps](https://docs.pollar.xyz/docs/core-concepts/ramps).
 - **Networks.** A testnet app uses **devnet**; a mainnet app uses **mainnet-beta**. The cluster follows the app's network, never a request parameter.
 
@@ -95,7 +96,7 @@ Two Solana facts the client has to respect:
 
 | Feature | Reason |
 |---|---|
-| Swap and Earn | The venues (SDEX, Soroswap, Aquarius, DeFindex, Blend) are Stellar and Soroban protocols. The modals hide themselves on a Solana-only app. |
+| Earn | The providers (DeFindex, Blend) are Soroban protocols. The modal hides itself on a Solana-only app. |
 | Trustlines, account merge, Soroban auth entries | Stellar protocol concepts with no Solana equivalent. |
 | Passkey smart wallets | Built on Stellar C-addresses. |
 | Card funding | The card balance is funded from the user's Stellar wallet. |
