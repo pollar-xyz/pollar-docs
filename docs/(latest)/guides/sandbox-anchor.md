@@ -1,10 +1,10 @@
 ---
-title: "Testnet Sandbox Anchor (ARS and PEN)"
-description: "A public testnet anchor to test ARS and PEN on-ramps and off-ramps end to end over SEP-10 and SEP-24."
+title: "Testnet Sandbox Anchor (ARS, PEN and COP)"
+description: "A public testnet anchor to test ARS, PEN and COP on-ramps and off-ramps end to end over SEP-10 and SEP-24."
 ---
 
 Public Stellar **testnet** anchor at `https://sandbox-anchor.pollar.xyz`. It behaves like a real Latin American
-fiat anchor for **ARS** (Argentina) and **PEN** (Peru): same SEP endpoints, fields, statuses, fees and limits. Use it
+fiat anchor for **ARS** (Argentina), **PEN** (Peru) and **COP** (Colombia): same SEP endpoints, fields, statuses, fees and limits. Use it
 to build and test on-ramps (deposit) and off-ramps (withdrawal) end to end.
 
 - No real money moves. No real KYC. Not affiliated with any real anchor.
@@ -24,11 +24,13 @@ to build and test on-ramps (deposit) and off-ramps (withdrawal) end to end.
 | SIGNING_KEY | `GBI34XHNZ3ZXQTOIPYIXPVLPY5SJGWMSSZV42J5O2AEJ23VLNCF2NMJL` |
 | ARS issuer | `GCLAJ3NUQJPUIXMOP6EEQOOK556X6JUBSQEDGIYN2QD4MBEF3EVKCMDR` |
 | PEN issuer | `GCCMUNJUUZSKIGVRE74GW4ITWEWZZXNMSVVDL56MJY44F4MINGDUPNKM` |
+| COP issuer | `GANBN4BRF5IAQOXVAPJ2GW6ZGWMZF6NMJR3DL2SJWE4ZHTUWILWTAUPD` |
 | USDC (Circle testnet) issuer | `GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5` |
 | USDC SAC (Soroban) | `CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA` |
 
 Asset strings: `ARS:GCLAJ3NUQJPUIXMOP6EEQOOK556X6JUBSQEDGIYN2QD4MBEF3EVKCMDR`,
 `PEN:GCCMUNJUUZSKIGVRE74GW4ITWEWZZXNMSVVDL56MJY44F4MINGDUPNKM`,
+`COP:GANBN4BRF5IAQOXVAPJ2GW6ZGWMZF6NMJR3DL2SJWE4ZHTUWILWTAUPD`,
 `USDC:GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5`.
 
 The withdrawal destination account is **not** a constant: always read `withdraw_anchor_account` from the transaction.
@@ -38,28 +40,29 @@ stellar.toml instead of hardcoding them.
 ### USDC and the DEX
 
 USDC is **not** issued by the sandbox and is not in its stellar.toml. It is Circle's testnet USDC. The sandbox keeps DEX
-offers between ARS, PEN, XLM and USDC, so path payments such as ARS -> USDC or USDC -> PEN work on testnet. Default
-rates: 1 USDC = 1450 ARS = 3.7 PEN = 4 XLM, with a 1% spread. Get testnet USDC from https://faucet.sozu.capital or
+offers between ARS, PEN, COP, XLM and USDC, so path payments such as ARS -> USDC or USDC -> COP work on testnet. Default
+rates: 1 USDC = 1450 ARS = 3.7 PEN = 4000 COP = 4 XLM, with a 1% spread. Get testnet USDC from https://faucet.sozu.capital or
 https://faucet.circle.com.
 
 ## Prerequisites for a user account
 
 1. Create a testnet account and fund it with friendbot: `https://friendbot.stellar.org?addr=G...`.
-2. Add a trustline to `ARS` or `PEN` (issuer above). A deposit to an account without the trustline ends in `error`
+2. Add a trustline to `ARS`, `PEN` or `COP` (issuer above). A deposit to an account without the trustline ends in `error`
    with the message `the account has no trustline to ARS:G...`.
 
-## Getting ARS or PEN (minting)
+## Getting ARS, PEN or COP (minting)
 
-There is no public mint endpoint, and the issuer secret is never exposed. A user account gets ARS or PEN in one of
+There is no public mint endpoint, and the issuer secret is never exposed. A user account gets ARS, PEN or COP in one of
 two ways:
 
 1. **SEP-24 deposit (the on-ramp is the mint).** Run a deposit (see below), and in the hosted bank ticket press
    **"Simular transferencia recibida"**. The anchor's distribution account sends `amount_out` of the asset to the user
    account on-chain. This is the intended way to get funds, and it needs no real money. Each deposit is limited by the
-   per-operation range (ARS 11 to 500000, PEN 2 to 3000) and by the daily cap per account (ARS 1000000, PEN 6000).
-   Example: deposit `1000` ARS -> fee `10 + 1%` = `20.00` -> the account receives `980.00` ARS.
+   per-operation range (about 1 to 10 USD: ARS 1450 to 14500, PEN 3.7 to 37, COP 4000 to 40000) and by the daily cap
+   per account (about 50 USD: ARS 72500, PEN 185, COP 200000).
+   Example: deposit `5000` ARS -> fee `145 + 1%` = `195.00` -> the account receives `4805.00` ARS.
 2. **Buy on the testnet DEX.** The sandbox keeps offers against XLM and USDC, so a friendbot-funded account can swap
-   XLM (or testnet USDC) into ARS/PEN with a path payment to itself:
+   XLM (or testnet USDC) into ARS/PEN/COP with a path payment to itself:
 
 ```ts
 // Needs the ARS trustline first. Spends at most 10 XLM and receives exactly 1000 ARS.
@@ -73,11 +76,11 @@ Operation.pathPaymentStrictReceive({
 });
 ```
 
-   Check the price and depth first with Horizon `GET /paths/strict-receive` or `GET /order_book`. Depth is limited
-   (it is backed by the sandbox's own USDC), so prefer deposits for large amounts.
+   Check the price and depth first with Horizon `GET /paths/strict-receive` or `GET /order_book`. Depth is limited:
+   every offer that sells the sandbox's USDC is capped at 20 USDC, so swaps into USDC are small by design.
 
 Operators of the sandbox (not integrators) can issue new supply to a liquidity wallet with
-`pnpm cli mint <liquidityAccountId> <ARS|PEN> <amount>`. This pays from the issuer to that liquidity wallet only, and it
+`pnpm cli mint <liquidityAccountId> <ARS|PEN|COP> <amount>`. This pays from the issuer to that liquidity wallet only, and it
 is used to keep the DEX offers funded.
 
 ## Flow overview
@@ -118,12 +121,14 @@ Base: `https://sandbox-anchor.pollar.xyz/transfer24`. CORS is open (OPTIONS pref
 ```json
 {
   "deposit": {
-    "ARS": { "enabled": true, "min_amount": 11, "max_amount": 500000, "fee_fixed": 10, "fee_percent": 1 },
-    "PEN": { "enabled": true, "min_amount": 2, "max_amount": 3000, "fee_fixed": 1, "fee_percent": 1 }
+    "ARS": { "enabled": true, "min_amount": 1450, "max_amount": 14500, "fee_fixed": 145, "fee_percent": 1 },
+    "PEN": { "enabled": true, "min_amount": 3.7, "max_amount": 37, "fee_fixed": 0.37, "fee_percent": 1 },
+    "COP": { "enabled": true, "min_amount": 4000, "max_amount": 40000, "fee_fixed": 400, "fee_percent": 1 }
   },
   "withdraw": {
-    "ARS": { "enabled": true, "min_amount": 11, "max_amount": 500000, "fee_fixed": 10, "fee_percent": 2 },
-    "PEN": { "enabled": true, "min_amount": 2, "max_amount": 3000, "fee_fixed": 1, "fee_percent": 2 }
+    "ARS": { "enabled": true, "min_amount": 1450, "max_amount": 14500, "fee_fixed": 145, "fee_percent": 2 },
+    "PEN": { "enabled": true, "min_amount": 3.7, "max_amount": 37, "fee_fixed": 0.37, "fee_percent": 2 },
+    "COP": { "enabled": true, "min_amount": 4000, "max_amount": 40000, "fee_fixed": 400, "fee_percent": 2 }
   },
   "fee": { "enabled": true, "authentication_required": true },
   "transactions": { "enabled": true, "authentication_required": true },
@@ -140,7 +145,7 @@ Body (JSON or form):
 
 | Field | Required | Notes |
 | --- | --- | --- |
-| `asset_code` | yes | `ARS` or `PEN` |
+| `asset_code` | yes | `ARS`, `PEN` or `COP` |
 | `asset_issuer` | no | If sent, must match the sandbox issuer |
 | `account` | no | Defaults to the JWT account; must equal it (else `403`) |
 | `amount` | no | Prefills the form; up to 2 decimals |
@@ -163,7 +168,7 @@ the JWT account (and memo). `404` if not found.
 
 ### GET /transactions
 
-`?asset_code=ARS|PEN` (required), `kind=deposit|withdrawal`, `limit` (max 200), `no_older_than` (ISO 8601),
+`?asset_code=ARS|PEN|COP` (required), `kind=deposit|withdrawal`, `limit` (max 200), `no_older_than` (ISO 8601),
 `paging_id` (a transaction id; returns older ones). Newest first.
 
 ### GET /fee
@@ -184,7 +189,7 @@ Amounts are strings with 2 decimals. Null fields are omitted.
 | `external_transaction_id` | Simulated bank transfer id (`DEP-...` / `WDR-...`) |
 | `from`, `to`, `message`, `refunded`, `refunds` | |
 | `withdraw_anchor_account`, `withdraw_memo`, `withdraw_memo_type` (`hash`) | Withdrawal only, present after the form is submitted. Memo is 32 bytes, base64 |
-| `external_extra`, `external_extra_text` | Deposit only: the fake bank ticket (`CBU` for ARS, `CCI` for PEN, alias, holder, bank, REF) |
+| `external_extra`, `external_extra_text` | Deposit only: the fake bank ticket (`CBU` for ARS, `CCI` for PEN, account number for COP, alias, holder, bank, REF) |
 
 ## Statuses
 
@@ -207,11 +212,12 @@ can end in a failure status.
 Steps (Spanish UI):
 
 1. **KYC**, once per account: a form prefilled with fake but stable data (first_name, last_name, email, id_type
-   `DNI`/`CE`, id_country_code `AR`/`PE`, id_number 6-12 digits). The user confirms and it is approved immediately.
+   `DNI`/`CE`/`CC`, id_country_code `AR`/`PE`/`CO`, id_number 6-12 digits). The user confirms and it is approved immediately.
 2. **Deposit**: payment method -> amount -> confirm. The page shows a bank ticket with a fake account. Press
    **"Simular transferencia recibida"** and the anchor sends `amount_out` of the asset on-chain to the user account
    (with the memo, if any) -> `completed`.
-3. **Withdrawal**: amount -> destination (holder + `CBU` of 22 digits for ARS, `CCI` of 20 digits for PEN) -> confirm.
+3. **Withdrawal**: amount -> destination (holder + `CBU` of 22 digits for ARS, `CCI` of 20 digits for PEN, an account
+   number of 10 to 16 digits for COP) -> confirm.
    The transaction moves to `pending_user_transfer_start` and shows `withdraw_anchor_account` + `withdraw_memo`.
 
 ### Paying a withdrawal
@@ -219,7 +225,7 @@ Steps (Spanish UI):
 Build a Stellar payment from the user account:
 
 - destination: `withdraw_anchor_account`
-- asset: the same ARS/PEN asset (code **and** issuer)
+- asset: the same ARS/PEN/COP asset (code **and** issuer)
 - amount: at least `amount_in`
 - memo: `Memo.hash(Buffer.from(withdraw_memo, 'base64'))`
 
@@ -229,23 +235,26 @@ A withdrawal paid after it expired is not refunded.
 
 ## Magic amounts
 
-Enter these amounts in the hosted form (ARS or PEN) to force an outcome:
+The cents of the amount entered in the hosted form force an outcome, for any asset and any amount inside its limits.
+Any other cents complete normally.
 
-| Amount | Final status |
-| --- | --- |
-| `13.13` | `error` |
-| `66.60` | `refunded` (with a `refunds` object) |
-| `77.70` | `expired` |
-| `11.11` | `too_small` |
-| `2999.99` | `too_large` |
-| `55.55` | `no_market` |
+| Ends in | Examples | Final status |
+| --- | --- | --- |
+| `.13` | `2000.13` ARS, `5.13` PEN, `5000.13` COP | `error` |
+| `.66` | `2000.66` ARS, `5.66` PEN, `5000.66` COP | `refunded` (with a `refunds` object) |
+| `.77` | `2000.77` ARS, `5.77` PEN, `5000.77` COP | `expired` |
+| `.11` | `2000.11` ARS, `5.11` PEN, `5000.11` COP | `too_small` |
+| `.99` | `2000.99` ARS, `5.99` PEN, `5000.99` COP | `too_large` |
+| `.55` | `2000.55` ARS, `5.55` PEN, `5000.55` COP | `no_market` |
 
 Deposits apply the outcome when the transfer is marked received; withdrawals when the user's payment arrives.
 
 ## Limits
 
-- Per operation: see `/info` (ARS 11 to 500000, PEN 2 to 3000). Out of range -> form error.
-- Daily cap per account and asset (UTC day, deposits + withdrawals combined): ARS 1000000, PEN 6000.
+- Per operation, about 1 to 10 USD: see `/info` (ARS 1450 to 14500, PEN 3.7 to 37, COP 4000 to 40000). Out of
+  range -> form error.
+- Daily cap per account and asset (UTC day, deposits + withdrawals combined), about 50 USD: ARS 72500,
+  PEN 185, COP 200000.
 - Rate limits: per IP burst 120 then 2 req/s; per account burst 60 then 1 req/s. Over the limit -> `429` with
   `Retry-After`. Poll `/transaction` every 5 seconds or slower.
 
@@ -280,7 +289,7 @@ const { url, id } = await (
   await fetch(`${ANCHOR}/transfer24/transactions/withdraw/interactive`, {
     method: 'POST',
     headers: auth,
-    body: JSON.stringify({ asset_code: 'ARS', amount: '1000' }),
+    body: JSON.stringify({ asset_code: 'ARS', amount: '3000' }),
   })
 ).json();
 console.log('Open in a browser:', url);
@@ -318,7 +327,7 @@ if (tx.status === 'pending_user_transfer_start') {
 
 ## Common pitfalls
 
-- Deposit ends in `error` "no trustline": add the ARS/PEN trustline before depositing.
+- Deposit ends in `error` "no trustline": add the ARS/PEN/COP trustline before depositing.
 - Withdrawal stuck in `pending_user_transfer_start`: the payment had no hash memo, a text memo, or went to a hardcoded
   address instead of `withdraw_anchor_account`.
 - Interactive page says expired: the `url` token lives 15 minutes; start a new transaction.
