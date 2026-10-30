@@ -210,6 +210,7 @@ SDK only. Every signing call passes the app's confirmation policy first (see [Si
 | `TX_OP_MALFORMED` (400)    | Invalid operation parameters                            | Fix the parameters                                  |
 | `TX_INVALID_SIGNED_XDR` (400) | The signed XDR is malformed                          | Re-sign from the built XDR                          |
 | `TX_SIGN_FAILED` (502)     | Signing failed on Pollar's side                         | Retry; for external wallets, re-approve in the wallet |
+| `SDK_STELLAR_SERVER_CANNOT_SIGN` (422) | A SEP-10 or SEP-53 proof asked of a wallet whose key Pollar does not hold; `signer` says which kind | A co-signed (`cosign`) or contract wallet cannot sign this proof; an external one (`client`) signs it in its own wallet |
 | `TX_SUBMIT_FAILED` (422)   | The network rejected the transaction                    | Inspect `resultCode` on the outcome                 |
 | `TX_SUBMIT_UNCONFIRMED` (504) | The network did not answer in time; nothing rejected the transaction | Check its status before retrying     |
 | `TX_BAD_SEQUENCE` (409)    | Sequence number race                                    | Safe to retry                                       |
@@ -309,6 +310,8 @@ Saving an allowlist row (dashboard or Server API) can also answer:
 | `SDK_KYC_VERIFICATION_NOT_FOUND` (404) | KYC verification not found            |
 | `SDK_KYC_ALREADY_APPROVED` (409) | The user is already verified for this option |
 | `SDK_KYC_UNDER_REVIEW` (409)    | A verification is waiting for a person; a new one is refused meanwhile |
+| `KYC_FORM_INVALID_ANSWERS` (422) | A form's answers are missing or invalid; `errors` lists each field |
+| `KYC_REGISTRATION_CONSENT_INVALID` (422) | A provider registration's consent does not stand: `reason` is `fields_mismatch` (the shared fields changed) or `accepted_at` (missing, in the future, or older than 24 hours) |
 
 ---
 

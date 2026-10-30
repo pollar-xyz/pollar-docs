@@ -37,7 +37,7 @@ Which routes an app offers depends on the providers and corridors it enables und
 `quoteRamp({ direction, fiat, asset, amount: { value, denomination } })` prices every usable route and answers:
 
 - `quotes`, best first: most received for an exact input (or least sent for an exact output), then fewer legs, then faster. Each quote lists its legs with their amounts, fees, ETA and the user's wallet on each leg, plus the `requiredFields` the user fills in (bank account, Pix key, name...).
-- `rejected`, the routes that cannot run right now, each with a `failure` that says who can fix it (`resolutionOwner`) and how (`resolutionAction`). A route waiting on a verification step carries a `requirement`: the KYC, form, registry check or provider registration to complete through `/v3/kyc` or `/v3/requirements` before quoting again. `rampNoRouteText(rejected)` gives the text to show.
+- `rejected`, the routes that cannot run right now, each with a `failure` that says who can fix it (`resolutionOwner`) and how (`resolutionAction`). A route waiting on a verification step carries a `requirement`: the KYC, form, registry check or provider registration to complete through `/v3/kyc` or `/v3/requirements` (from the server, `/v3/ramps/kyc` and `/v3/ramps/requirements`) before quoting again. `rampNoRouteText(rejected)` gives the text to show.
 
 Fees are inside the amounts: the provider's, venue's or bridge's own fees, plus Pollar's and the app's fees per leg. On an [app on credits](https://docs.pollar.xyz/docs/core-concepts/credits), a quote or an order the credits do not cover answers **402 `SDK_CREDITS_INSUFFICIENT`**.
 
@@ -78,7 +78,7 @@ Rail wallets show up under **Wallets > Wallets** with a Rail badge, next to the 
 
 ## From the server
 
-An app's backend can run ramps for users it manages, without an SDK session, through `/v3/ramps` on the [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api). Each call names the user with the `x-pollar-external-user-id` header.
+An app's backend can run ramps for users it manages, without an SDK session, through `/v3/ramps` on the [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api). Each call names the user with the `x-pollar-external-user-id` header. The verification steps a route needs are on the same surface; see [Verification steps](https://docs.pollar.xyz/docs/sdk-reference/server-api#verification-steps). The user's own verification with a KYC provider always happens with the user, at the provider's page: the backend sends the user there and never handles documents or biometrics.
 
 ---
 

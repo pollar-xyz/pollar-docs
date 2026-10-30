@@ -181,6 +181,11 @@ x-pollar-external-user-id: user_8231
 | `POST /v3/ramps/orders/{id}/retry` | Runs a held leg again from where it stopped. |
 | `POST /v3/ramps/orders/{id}/cancel` | Cancels an order before any funds move. |
 | `PUT /v3/ramps/customers/wallets/{chain}` | Links a wallet the user holds outside Pollar. |
+| `GET /v3/ramps/kyc/status`, `GET /v3/ramps/kyc/providers`, `POST /v3/ramps/kyc/start` | A route's KYC step (see [Verification steps](#verification-steps)). |
+| `GET /v3/ramps/requirements` | The app's own KYC steps and where the user stands. |
+| `GET` / `POST /v3/ramps/requirements/forms/{formId}` | A route's `FORM` step. |
+| `GET` / `POST /v3/ramps/requirements/registry/{optionId}` | A route's `REGISTRY_CHECK` step. |
+| `GET` / `POST /v3/ramps/requirements/registration/{corridorId}` | A route's `PROVIDER_REGISTRATION` step, with the user's consent. |
 
 ### Quote
 
@@ -196,7 +201,7 @@ POST /v3/ramps/quotes
 
 `amount.denomination` is `in` (fixes what the user sends) or `out` (fixes what the user receives); `value` is a decimal string, never a number. `asset.identifier` is the issuer on Stellar, the contract on Polygon, the mint on Solana, and `null` for the native coin.
 
-The answer (`SDK_RAMPS_QUOTES`) is `{ quotes, rejected }`. `quotes` is best first: most received (exact in) or least sent (exact out), then fewer legs, then faster. Each quote has `quoteId`, `expiresAt`, `amountIn`, `amountOut`, `etaSeconds` and its `legs`; each leg has its `kind` (`PROVIDER_ONRAMP`, `PROVIDER_OFFRAMP`, `SWAP`, `BRIDGE`), amounts, `providerFees`, `fees`, the user's `wallet` on it, and `requiredFields`: the values the user fills in before the order (a payout account, a name, a bank from a list). `rejected` says why every other candidate route dropped out; a route waiting on a verification step carries a `requirement` naming the step to complete through `/v3/kyc` or `/v3/requirements` in the SDK.
+The answer (`SDK_RAMPS_QUOTES`) is `{ quotes, rejected }`. `quotes` is best first: most received (exact in) or least sent (exact out), then fewer legs, then faster. Each quote has `quoteId`, `expiresAt`, `amountIn`, `amountOut`, `etaSeconds` and its `legs`; each leg has its `kind` (`PROVIDER_ONRAMP`, `PROVIDER_OFFRAMP`, `SWAP`, `BRIDGE`), amounts, `providerFees`, `fees`, the user's `wallet` on it, and `requiredFields`: the values the user fills in before the order (a payout account, a name, a bank from a list). `rejected` says why every other candidate route dropped out; a route waiting on a verification step carries a `requirement` naming the step to complete (see [Verification steps](#verification-steps)), then quote again.
 
 No route at all answers `422 SDK_RAMPS_NO_ROUTE` with `rejected`.
 
@@ -221,10 +226,56 @@ An order has `id`, `direction`, `state` (`created`, `awaiting_payment`, `process
 | `FIAT_PAYMENT` | Show your user the `instructions`: a QR to scan (`qr`, with a rendered `scannable` image), bank details (`bank_transfer`) or the provider's page (`hosted`) |
 | `SIGNATURE` | Sign `payload` unchanged and send it to the signature route. Comes up for an `EXTERNAL` wallet (linked with `PUT /customers/wallets/{chain}`) or an app-custody wallet |
 | `COSIGN_APPROVAL` | The user approves it on their device, where the SDK holds the co-signed wallet's key |
-| `KYC` | The user completes the verification steps |
+| `KYC` | The provider's own verification: open `url` for your user (a redirect or an iframe). The user verifies there, with the provider; the order checks the result on each pass and goes on by itself once approved. Once the provider approves the user, their later orders with it skip this step |
 | `NONE` | Nothing to do: read the order again at `nextPollAfter` |
 
 `GET /v3/ramps/orders` takes `state`, `pending=true` (only orders waiting on the user or on you), `open=true` (only orders not yet final), `since` (ISO date), `limit` (1 to 100, default 20) and `cursor`; it answers `{ orders, nextCursor }`.
+
+### Verification steps
+
+A route can need steps before it is quoted: Pollar's own KYC, a form, a registry check, or a registration with the provider. A quote that waits on one comes back in `rejected` with `failure.code` `PROVIDER_VERIFICATION_REQUIRED` and a `requirement`:
+
+```json
+"requirement": {
+  "corridorId": "cmvraiztm000d0io87fkblwpj",
+  "position": 1, "completed": 0, "total": 1,
+  "type": "FORM",
+  "optionId": "cmvravyyd000h0hqsx9k8zhvt",
+  "status": "none"
+}
+```
+
+Complete the step for its `type`, then quote again; a route with several steps asks for them one at a time, in order. The routes are the SDK's `/kyc` and `/requirements`, under `/v3/ramps`, for the user in `x-pollar-external-user-id`, with the same checks and errors. The user must exist: a quote creates them, and a read before any write answers `404 USER_NOT_FOUND`.
+
+| `type` | What to do |
+|---|---|
+| `KYC` | `POST /v3/ramps/kyc/start` with `{ "providerId": "<optionId>", "corridorId": "<corridorId>" }` answers a `kycUrl`. Send your user to it (a redirect or an iframe): they verify their document and themselves with the KYC provider. Your backend never sends documents, photos or biometrics and cannot complete this step for the user. Then read `GET /v3/ramps/kyc/status?corridorId=...` until it is `approved`. Reuse `idempotencyKey` on retries |
+| `FORM` | `GET /v3/ramps/requirements/forms/{optionId}` answers the form's `fields`, the user's previous `answers` to prefill and `missing`, the required keys still open. Send the user's full set of answers with `POST` and `{ "answers": { "<key>": "<value>" } }`; `422 KYC_FORM_INVALID_ANSWERS` lists every field missing or invalid in `errors` |
+| `REGISTRY_CHECK` | `GET /v3/ramps/requirements/registry/{optionId}` answers the identity data the registry checks, for your user to confirm. `POST` it with the surnames split (`surname1`, `surname2`) and the CI complement (`complementNumber`), if any. It answers `approved`, `rejected` with `rejectedFields` the user can correct, or `pending` for a person to review |
+| `PROVIDER_REGISTRATION` | See below |
+
+**Provider registration and consent.** `GET /v3/ramps/requirements/registration/{corridorId}` answers `ready` (every earlier step is done) and `fields`: the data the registration shares with the provider. Show `fields` to your user and ask for their consent. Then `POST` the evidence of it:
+
+```json
+POST /v3/ramps/requirements/registration/{corridorId}
+{
+  "consent": {
+    "accepted": true,
+    "acceptedAt": "2026-10-29T12:00:00-03:00",
+    "fields": ["name", "lastname", "document_type", "document_number", "..."],
+    "ipAddress": "203.0.113.7",
+    "userAgent": "Mozilla/5.0 ..."
+  }
+}
+```
+
+- `fields` is exactly the list the `GET` answered. If it changed, read it and ask the user again.
+- `acceptedAt` is when the user agreed, an ISO 8601 date with an offset, within the last 24 hours.
+- `ipAddress` is the user's own address when they agreed, not your server's. `userAgent` is optional.
+
+Pollar stores the consent, with the key that sent it, before it calls the provider. Calling this route is your attestation that your user saw those fields and agreed: never send it for a user who did not. A consent that does not stand answers `422 KYC_REGISTRATION_CONSENT_INVALID` with `reason` `fields_mismatch` or `accepted_at`; `422 KYC_REGISTRATION_MISSING_DATA` lists what the identity or the forms lack.
+
+The order can still stop on the provider's own verification after these steps: that is the `KYC` pending action above.
 
 ### Sign, retry, cancel, link a wallet
 
@@ -250,6 +301,10 @@ There is no server-side equivalent of the SDK's `POST /orders/{id}/check`: read 
 | `409 SDK_RAMPS_ORDER_NOT_CANCELLABLE` | Funds already moved, or an approval is open |
 | `422 SDK_RAMPS_NO_ROUTE` | No route can serve the request; `rejected` says why |
 | `422 SDK_RAMPS_WALLET_NOT_READY` | The route's wallet on another chain waits for the user's approval; retry once it is approved |
+| `404 USER_NOT_FOUND` | A verification step read for a user no call has named yet: quote first |
+| `422 KYC_FORM_INVALID_ANSWERS` | A form's answers are missing or invalid; `errors` lists each field |
+| `422 KYC_REGISTRATION_CONSENT_INVALID` | The registration's consent does not stand; `reason` is `fields_mismatch` or `accepted_at` |
+| `503 SDK_KYC_NOT_CONFIGURED` | The app cannot serve that verification step; `reason` says why |
 | `502` | Ramps are unavailable; retry |
 
 ---
