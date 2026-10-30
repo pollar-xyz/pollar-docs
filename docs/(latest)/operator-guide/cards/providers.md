@@ -2,7 +2,7 @@
 title: "Providers"
 ---
 
-**Dashboard > Cards > Providers** · Chains: all (the card is funded from the user's Stellar wallet)
+**Dashboard > Cards > Providers** · Chains: all (the card is funded from the user's Stellar or Solana wallet)
 
 Let your users get a card funded from their Pollar wallet. Enable the card providers you want to offer; they are off by default.
 
@@ -20,7 +20,7 @@ Let your users get a card funded from their Pollar wallet. Enable the card provi
 
 ## What the user does
 
-From the SDK the user creates a card holder, passes the provider's identity check, gets the card issued and reveals its details. Those steps are chain-agnostic. **Funding the card** moves USDC from the user's Stellar wallet, so an app that offers cards serves Stellar.
+From the SDK the user creates a card holder, passes the provider's identity check, gets the card issued and reveals its details. Those steps are chain-agnostic. **Funding the card** moves USDC from the user's Stellar or Solana wallet, so an app that offers cards serves at least one of the two. On an app on credits, Pollar pays the network fee and charges it; on Solana, the first funding also creates the provider's USDC account and its rent is charged once. The developer side is in the [Cards guide](https://docs.pollar.xyz/docs/guides/cards-guide).
 
 ---
 

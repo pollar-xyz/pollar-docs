@@ -28,6 +28,8 @@ Running wallets costs money on-chain: account reserves, network fees, starting b
 
 Every billable event (a wallet, a sponsored reserve or fee, a co-signed signature, a KYC check, a ramp leg, and so on) has a price in the app's price list, shown on **Billing > Credits > Prices**. An event with no price counts at 0.
 
+On Solana, a sponsored transfer to an address that never held the token also creates its token account, and the pool pays its rent (about 0.002 SOL). That rent is charged once per account created, as `reserve.token_account`, the Solana counterpart of a Stellar trustline reserve. A swap that creates the user's output account is charged the same way.
+
 ### Topping up
 
 Each app has a deposit address of its own on Stellar, Polygon and Solana, on the app's network. Send a stablecoin it accepts; the balance updates once the deposit confirms, at par (1 USDC or 1 USDT = 100 credits):

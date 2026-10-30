@@ -56,7 +56,7 @@ Legend: **Yes** = works today on that chain. **n/a** = the chain has no such con
 | On/off-ramps | Yes (Abroad, Anclap SEP-24, Etherfuse) | Yes (through a Circle CCTP bridge leg) | Yes (Stereum; Uniswap V3 swap legs) | [Ramps](https://docs.pollar.xyz/docs/core-concepts/ramps) |
 | KYC and requirement steps | Yes | Yes | Yes | chain-agnostic |
 | Cards: holder, KYC, issue, reveal | Yes | Yes | Yes | chain-agnostic |
-| Cards: fund the card from the wallet | Yes | No | No | [Cards](https://docs.pollar.xyz/docs/operator-guide/cards/providers) |
+| Cards: fund the card from the wallet | Yes (through a Circle CCTP bridge) | Yes (straight to the provider's Solana address) | No | [Cards guide](https://docs.pollar.xyz/docs/guides/cards-guide) |
 | Outbound webhooks for on-chain events | `upcoming` | `upcoming` | `upcoming` | [Webhooks](https://docs.pollar.xyz/docs/sdk-reference/webhooks) |
 
 ### On-chain DeFi and policies
@@ -99,7 +99,6 @@ Two Solana facts the client has to respect:
 | Earn | The providers (DeFindex, Blend) are Soroban protocols. The modal hides itself on a Solana-only app. |
 | Trustlines, account merge, Soroban auth entries | Stellar protocol concepts with no Solana equivalent. |
 | Passkey smart wallets | Built on Stellar C-addresses. |
-| Card funding | The card balance is funded from the user's Stellar wallet. |
 
 ---
 

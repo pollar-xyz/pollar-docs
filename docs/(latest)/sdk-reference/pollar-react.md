@@ -561,7 +561,7 @@ A 409 `KYC_REGISTRATION_STEPS_PENDING` means an earlier step is still open; a 42
 
 ### `<CardModal>`
 
-The Cards flow: provider steps (KYC, forms, registry check, provider registration), the provider's own KYC form with terms, verification polling, issuing, the card face with limit / available / to pay, recent activity, **Reveal** (decrypted on the device, auto-hidden after 30 s; the number and CVC can be copied while shown, the expiry date always) and **Add funds** (from the user's Stellar wallet, shown as "Step n of 4" until credited, or a deposit address for another wallet).
+The Cards flow: provider steps (KYC, forms, registry check, provider registration), the provider's own KYC form with terms, verification polling, issuing, the card face with limit / available / to pay, recent activity, **Reveal** (decrypted on the device, auto-hidden after 30 s; the number and CVC can be copied while shown, the expiry date always) and **Add funds** (from the user's Stellar or Solana wallet, with a **Network** picker when the user holds both; each funding shows its own steps until credited, 4 from Stellar and 2 from Solana; or a deposit address per network for another wallet). See the [Cards guide](https://docs.pollar.xyz/docs/guides/cards-guide).
 
 ```tsx
 import { CardModal } from '@pollar/react';

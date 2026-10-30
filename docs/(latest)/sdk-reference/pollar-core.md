@@ -1126,7 +1126,7 @@ Every method takes an optional `{ cardProviderId }`, needed only when the app en
 | `issueCard({ nickname?, limit? })` -> `Promise<CardInfo>` | Issue a virtual card. Needs an approved KYC |
 | `getCardBalance(params?)` -> `Promise<CardBalance \| null>` | Credit limit, spending power and balance due, read live from the provider |
 | `getCardTransactions({ cardId?, limit?, offset? })` -> `Promise<CardTransactionsPage>` | Newest first |
-| `fundCard({ amount })` -> `Promise<CardFundingOutcome>` | Moves USDC from the user's **Stellar** wallet to the card's collateral. A custodial wallet pays at once; an external wallet is asked to sign, and `{ status: 'cancelled' }` means it declined. The returned `CardFunding` then advances on its own: `CREATED -> BURNED -> ATTESTED -> MINTED -> CREDITED`, or `FAILED` with `error` |
+| `fundCard({ amount, chain? })` -> `Promise<CardFundingOutcome>` | Moves USDC from the user's wallet on `chain` (`'STELLAR'`, the default, or `'SOLANA'`) to the card's collateral. A Pollar-managed wallet pays at once; an external wallet is asked to sign; a co-signed wallet approves on the device. `{ status: 'cancelled' }` means the user declined; `{ status: 'cosign_pending', request }` comes only with `cosignManual: true`. The returned `CardFunding` then advances on its own: from Stellar `CREATED -> BURNED -> ATTESTED -> MINTED -> CREDITED`, from Solana `CREATED -> SENT -> CREDITED`, or `FAILED` with `error`. See the [Cards guide](https://docs.pollar.xyz/docs/guides/cards-guide) |
 | `getCardFunding(fundingId)` / `listCardFundings(params?)` | Follow a funding, or list them newest first |
 | `getCardDepositAddresses(params?)` | One deposit address per network, for funding from another wallet |
 | `revealCardSecrets(cardId, params?)` -> `Promise<CardSecrets>` | PAN and CVC, decrypted on this device with a one-shot key the server never sees. Show them and drop them; never store or log the result |
@@ -1149,7 +1149,7 @@ const { pan, cvc } = await pollar.revealCardSecrets(card.id);
 
 Errors are `PollarApiError`s: `SDK_CARDS_PROVIDER_ERROR` (the provider is down), `SDK_CARDS_IP_NOT_SUPPORTED`, `SDK_CARDS_PROVIDER_USER_TAKEN` (the email is already registered through another app), and `SDK_CARDS_REQUIREMENT_REQUIRED` (409: a platform step is still open; the body names `requirementType` and `optionId`).
 
-Types: `CardProvider`, `CardHolder`, `CardKycStatus`, `CardKycInput`, `CardInfo`, `CardStatus`, `CardBalance`, `CardTransaction`, `CardFunding`, `CardFundingStatus`, `CardFundingOutcome`, `CardSecrets`, `CardRequirements`, `CardRequirementStep`.
+Types: `CardProvider`, `CardHolder`, `CardKycStatus`, `CardKycInput`, `CardInfo`, `CardStatus`, `CardBalance`, `CardTransaction`, `CardFunding`, `CardFundingStatus`, `CardFundingChain`, `CardFundingOutcome`, `CardSecrets`, `CardRequirements`, `CardRequirementStep`.
 
 ---
 
