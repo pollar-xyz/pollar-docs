@@ -408,9 +408,16 @@ Since 0.12.1 every Pollar modal renders into `document.body` through a portal, o
 
 **React Aria and HeroUI.** Nothing to do. While its modal is open, React Aria leaves elements marked `data-react-aria-top-layer` reachable, lets focus move into them, and does not close its modal on a press inside them.
 
-**Radix (`@radix-ui/react-dialog`, shadcn/ui).** The Pollar modal takes clicks: its overlay sets `pointer-events: auto`, which a Radix modal turns off on `body`. Radix counts a press on it as outside the dialog and closes the dialog, so keep it open:
+**Radix (`@radix-ui/react-dialog`, shadcn/ui).** The Pollar modal takes clicks: its overlay sets `pointer-events: auto`, which a Radix modal turns off on `body`. Radix does not know the Pollar modal, so it treats it as outside the dialog:
+
+- A press on it can close the dialog. `@radix-ui/react-dialog` 1.1.16 and earlier close it on any press on the Pollar modal; from 1.1.17, only on a press on its backdrop. Pressing Escape closes the dialog even while the Pollar modal is open.
+- Its focus trap moves keyboard focus back into the dialog, so a keyboard user cannot tab into the Pollar modal; a click or a tap works.
+- With `<Dialog.Overlay>` mounted, the wheel and touch scroll is blocked outside the dialog, so a Pollar modal taller than the screen scrolls only with its scrollbar or the keyboard.
+
+Keep the dialog open while a confirmation is pending:
 
 ```tsx
+const { confirmations } = usePollar();
 const isPollarLayer = (target: EventTarget | null) =>
   target instanceof Element && target.closest('[data-react-aria-top-layer]') !== null;
 
@@ -418,10 +425,13 @@ const isPollarLayer = (target: EventTarget | null) =>
   onInteractOutside={(event) => {
     if (isPollarLayer(event.target)) event.preventDefault();
   }}
+  onEscapeKeyDown={(event) => {
+    if (confirmations.length > 0) event.preventDefault();
+  }}
 >
 ```
 
-Radix's focus trap moves keyboard focus back into the dialog, so a keyboard user cannot tab into the Pollar modal (a click or a tap works). Where that matters, render the dialog with `modal={false}` while `confirmations.length > 0`.
+Only a non-modal dialog (`modal={false}`) has no focus trap and no scroll lock. Set it for the dialog's whole life, not only while a confirmation is pending: switching `modal` unmounts the dialog's content and loses its state.
 
 **Headless UI (`Dialog`).** Headless UI makes the rest of the page inert when the dialog opens, not what is added later, so a Pollar modal opened from inside the dialog works. A Pollar modal that was already open when the dialog opened is made inert with the rest of the page. A press on the Pollar modal counts as outside the dialog, and the dialog calls `onClose`; ignore it while a confirmation is pending:
 
