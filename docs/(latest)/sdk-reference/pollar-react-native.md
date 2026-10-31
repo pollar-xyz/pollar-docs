@@ -112,6 +112,7 @@ Creates the `PollarClient`, exposes it through `usePollar()` and mounts the moda
 | `adapters`     | `PollarAdapters`         | No       | Custom transaction builders, used with `createPollarAdapterHook(key)`. |
 | `platform`     | `NativePlatformAdapters` | No       | `storage`, `visibilityProvider` and `openAuthUrl` (each overrides the same field of `config`), and `copyText` for the clipboard actions. |
 | `privyAdapter` | `InteractiveAuthAdapter` | No       | An interactive login adapter, added to `walletAdapters`. Mount its native provider above `PollarProvider`. |
+| `language`     | `string`                 | No       | Language of the modals, as a BCP 47 tag. Followed on every render without replacing the client (a changed `config.locale` replaces it). Since 0.12.1. |
 
 How the provider runs:
 
@@ -191,13 +192,15 @@ const {
   openLoginModal,
   openTransactionModal, // also as `openTxModal`
   openKycModal, // (options?: { country?, level?, onApproved? }) => void
-  openRampWidget, // also as `openRampModal`
-  openCardModal,
-  openTxHistoryModal,
+  openRampWidget, // also as `openRampModal`; (options?: RampModalOptions) => void
+  openCardModal, // (options?: CardModalOptions) => void
+  openTxHistoryModal, // (options?: TxHistoryModalOptions) => void
   openWalletBalanceModal,
-  openSendModal, openReceiveModal, openEnabledAssetsModal, openSwapModal, openEarnModal,
+  openSendModal, openReceiveModal, openEnabledAssetsModal, openSwapModal, openEarnModal, // send, receive, swap, earn take options
 } = usePollar();
 ```
+
+Since 0.12.1 the ramp, send, receive, swap, earn, history and card entry points take the same options as in `@pollar/react`, with the same rules: a starting point the user can change, an option the app or wallet cannot use left out, data that loads late picked up when it arrives, and `onSuccess({ hash })` / `onFunded(funding)` called once. See [Modal options](https://docs.pollar.xyz/docs/sdk-reference/pollar-react#modal-options). A ramp order the widget keeps in `usePollar().ramp` wins over the ramp options: the widget opens on that order. On Solana the swap panel always quotes with the best venue ("auto") and has no **Max** button.
 
 `buildTx` opens the transaction modal and the user confirms from there. The other transaction methods work through core state without opening it; call `openTransactionModal()` when your flow needs that screen. Every signing call passes the app's [signature confirmation](https://docs.pollar.xyz/docs/sdk-reference/pollar-react#signature-confirmation) first; the provider renders the prompt.
 
@@ -233,7 +236,7 @@ Components are styled with `StyleSheet`; there is no stylesheet to import. Theme
 
 The package also exports building blocks for a whole app: `AppShell`, `FeatureCatalog`, `FeaturePanel` and `FeatureExample`, `AccountOnboarding`, panels per feature (`AuthPanel`, `WalletPanel`, `SendPanel`, `ReceivePanel`, `AssetsPanel`, `HistoryPanel`, `SessionsPanel`, `SwapPanel`, `EarnPanel`, `DistributionPanel`, `RampPanel`, `ChainsPanel`, ...) and layout primitives (`PollarUIProvider`, `ScreenLayout`, `Card`, `ActionButton`, `Field`, ...).
 
-The modals and these building blocks pick their language as in `@pollar/react` (the dashboard's pin, a modal's `language` prop, the client's `locale`, then the device language): see [Language](https://docs.pollar.xyz/docs/sdk-reference/pollar-react#language). `AppShell`'s `settings.language` and `AccountOnboarding` take `'en'`, `'es'` or `'pt'`.
+The modals and these building blocks pick their language as in `@pollar/react` (the dashboard's pin, a modal's `language` prop, the provider's `language` prop, the client's `locale`, then the device language): see [Language](https://docs.pollar.xyz/docs/sdk-reference/pollar-react#language). The ramp widget names each country in the modal's language where the engine's `Intl.DisplayNames` has it; Hermes has none, so the ISO code shows there. `AppShell`'s `settings.language` and `AccountOnboarding` take `'en'`, `'es'` or `'pt'`.
 
 ### Ramps
 

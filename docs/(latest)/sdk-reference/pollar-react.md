@@ -36,6 +36,7 @@ import { PollarProvider } from '@pollar/react';
 | `appConfig`        | `PollarConfig`                       | No       | Local replacement for the remote `/applications/config` (styles, app name, chains). If provided, the remote fetch is skipped and nothing is merged with the server's answer. |
 | `adapters`         | `PollarAdapters`                     | No       | Transaction-building adapters, consumed via `createPollarAdapterHook`. This is **not** the wallet-login slot: wallet login providers go on the client's `walletAdapters` config; see [Wallet Adapters](https://docs.pollar.xyz/docs/sdk-reference/wallet-adapters). |
 | `onStorageDegrade` | `OnStorageDegrade`                   | No       | Notified when persistent storage silently degrades to in-memory mode.                        |
+| `language`         | `string`                             | No       | Language of the modals, as a BCP 47 tag; typically your app's current language. Followed on every render, so open modals switch when it changes. Since 0.12.1. See [Language](#language). |
 
 > To register wallet-login providers (Stellar Wallets Kit, Solana Wallet Standard), put them on `client.walletAdapters`, not on this component. See [Wallet Adapters](https://docs.pollar.xyz/docs/sdk-reference/wallet-adapters).
 
@@ -63,20 +64,21 @@ The app's policy is set in the dashboard, under **Wallets > Wallet settings > Si
 
 ### Language
 
-Every modal is in English, Spanish and Portuguese. The provider picks the language once, in this order:
+Every modal is in English, Spanish and Portuguese. The language is, in this order:
 
 1. The language pinned in the dashboard, **Build > Branding > Language** ([guide](https://docs.pollar.xyz/docs/operator-guide/build/branding)). With **User's device language** (the default) nothing is pinned.
 2. The `language` prop of a modal that takes one (`<RampWidget>`, `<KycModal>`, `<RequirementFormModal>`, `<RegistryCheckModal>`, `<ProviderRegistrationModal>`).
-3. The client's `locale`.
-4. The browser language.
+3. The `language` prop of `<PollarProvider>` (since 0.12.1).
+4. The client's `locale`.
+5. The browser language.
 
-English when none of them is a language the modals have. To keep the modals in your app's language, pass it as `locale`:
+English when none of them is a language the modals have. To keep the modals in your app's language, pass it to the provider; when the user switches language, open and later modals follow without remounting anything:
 
 ```tsx
-<PollarProvider client={{ apiKey: 'pub_testnet_xxxxxxxxxxxxxxxxxxxx', locale: i18n.language }}>
+<PollarProvider client={{ apiKey: 'pub_testnet_xxxxxxxxxxxxxxxxxxxx' }} language={i18n.language}>
 ```
 
-`locale` is read when the client is built; the dashboard setting arrives with `/applications/config` on each mount.
+Outside React, `getClient().setLocale(tag)` does the same (`undefined` clears it), and `config.locale` is its starting value. Before 0.12.1, `locale` is read once, when the client is built. The dashboard setting arrives with `/applications/config` on each mount.
 
 ---
 
@@ -269,7 +271,7 @@ The transaction modal opens automatically when `buildTx` is called. Each signing
 | `getSolanaSwapConfig` | `() => Promise<SolanaSwapVenue[]>`                         | Solana venues this app exposes (Jupiter, Titan; mainnet). |
 | `getSolanaSwapQuote`  | `(params: SolanaSwapQuoteParams) => Promise<SolanaSwapQuote[]>` | Solana quotes in base units, best first.            |
 | `swapSolana`          | `(quote: SolanaSwapQuote, opts?: { slippageBps? }) => Promise<SubmitOutcome>` | Runs a Solana swap; drives `tx`.     |
-| `openSwapModal`  | `() => void`                                                   | Opens the swap modal. On an app that offers swaps on Stellar and Solana it shows a Network selector. |
+| `openSwapModal`  | `(options?: SwapModalOptions) => void`                         | Opens the swap modal. On an app that offers swaps on Stellar and Solana it shows a Network selector. See [Modal options](#modal-options). |
 
 ---
 
@@ -282,7 +284,7 @@ The transaction modal opens automatically when `buildTx` is called. Each signing
 | `getEarnPosition`      | `(params: EarnPositionParams) => Promise<EarnPosition>` | The wallet's position.                              |
 | `earnDeposit`          | `(params: EarnTxParams) => Promise<SubmitOutcome>`      | Deposit into a vault/pool; drives `tx`.             |
 | `earnWithdraw`         | `(params: EarnTxParams) => Promise<SubmitOutcome>`      | Withdraw from a vault/pool; drives `tx`.            |
-| `openEarnModal`        | `() => void`                                            | Opens the Earn modal.                               |
+| `openEarnModal`        | `(options?: EarnModalOptions) => void`                  | Opens the Earn modal. See [Modal options](#modal-options). |
 
 ---
 
@@ -291,7 +293,7 @@ The transaction modal opens automatically when `buildTx` is called. Each signing
 | Property            | Type             | Description                          |
 |---------------------|------------------|--------------------------------------|
 | `txHistory`         | `TxHistoryState` | Current tx history state (reactive). |
-| `openTxHistoryModal` | `() => void`    | Opens the transaction history modal. |
+| `openTxHistoryModal` | `(options?: TxHistoryModalOptions) => void` | Opens the transaction history modal. See [Modal options](#modal-options). |
 
 ---
 
@@ -317,7 +319,21 @@ Without `corridorId` or `providerId` the modal walks the app's own KYC steps, as
 
 | Property         | Type         | Description                        |
 |------------------|--------------|------------------------------------|
-| `openRampModal`  | `() => void` | Opens the fiat on/off-ramp widget. |
+| `openRampModal`  | `(options?: RampModalOptions) => void` | Opens the fiat on/off-ramp widget, on the options given (since 0.12.1). |
+
+| Option      | Type              | Description                                                                 |
+|-------------|-------------------|-----------------------------------------------------------------------------|
+| `direction` | `'buy' \| 'sell'` | Buy (on-ramp) or sell (off-ramp). Defaults to `'buy'`.                      |
+| `country`   | `string`          | ISO 3166-1 alpha-2, e.g. `'BR'`.                                            |
+| `fiat`      | `string`          | Currency code, e.g. `'BRL'`. Defaults to the country's first fiat.          |
+| `asset`     | `string`          | Asset code, e.g. `'USDC'`. Defaults to the first asset for that fiat.       |
+| `amount`    | `string`          | A plain decimal, e.g. `'100'`; anything else is left out.                   |
+
+```tsx
+openRampModal({ country: 'BR', direction: flow === 'withdraw' ? 'sell' : 'buy' });
+```
+
+A country that does not route in the requested direction, or that the app does not offer, opens on the widget's default country, without the fiat, asset or amount. The widget names each country in the modal's language, sorted by name.
 
 The widget runs the v3 ramps API: a ramp is an order of one or more legs (the provider, a swap, a bridge) that Pollar runs server-side. See [Ramps](https://docs.pollar.xyz/docs/core-concepts/ramps) and the ramp methods in [`@pollar/core`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core) for a headless flow.
 
@@ -343,21 +359,45 @@ All Pollar modals are mounted inside `<PollarProvider>` and controlled programma
 | `openLoginModal()`               | Opens the login modal.                  |
 | `openTxModal()`                  | Opens the transaction modal.            |
 | `openKycModal(options?)`         | Opens the KYC modal.                    |
-| `openRampModal()`                | Opens the ramp widget.                  |
-| `openTxHistoryModal()`           | Opens the transaction history modal.    |
+| `openRampModal(options?)`        | Opens the ramp widget.                  |
+| `openTxHistoryModal(options?)`   | Opens the transaction history modal.    |
 | `openWalletBalanceModal()`       | Opens the wallet balance modal.         |
-| `openSendModal()`                | Opens the send-payment modal.           |
-| `openReceiveModal()`             | Opens the receive modal.                |
+| `openSendModal(options?)`        | Opens the send-payment modal.           |
+| `openReceiveModal(options?)`     | Opens the receive modal.                |
 | `openEnabledAssetsModal()`       | Opens the enabled-assets / trustline modal. |
-| `openSwapModal()`                | Opens the swap modal.                   |
-| `openEarnModal()`                | Opens the Earn modal.                   |
+| `openSwapModal(options?)`        | Opens the swap modal.                   |
+| `openEarnModal(options?)`        | Opens the Earn modal.                   |
 | `openSessionsModal()`            | Opens the active-sessions modal.        |
 | `openDistributionRulesModal()`   | Opens the distribution-rules modal.     |
-| `openCardModal()`                | Opens the Cards modal: sign-up, identity verification, issuing, the card and its activity. |
+| `openCardModal(options?)`        | Opens the Cards modal: sign-up, identity verification, issuing, the card and its activity. |
 | `openCosignModal()`              | Opens the co-sign approval prompt.      |
 | `openRecoveryModal()`            | Opens the wallet recovery modal.        |
 
 `<ConfirmModal>` and `<CustodyMigrationModal>` have no entry point: the provider opens them when a signature waits for the user and when the server asks for the move.
+
+### Modal options
+
+Since 0.12.1 the entry points marked `options?` open the modal on the values given, and the user can still change each one. An option the app or wallet cannot use (a network the app does not offer, an asset the wallet does not hold, a provider that is not enabled, an amount that is not a plain decimal) is left out and that field opens on its default; nothing is thrown. An option whose data is still loading is applied when it arrives. Each call starts over: opening again with other options, or with none, drops the earlier ones. The types are exported from `@pollar/react`, and each modal component takes the same options as its `initial` prop.
+
+```tsx
+openSendModal({ asset: 'USDC', destination: 'G...', amount: '25', memo: 'order-1042', onSuccess: ({ hash }) => save(hash) });
+openSwapModal({ sell: 'XLM', buy: 'USDC', amount: '100' });
+openEarnModal({ provider: 'blend', tab: 'withdraw' });
+openReceiveModal({ chain: 'SOLANA' });
+openCardModal({ panel: 'fund', amount: '50', onFunded: (funding) => track(funding.id) });
+```
+
+| Entry point          | Options                                                                                                     |
+|----------------------|-------------------------------------------------------------------------------------------------------------|
+| `openRampModal`      | `direction`, `country`, `fiat`, `asset`, `amount` (see [Ramps](#ramps))                                     |
+| `openSendModal`      | `chain`, `asset` (code), `destination`, `amount`, `memo`, `memoType` (`'text' \| 'id' \| 'hash'`), `onSuccess({ hash })` |
+| `openSwapModal`      | `chain` (`'STELLAR' \| 'SOLANA'`), `sell` (code), `buy` (code), `amount`, `onSuccess({ hash })`              |
+| `openEarnModal`      | `provider`, `opportunityId`, `tab` (`'deposit' \| 'withdraw'`), `amount`, `onSuccess({ hash })`              |
+| `openReceiveModal`   | `chain`                                                                                                     |
+| `openTxHistoryModal` | `chain`                                                                                                     |
+| `openCardModal`      | `panel: 'fund'` (opens the funding panel once the user's card loads), `amount`, `chain`, `onFunded(funding)` |
+
+`onSuccess` is called once per transaction that lands while the modal is open, and `onFunded` with each funding the user sends from the card modal. A Solana or Polygon send takes `amount` in the asset's decimals, as the form shows it.
 
 ---
 
@@ -569,9 +609,10 @@ import { CardModal } from '@pollar/react';
 <CardModal onClose={() => setOpen(false)} />
 ```
 
-| Prop      | Type         | Description                                              |
-|-----------|--------------|----------------------------------------------------------|
-| `onClose` | `() => void` | **Required.** A funding in flight keeps advancing after close. |
+| Prop      | Type               | Description                                              |
+|-----------|--------------------|----------------------------------------------------------|
+| `onClose` | `() => void`       | **Required.** A funding in flight keeps advancing after close. |
+| `initial` | `CardModalOptions` | Where the modal opens. See [Modal options](#modal-options). |
 
 Headless: the card methods on `PollarClient` (see [`@pollar/core`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core)).
 
@@ -638,6 +679,7 @@ import { RampWidget } from '@pollar/react';
 |-----------|--------------|----------------------------------------------------------|
 | `onClose` | `() => void` | **Required.** Called when the user dismisses the widget. |
 | `language` | `string`    | Language of the widget and the verification steps it opens, as a BCP 47 tag. See [Language](#language). |
+| `initial` | `RampModalOptions` | Where the widget opens. See [Ramps](#ramps). |
 
 Signing a leg only runs on a user press; polling never signs. When the app registered no signer for a leg (`registerRampSigningHandler` in `@pollar/core`), the widget signs with the user's connected wallet after checking the payload: a Stellar XDR must run every operation as the connected account (`assertRampStellarSigner`), and a Solana transfer must be built from the connected Solana wallet (signed through `signSolanaTransaction`).
 
