@@ -64,6 +64,7 @@ Legend: **Yes** = works today on that chain. **n/a** = the chain has no such con
 | Feature | Stellar | Solana | Polygon | Where |
 |---|:---:|:---:|:---:|---|
 | Swap | Yes (SDEX, Soroswap, Aquarius) | Yes, mainnet only (Jupiter, Titan) | No | [Swap](https://docs.pollar.xyz/docs/operator-guide/treasury/swap) |
+| Move USDC between the user's wallets (Circle CCTP, every direction) | Yes, mainnet | Yes, mainnet | Yes, mainnet | [Bridge guide](https://docs.pollar.xyz/docs/guides/bridge-guide) |
 | Earn (DeFindex, Blend) | Yes | No | No | [Earn](https://docs.pollar.xyz/docs/operator-guide/treasury/earn) |
 | Token distribution (claimable rules) | Yes | No | No | [Token Distribution](https://docs.pollar.xyz/docs/operator-guide/treasury/token-distribution) |
 | Transaction policy (account merge, max fee) | Yes | n/a | n/a | [Transaction Policy](https://docs.pollar.xyz/docs/operator-guide/wallets/transaction-policy) |

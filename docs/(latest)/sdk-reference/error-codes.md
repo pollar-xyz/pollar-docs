@@ -351,6 +351,18 @@ Ramps run on `/v3/ramps` (see [Ramps](https://docs.pollar.xyz/docs/core-concepts
 
 ---
 
+## Bridge
+
+| Code | Description |
+| --- | --- |
+| `SDK_BRIDGE_UNAVAILABLE` (422) | The move cannot run: `reason` is `mainnet_only`, `chain_not_enabled` or `no_gas_wallet` |
+| `SDK_BRIDGE_ROUTE_UNSUPPORTED` (422) | Not USDC between two different chains of Stellar, Solana and Polygon |
+| `SDK_BRIDGE_WALLET_NOT_READY` (422) | A wallet is missing (`no_wallet`, with `chain`), a Stellar destination does not trust USDC (`no_usdc_trustline`), or the wallet cannot sign a move (`unsupported_wallet`) |
+| `SDK_BRIDGE_TRANSFER_NOT_FOUND` (404) | No such transfer for this user |
+| `SDK_BRIDGE_ACTION_CHANGED` (409) | The step to sign changed since it was read: read the transfer again |
+
+---
+
 ## Session, DPoP & passkeys
 
 End-user session and token errors (sdk-api). These are handled by the SDK's auth flow; surface to users as "please sign in again".

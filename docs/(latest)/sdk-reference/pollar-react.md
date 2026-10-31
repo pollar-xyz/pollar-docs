@@ -370,6 +370,7 @@ All Pollar modals are mounted inside `<PollarProvider>` and controlled programma
 | `openSessionsModal()`            | Opens the active-sessions modal.        |
 | `openDistributionRulesModal()`   | Opens the distribution-rules modal.     |
 | `openCardModal(options?)`        | Opens the Cards modal: sign-up, identity verification, issuing, the card and its activity. |
+| `openBridgeModal(options?)`      | Opens the modal that moves USDC between the user's wallets on Stellar, Solana and Polygon (mainnet). |
 | `openCosignModal()`              | Opens the co-sign approval prompt.      |
 | `openRecoveryModal()`            | Opens the wallet recovery modal.        |
 
@@ -385,6 +386,7 @@ openSwapModal({ sell: 'XLM', buy: 'USDC', amount: '100' });
 openEarnModal({ provider: 'blend', tab: 'withdraw' });
 openReceiveModal({ chain: 'SOLANA' });
 openCardModal({ panel: 'fund', amount: '50', onFunded: (funding) => track(funding.id) });
+openBridgeModal({ fromChain: 'POLYGON', toChain: 'STELLAR', amount: '25', onSuccess: (transfer) => track(transfer.id) });
 ```
 
 | Entry point          | Options                                                                                                     |
@@ -396,6 +398,7 @@ openCardModal({ panel: 'fund', amount: '50', onFunded: (funding) => track(fundin
 | `openReceiveModal`   | `chain`                                                                                                     |
 | `openTxHistoryModal` | `chain`                                                                                                     |
 | `openCardModal`      | `panel: 'fund'` (opens the funding panel once the user's card loads), `amount`, `chain`, `onFunded(funding)` |
+| `openBridgeModal`    | `fromChain`, `toChain` (`'STELLAR' \| 'SOLANA' \| 'POLYGON'`), `amount` (USDC), `onSuccess(transfer)` once the USDC arrives |
 
 `onSuccess` is called once per transaction that lands while the modal is open, and `onFunded` with each funding the user sends from the card modal. A Solana or Polygon send takes `amount` in the asset's decimals, as the form shows it.
 
@@ -615,6 +618,25 @@ import { CardModal } from '@pollar/react';
 | `initial` | `CardModalOptions` | Where the modal opens. See [Modal options](#modal-options). |
 
 Headless: the card methods on `PollarClient` (see [`@pollar/core`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core)).
+
+---
+
+### `<BridgeModal>`
+
+Moves USDC between the user's own wallets on Stellar, Solana and Polygon, on mainnet: the directions the user holds wallets for, the amount against the USDC available on the source chain, a quote with what arrives, Pollar's fee to the app and the estimated time, and the move followed step by step (leaves the source, confirmed by Circle, arrives on the destination) with a link to each transaction. An external wallet's step shows **Authorize** and the connected Stellar or Solana wallet signs it; a co-signed wallet's opens the co-sign approval. See the [Bridge guide](https://docs.pollar.xyz/docs/guides/bridge-guide).
+
+```tsx
+import { BridgeModal } from '@pollar/react';
+
+<BridgeModal onClose={() => setOpen(false)} initial={{ fromChain: 'SOLANA', toChain: 'STELLAR' }} />
+```
+
+| Prop      | Type                 | Description                                                  |
+|-----------|----------------------|--------------------------------------------------------------|
+| `onClose` | `() => void`         | **Required.** A move in flight keeps advancing after close.  |
+| `initial` | `BridgeModalOptions` | Where the modal opens. See [Modal options](#modal-options).  |
+
+`BridgeModalTemplate` is the presentational layer, to build your own container around it.
 
 ---
 

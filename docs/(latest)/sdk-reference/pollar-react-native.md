@@ -194,13 +194,14 @@ const {
   openKycModal, // (options?: { country?, level?, onApproved? }) => void
   openRampWidget, // also as `openRampModal`; (options?: RampModalOptions) => void
   openCardModal, // (options?: CardModalOptions) => void
+  openBridgeModal, // (options?: BridgeModalOptions) => void
   openTxHistoryModal, // (options?: TxHistoryModalOptions) => void
   openWalletBalanceModal,
   openSendModal, openReceiveModal, openEnabledAssetsModal, openSwapModal, openEarnModal, // send, receive, swap, earn take options
 } = usePollar();
 ```
 
-Since 0.12.1 the ramp, send, receive, swap, earn, history and card entry points take the same options as in `@pollar/react`, with the same rules: a starting point the user can change, an option the app or wallet cannot use left out, data that loads late picked up when it arrives, and `onSuccess({ hash })` / `onFunded(funding)` called once. See [Modal options](https://docs.pollar.xyz/docs/sdk-reference/pollar-react#modal-options). A ramp order the widget keeps in `usePollar().ramp` wins over the ramp options: the widget opens on that order. On Solana the swap panel always quotes with the best venue ("auto") and has no **Max** button.
+Since 0.12.1 the ramp, send, receive, swap, earn, history, card and bridge entry points take the same options as in `@pollar/react`, with the same rules: a starting point the user can change, an option the app or wallet cannot use left out, data that loads late picked up when it arrives, and `onSuccess({ hash })` / `onFunded(funding)` called once. See [Modal options](https://docs.pollar.xyz/docs/sdk-reference/pollar-react#modal-options). A ramp order the widget keeps in `usePollar().ramp` wins over the ramp options: the widget opens on that order. On Solana the swap panel always quotes with the best venue ("auto") and has no **Max** button.
 
 `buildTx` opens the transaction modal and the user confirms from there. The other transaction methods work through core state without opening it; call `openTransactionModal()` when your flow needs that screen. Every signing call passes the app's [signature confirmation](https://docs.pollar.xyz/docs/sdk-reference/pollar-react#signature-confirmation) first; the provider renders the prompt.
 
@@ -222,7 +223,7 @@ The login modal also offers Freighter and Albedo when the application enables th
 ## Components
 
 - `<WalletButton>`: opens the login modal when logged out; when logged in, shows the address with a menu for balance, transaction history and logout, and the recovery lock while `recoveryLocked`.
-- `<KycModal>`, `<KycStatus>`, `<WalletBalanceModal>`, `<CardModal>`: the modals, for when you mount one yourself.
+- `<KycModal>`, `<KycStatus>`, `<WalletBalanceModal>`, `<CardModal>`, `<BridgeModal>`: the modals, for when you mount one yourself.
 - `<RequirementFormModal>`, `<RegistryCheckModal>`, `<ProviderRegistrationModal>`: the requirement steps a ramp route or a card provider asks for. Props as in [`@pollar/react`](https://docs.pollar.xyz/docs/sdk-reference/pollar-react).
 - `<RampWidget>`, `<RouteDisplay>`, `<RejectedRouteDisplay>`: the ramp flow on the v3 API (below).
 - `<CosignModal>`, `<RecoveryModal>`, `<CustodyMigrationModal>`: the Turnkey wallet screens the provider opens by itself.

@@ -1153,6 +1153,32 @@ Types: `CardProvider`, `CardHolder`, `CardKycStatus`, `CardKycInput`, `CardInfo`
 
 ---
 
+## Bridge
+
+On a mainnet app, the user moves USDC between their own wallets on Stellar, Solana and Polygon, in any direction, through Circle's CCTP: burned on the source chain, attested by Circle, minted on the destination by the app's network fee wallet. About five minutes. `@pollar/react` wraps it in `<BridgeModal>`; the methods below are the headless surface. See the [Bridge guide](https://docs.pollar.xyz/docs/guides/bridge-guide).
+
+| Method | Description |
+|---|---|
+| `getBridgeConfig()` -> `Promise<BridgeConfig>` | `directions` (`{ fromChain, toChain }[]`) the user can move in now: both chains on the app, a wallet on each. `available: false` on testnet (`reason: 'mainnet_only'`) or when there is no pair |
+| `quoteBridge({ fromChain, toChain, amount })` -> `Promise<BridgeQuote>` | `amountOut` (equal to `amountIn`: a Standard Transfer charges nothing), `fee` (Pollar's, in USD, charged to the app in credits; `null` when not charged), `etaSeconds`, and `signing`: `INTERNAL`, `COSIGNED`, `SELF_CUSTODY` or `EXTERNAL`. Nothing moves |
+| `bridge({ fromChain, toChain, amount, idempotencyKey? })` -> `Promise<BridgeTransfer>` | Starts the move. A Pollar-managed wallet burns at once; a co-signed one waits on `pendingAction` `COSIGN_APPROVAL`; an external one on `SIGNATURE`. A retry with the same `idempotencyKey` returns the transfer it started |
+| `signBridgeStep(transferId, actionId)` -> `Promise<BridgeTransfer>` | Signs the `SIGNATURE` action with the handler registered for its chain and encoding (`registerRampSigningHandler`, as for a ramp leg) and sends it. Call it from the user's explicit Authorize |
+| `getBridgeTransfer(transferId)` / `listBridgeTransfers()` | One transfer (a read moves it when its next step is due), or the latest 20, newest first |
+| `pollBridgeTransfer(transferId, { signal?, onUpdate?, onError?, until? })` | Reads until the transfer settles or waits on the user |
+
+`BridgeTransfer.status` goes `PENDING` -> (`AWAITING_ACTION`) -> `BURNED` -> `ATTESTED` -> `COMPLETED`, with `burnTxHash` and `mintTxHash`. `FAILED` means nothing left the wallet; `HELD` means the USDC was burned and what followed failed, which Pollar resolves. `isBridgeSettled`, `bridgeSourceChains` and `bridgeTargetChains` are exported helpers.
+
+```typescript
+const config = await pollar.getBridgeConfig();
+const [first] = config.directions;
+if (!first) return;
+let transfer = await pollar.bridge({ ...first, amount: '25', idempotencyKey: crypto.randomUUID() });
+if (transfer.pendingAction?.kind === 'SIGNATURE')
+  transfer = await pollar.signBridgeStep(transfer.id, transfer.pendingAction.actionId);
+transfer = await pollar.pollBridgeTransfer(transfer.id);
+```
+---
+
 ## Errors and messages
 
 Transaction methods (`signTx`, `runTx`, `sendPayment`, `setTrustline`, ...) return an outcome with `status: 'error'` and a `code` instead of throwing. Calls that read or create resources (KYC, `createWallet`, ramps, cards, requirement steps) throw a `PollarApiError`: `code` is the stable machine-readable code, `details` the server's reason when it sends one, and `body` the whole error payload. A request that hangs past its timeout rejects with a `PollarNetworkError` (`code: 'SDK_NETWORK_TIMEOUT'`).
