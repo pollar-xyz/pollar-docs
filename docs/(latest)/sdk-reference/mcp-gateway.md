@@ -66,6 +66,8 @@ Each tool maps to a Pollar API operation and requires the matching scope on your
 | `list_api_keys` | `id` | The app's keys, metadata only (never the key itself) | `api_keys:read` |
 | `list_distribution_rules` | `id` | The app's token distribution rules | `distribution:read` |
 | `list_application_assets` | `id` | The assets enabled on the app | `applications:read` |
+| `list_bridge_transfers` | `id`, `status?`, `userId?`, `limit?`, `offset?` | The app's USDC bridges between its users' own wallets, newest first, with the count per status | `applications:read` |
+| `get_bridge_transfer` | `id`, `transferId` | One bridge: direction, amount, status, burn and mint hashes, failure code | `applications:read` |
 
 There is no tool that withdraws from the distribution vault: a withdrawal needs the owner's dashboard session.
 

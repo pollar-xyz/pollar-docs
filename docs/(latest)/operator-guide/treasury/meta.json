@@ -1,8 +1,9 @@
 {
   "title": "Treasury",
-  "description": "Swap venues, yield providers, and token distribution rules.",
+  "description": "Swap venues, USDC bridges between networks, yield providers, and token distribution rules.",
   "pages": [
     "swap",
+    "bridge",
     "earn",
     "token-distribution"
   ]

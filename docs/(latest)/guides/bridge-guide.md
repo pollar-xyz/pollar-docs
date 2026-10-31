@@ -168,6 +168,7 @@ Bridge calls throw a `PollarApiError`:
 ## Related
 
 - [`@pollar/core` Bridge](https://docs.pollar.xyz/docs/sdk-reference/pollar-core)
+- [USDC bridges](https://docs.pollar.xyz/docs/operator-guide/treasury/bridge) in the dashboard, and the [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api) `/v3/bridge` for your backend
 - [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support)
 - [Credits](https://docs.pollar.xyz/docs/core-concepts/credits)
 - [Ramps](https://docs.pollar.xyz/docs/core-concepts/ramps), which use the same CCTP bridge as one of their legs

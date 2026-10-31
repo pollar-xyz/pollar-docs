@@ -309,6 +309,39 @@ There is no server-side equivalent of the SDK's `POST /orders/{id}/check`: read 
 
 ---
 
+## Bridge
+
+Move a user's USDC between their own wallets on Stellar, Solana and Polygon, through Circle's CCTP, on a mainnet app: the routes and answers of the SDK's `/v3/bridge`, for the user your backend names in `x-pollar-external-user-id` (the same user as the server-side ramps). See the [Bridge guide](https://docs.pollar.xyz/docs/guides/bridge-guide) for how a move runs.
+
+| Route | What it does |
+|---|---|
+| `GET /v3/bridge/config` | The directions the user can move in now: both chains on the app, a wallet on each. `available: false` on testnet |
+| `POST /v3/bridge/quote` | `{ fromChain, toChain, amount }`: what arrives, Pollar's fee to the app, and how the source wallet signs (`signing`) |
+| `POST /v3/bridge/transfers` | `{ fromChain, toChain, amount, idempotencyKey? }`: starts the move and its first step. A retry with the same key answers the transfer it started (`200`) |
+| `GET /v3/bridge/transfers` | The user's latest 20 moves, newest first |
+| `GET /v3/bridge/transfers/{transferId}` | One move: `status`, `pendingAction`, `burnTxHash`, `mintTxHash`, `failure`. A read moves it when its next step is due |
+| `POST /v3/bridge/transfers/{transferId}/signature` | `{ actionId, signedPayload }`: the signature of a `SIGNATURE` pending action |
+
+Who signs the burn depends on the source wallet. A Pollar-managed wallet burns at once. A co-signed wallet's step is `COSIGN_APPROVAL`: the user approves it with their passkey. An external wallet's, or one in your app's custody (`APP_CUSTODY`, open only to your backend), is `SIGNATURE`: sign `pendingAction.payload.value` as built, without broadcasting it, and send it with its `actionId`. The encoding is that of a ramp leg: `xdr` on Stellar (an approve, then the burn), `evm-eip1559-json` on Polygon, and `solana-cctp-json` on Solana, whose JSON carries `unsignedTransaction` (base64) to sign as is. A Solana step must be signed within about a minute.
+
+`status` goes `PENDING`, `AWAITING_ACTION`, `BURNED`, `ATTESTED`, `COMPLETED`; `FAILED` means nothing moved, and `HELD` means the USDC was burned and what followed failed, which Pollar resolves.
+
+### Bridge errors
+
+| Code | Meaning |
+|---|---|
+| `400 VALIDATION_ERROR` | Bad body, or a missing or invalid `x-pollar-external-user-id` |
+| `402 SDK_CREDITS_INSUFFICIENT` / `SDK_BILLING_OVERDUE` | Your credits do not cover Pollar's fee, or a statement is overdue |
+| `404 USER_NOT_FOUND` | A read for a user no call has named yet |
+| `404 SDK_BRIDGE_TRANSFER_NOT_FOUND` | Unknown move, or another user's |
+| `409 SDK_BRIDGE_ACTION_CHANGED` | The step to sign changed: read the move again |
+| `422 SDK_BRIDGE_UNAVAILABLE` | `reason` is `mainnet_only`, `chain_not_enabled` or `no_gas_wallet` |
+| `422 SDK_BRIDGE_ROUTE_UNSUPPORTED` | Not USDC between two different chains of the three |
+| `422 SDK_BRIDGE_WALLET_NOT_READY` | `reason` is `no_wallet` (with `chain`), `no_usdc_trustline` (a Stellar destination) or `unsupported_wallet` |
+| `502` | The bridge is unavailable; retry |
+
+---
+
 ## Billing
 
 Reads only, for the app behind the key. Credits are explained in [Credits](https://docs.pollar.xyz/docs/core-concepts/credits). Taking assets out of the distribution vault is not possible with a secret key: a withdrawal needs the owner's session in the dashboard (see [Distribution vault](https://docs.pollar.xyz/docs/operator-guide/billing/distribution-vault)), so a leaked key cannot empty it.
