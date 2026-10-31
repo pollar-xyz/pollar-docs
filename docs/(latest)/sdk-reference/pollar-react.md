@@ -402,6 +402,39 @@ openBridgeModal({ fromChain: 'POLYGON', toChain: 'STELLAR', amount: '25', onSucc
 
 `onSuccess` is called once per transaction that lands while the modal is open, and `onFunded` with each funding the user sends from the card modal. A Solana or Polygon send takes `amount` in the asset's decimals, as the form shows it.
 
+### Modals over the app's own modals
+
+Since 0.12.1 every Pollar modal renders into `document.body` through a portal, outside the app's tree, and its overlay (`.pollar-overlay`) carries `data-react-aria-top-layer`. A signature started from inside one of the app's modals opens `<ConfirmModal>` above it, and the user can answer it. A font or a `--pollar-font-family` that an element of the app around `<PollarProvider>` passes down does not reach the modals; set it on `:root` or `.pollar-modal-card` (see [Theming](https://docs.pollar.xyz/docs/sdk-reference/theming)).
+
+**React Aria and HeroUI.** Nothing to do. While its modal is open, React Aria leaves elements marked `data-react-aria-top-layer` reachable, lets focus move into them, and does not close its modal on a press inside them.
+
+**Radix (`@radix-ui/react-dialog`, shadcn/ui).** The Pollar modal takes clicks: its overlay sets `pointer-events: auto`, which a Radix modal turns off on `body`. Radix counts a press on it as outside the dialog and closes the dialog, so keep it open:
+
+```tsx
+const isPollarLayer = (target: EventTarget | null) =>
+  target instanceof Element && target.closest('[data-react-aria-top-layer]') !== null;
+
+<Dialog.Content
+  onInteractOutside={(event) => {
+    if (isPollarLayer(event.target)) event.preventDefault();
+  }}
+>
+```
+
+Radix's focus trap moves keyboard focus back into the dialog, so a keyboard user cannot tab into the Pollar modal (a click or a tap works). Where that matters, render the dialog with `modal={false}` while `confirmations.length > 0`.
+
+**Headless UI (`Dialog`).** Headless UI makes the rest of the page inert when the dialog opens, not what is added later, so a Pollar modal opened from inside the dialog works. A Pollar modal that was already open when the dialog opened is made inert with the rest of the page. A press on the Pollar modal counts as outside the dialog, and the dialog calls `onClose`; ignore it while a confirmation is pending:
+
+```tsx
+const { confirmations } = usePollar();
+
+<Dialog open={open} onClose={() => confirmations.length === 0 && setOpen(false)}>
+```
+
+Its focus trap also moves keyboard focus back into the dialog.
+
+**Stacking.** The overlay's z-index is the app's **Stacking order** (Dashboard > Branding) or `--pollar-overlay-z-index`, `50` by default. A Pollar modal opened after the app's modal comes later in `body` and covers one with the same z-index. Raise it above a library that stacks its modals higher (MUI uses 1300, Chakra 1400).
+
 ---
 
 ## Hooks
