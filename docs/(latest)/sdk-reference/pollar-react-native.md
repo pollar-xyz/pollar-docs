@@ -236,7 +236,7 @@ Components are styled with `StyleSheet`; there is no stylesheet to import. Theme
 
 The package also exports building blocks for a whole app: `AppShell`, `FeatureCatalog`, `FeaturePanel` and `FeatureExample`, `AccountOnboarding`, panels per feature (`AuthPanel`, `WalletPanel`, `SendPanel`, `ReceivePanel`, `AssetsPanel`, `HistoryPanel`, `SessionsPanel`, `SwapPanel`, `EarnPanel`, `DistributionPanel`, `RampPanel`, `ChainsPanel`, ...) and layout primitives (`PollarUIProvider`, `ScreenLayout`, `Card`, `ActionButton`, `Field`, ...).
 
-The modals and these building blocks pick their language as in `@pollar/react` (the dashboard's pin, a modal's `language` prop, the provider's `language` prop, the client's `locale`, then the device language): see [Language](https://docs.pollar.xyz/docs/sdk-reference/pollar-react#language). The ramp widget names each country in the modal's language where the engine's `Intl.DisplayNames` has it; Hermes has none, so the ISO code shows there. `AppShell`'s `settings.language` and `AccountOnboarding` take `'en'`, `'es'` or `'pt'`.
+The modals and these building blocks pick their language as in `@pollar/react` (the dashboard's pin, a modal's `language` prop, the provider's `language` prop, the client's `locale`, then the device language): see [Language](https://docs.pollar.xyz/docs/sdk-reference/pollar-react#language). The ramp widget names each country in the modal's language, Hermes included (`countryName` in `@pollar/core` falls back to a built-in table where `Intl.DisplayNames` is missing). `AppShell`'s `settings.language` and `AccountOnboarding` take `'en'`, `'es'` or `'pt'`.
 
 ### Ramps
 
