@@ -30,6 +30,8 @@ Every billable event (a wallet, a sponsored reserve or fee, a co-signed signatur
 
 On Solana, a sponsored transfer to an address that never held the token also creates its token account, and the pool pays its rent (about 0.002 SOL). That rent is charged once per account created, as `reserve.token_account`, the Solana counterpart of a Stellar trustline reserve. A swap that creates the user's output account is charged the same way.
 
+An app that sponsors Earn on Solana pays the network fee and the rent of every account a deposit or withdrawal opens for the user, so the user's wallet needs no SOL. A first deposit into a vault opens the user's lending accounts, about 0.0298 SOL of rent; later deposits and withdrawals open none and pay only the fee. That rent is charged once per transaction, as `reserve.earn_accounts`, on the SOL actually locked.
+
 ### Topping up
 
 Each app has a deposit address of its own on Stellar, Polygon and Solana, on the app's network. Send a stablecoin it accepts; the balance updates once the deposit confirms, at par (1 USDC or 1 USDT = 100 credits):
