@@ -2,9 +2,9 @@
 title: "Distribution vault"
 ---
 
-**Dashboard > Billing > Distribution vault** · Chains: Stellar
+**Dashboard > Wallets > Distribution vault** · Chains: Stellar
 
-The app's own wallet for the assets it distributes to users through [Token Distribution](https://docs.pollar.xyz/docs/operator-guide/treasury/token-distribution). What is in it belongs to the app. Pollar's pool pays the network fee of every withdrawal.
+The app's own wallet for the assets it distributes to users through [Token distribution](https://docs.pollar.xyz/docs/operator-guide/wallets/token-distribution). What is in it belongs to the app. Pollar's pool pays the network fee of every withdrawal.
 
 ---
 
@@ -25,7 +25,7 @@ Rules:
 
 - **Only the owner or an admin** can withdraw, from their dashboard session. There is no withdrawal with a SECRET key, a Personal Access Token, the Server API or the MCP Gateway.
 - **The destination is always the payout wallet** Pollar set for the app. A withdrawal cannot name another address. Until Pollar has set it, withdrawals are not open; contact Pollar to set it.
-- **Withdrawals are for apps on [credits](https://docs.pollar.xyz/docs/operator-guide/billing/credits).** An app on its own wallets sees "Withdrawals are not open for this app"; contact Pollar to move it to credits.
+- **Withdrawals are for apps on [credits](https://docs.pollar.xyz/docs/operator-guide/settings/credits).** An app on its own wallets sees "Withdrawals are not open for this app"; contact Pollar to move it to credits.
 
 ---
 

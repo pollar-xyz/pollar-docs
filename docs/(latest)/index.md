@@ -58,98 +58,96 @@ These pages document `@pollar/*` **0.12**, SDK API v3 and Server API v3. The ref
 
 ## Operator Guide
 
-The sections below mirror the Dashboard sidebar: **Overview, Build, Users, Wallets, Ramps, Cards, Treasury, Integrations, Monitor, Billing, Danger Zone**. Start with the [Dashboard Overview](https://docs.pollar.xyz/docs/operator-guide/dashboard-overview), which also lists the chains each page applies to.
+The sections below mirror the Dashboard sidebar: **Home, Features, Get started, Users, Wallets, Cash in and out, Identity checks, Cards, Pollar Pay, Developers, Settings, Monitoring**. Start with the [Dashboard Overview](https://docs.pollar.xyz/docs/operator-guide/dashboard-overview), which also lists the chains each page applies to.
 
 **Overview**
 
 | <br /> | <br /> |
 | ------ | ------ |
-| [Home](https://docs.pollar.xyz/docs/operator-guide/overview/home)                 | Your app at a glance                  |
-| [Get started](https://docs.pollar.xyz/docs/operator-guide/overview/get-started)   | Onboarding checklist                  |
-
-**Build**
-
-| <br /> | <br /> |
-| ------ | ------ |
-| [Settings](https://docs.pollar.xyz/docs/operator-guide/build/settings)   | App name, environment and token lifetimes |
-| [API Keys](https://docs.pollar.xyz/docs/operator-guide/build/api-keys)   | Generate and manage keys              |
-| [Domains](https://docs.pollar.xyz/docs/operator-guide/build/domains)     | Allowed origins and redirect URIs     |
-| [Webhooks](https://docs.pollar.xyz/docs/operator-guide/build/webhooks)   | Event delivery endpoints (upcoming)   |
-| [Branding](https://docs.pollar.xyz/docs/operator-guide/build/branding)   | Customize the Pollar modals           |
-| [Members](https://docs.pollar.xyz/docs/operator-guide/build/members)     | Team access and roles (owner or admin manage) |
+| [Home](https://docs.pollar.xyz/docs/operator-guide/overview/home) | Your app at a glance |
+| [Features](https://docs.pollar.xyz/docs/operator-guide/overview/features) | Turn on the areas your app needs |
+| [Get started](https://docs.pollar.xyz/docs/operator-guide/overview/get-started) | Onboarding checklist |
 
 **Users**
 
 | <br /> | <br /> |
 | ------ | ------ |
-| [Accounts](https://docs.pollar.xyz/docs/operator-guide/users/accounts)   | Browse and manage app users           |
+| [Accounts](https://docs.pollar.xyz/docs/operator-guide/users/accounts) | Browse and manage app users |
+| [Sign-in](https://docs.pollar.xyz/docs/operator-guide/users/sign-in) | Token lifetimes, OAuth providers and email OTP |
+| [Sign-in look](https://docs.pollar.xyz/docs/operator-guide/users/sign-in-look) | Customize the Pollar modals |
 
 **Wallets**
 
 | <br /> | <br /> |
 | ------ | ------ |
-| [Wallet settings](https://docs.pollar.xyz/docs/operator-guide/wallets/settings)               | Enabled chains, custody, creation timing, signature confirmation |
-| [Wallets](https://docs.pollar.xyz/docs/operator-guide/wallets/user-wallets)                   | User wallets on every chain, rail wallets included |
-| [Account Funding](https://docs.pollar.xyz/docs/operator-guide/wallets/account-funding)        | Funding wallet, funding mode, starting XLM, SOL and POL |
-| [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship)                | Who pays the fee, per chain           |
-| [Tokens & Trustlines](https://docs.pollar.xyz/docs/operator-guide/wallets/tokens-trustlines)  | Stellar assets, SPL mints, ERC-20s    |
-| [Transaction Policy](https://docs.pollar.xyz/docs/operator-guide/wallets/transaction-policy)  | Restrict sensitive Stellar operations |
-| [Auth Policy](https://docs.pollar.xyz/docs/operator-guide/wallets/auth-policy)                | Soroban authorization allowlist       |
+| [Settings](https://docs.pollar.xyz/docs/operator-guide/wallets/settings) | Enabled chains, custody, creation timing, signature confirmation |
+| [All wallets](https://docs.pollar.xyz/docs/operator-guide/wallets/user-wallets) | User wallets on every chain, rail wallets included |
+| [Starting balance](https://docs.pollar.xyz/docs/operator-guide/wallets/account-funding) | Funding wallet, funding mode, starting XLM, SOL and POL |
+| [Sponsored fees](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship) | Who pays the fee, per chain |
+| [Tokens](https://docs.pollar.xyz/docs/operator-guide/wallets/tokens-trustlines) | Stellar assets, SPL mints, ERC-20s |
+| [Transaction rules](https://docs.pollar.xyz/docs/operator-guide/wallets/transaction-policy) | Restrict sensitive Stellar operations |
+| [Signing rules](https://docs.pollar.xyz/docs/operator-guide/wallets/auth-policy) | Soroban authorization allowlist |
+| [Swap](https://docs.pollar.xyz/docs/operator-guide/wallets/swap) | Swap venues exposed to users |
+| [USDC bridge](https://docs.pollar.xyz/docs/operator-guide/wallets/bridge) | Users moving USDC between chains |
+| [Savings](https://docs.pollar.xyz/docs/operator-guide/wallets/earn) | Yield vaults and pools (DeFindex, Blend) |
+| [Token distribution](https://docs.pollar.xyz/docs/operator-guide/wallets/token-distribution) | Claimable distribution rules |
+| [Distribution vault](https://docs.pollar.xyz/docs/operator-guide/wallets/distribution-vault) | The vault distribution claims pay from, and withdrawals |
 
-**Ramps**
+**Cash in and out**
 
 | <br /> | <br /> |
 | ------ | ------ |
-| [Providers](https://docs.pollar.xyz/docs/operator-guide/ramps/providers)       | Fiat on/off-ramp providers and corridors |
-| [Routes](https://docs.pollar.xyz/docs/operator-guide/ramps/routes)             | The paths a ramp can take, leg by leg |
-| [Orders](https://docs.pollar.xyz/docs/operator-guide/ramps/orders)             | Ramp orders and what each one needs   |
-| [Signing](https://docs.pollar.xyz/docs/operator-guide/ramps/signing)           | How ramp legs are signed              |
-| [Transactions](https://docs.pollar.xyz/docs/operator-guide/ramps/transactions) | Ramps from SDKs older than 0.12       |
+| [Orders](https://docs.pollar.xyz/docs/operator-guide/ramps/orders) | Ramp orders and what each one needs |
+| [Transactions](https://docs.pollar.xyz/docs/operator-guide/ramps/transactions) | Ramps from SDKs older than 0.12 |
+| [Routes](https://docs.pollar.xyz/docs/operator-guide/ramps/routes) | The paths a ramp can take, leg by leg |
+| [Signing](https://docs.pollar.xyz/docs/operator-guide/ramps/signing) | How ramp legs are signed |
+| [Providers](https://docs.pollar.xyz/docs/operator-guide/ramps/providers) | Fiat on/off-ramp providers and corridors |
+
+**Identity checks**
+
+| <br /> | <br /> |
+| ------ | ------ |
+| [Providers](https://docs.pollar.xyz/docs/operator-guide/identity-checks/providers) | KYC options and your own Didit account |
+| [Verification steps](https://docs.pollar.xyz/docs/operator-guide/identity-checks/steps) | The steps your users complete |
 
 **Cards**
 
 | <br /> | <br /> |
 | ------ | ------ |
-| [Providers](https://docs.pollar.xyz/docs/operator-guide/cards/providers)       | Card providers, label and redirect URL |
-| [Card holders](https://docs.pollar.xyz/docs/operator-guide/cards/card-holders) | Your users' cards                     |
+| [Issued cards](https://docs.pollar.xyz/docs/operator-guide/cards/card-holders) | Your users' cards |
+| [Providers](https://docs.pollar.xyz/docs/operator-guide/cards/providers) | Card providers, label and redirect URL |
 
-**Treasury**
-
-| <br /> | <br /> |
-| ------ | ------ |
-| [Swap](https://docs.pollar.xyz/docs/operator-guide/treasury/swap)                             | Swap venues exposed to users (Stellar) |
-| [Earn](https://docs.pollar.xyz/docs/operator-guide/treasury/earn)                             | Yield vaults and pools (DeFindex, Blend) |
-| [Token Distribution](https://docs.pollar.xyz/docs/operator-guide/treasury/token-distribution) | Claimable distribution rules          |
-
-**Integrations**
+**Pollar Pay**
 
 | <br /> | <br /> |
 | ------ | ------ |
-| [Authentication](https://docs.pollar.xyz/docs/operator-guide/integrations/authentication) | OAuth providers and email OTP (upcoming) |
-| [KYC](https://docs.pollar.xyz/docs/operator-guide/integrations/kyc)                        | Identity verification and verification steps |
-| [Pollar Pay](https://docs.pollar.xyz/docs/operator-guide/integrations/pollar-pay)          | Pollar Pay integration (upcoming)     |
+| [Overview](https://docs.pollar.xyz/docs/operator-guide/pollar-pay/overview) | Pollar Pay integration (upcoming) |
 
-**Monitor**
+**Developers**
 
 | <br /> | <br /> |
 | ------ | ------ |
-| [Transactions](https://docs.pollar.xyz/docs/operator-guide/monitor/transactions) | On-chain transactions, per chain      |
-| [Logs](https://docs.pollar.xyz/docs/operator-guide/monitor/logs)                 | Application logs, live or by date     |
-| [SDK versions](https://docs.pollar.xyz/docs/operator-guide/monitor/sdk-versions) | Which SDK builds your users run       |
-| [Alerts](https://docs.pollar.xyz/docs/operator-guide/monitor/alerts)             | Low-balance notifications (upcoming)  |
+| [API keys](https://docs.pollar.xyz/docs/operator-guide/developers/api-keys) | Generate and manage keys |
+| [Websites](https://docs.pollar.xyz/docs/operator-guide/developers/domains) | Allowed origins and redirect URIs |
+| [Webhooks](https://docs.pollar.xyz/docs/operator-guide/developers/webhooks) | Event delivery endpoints (upcoming) |
+| [SDK versions](https://docs.pollar.xyz/docs/operator-guide/developers/sdk-versions) | Which SDK builds your users run |
 
-**Billing**
-
-| <br /> | <br /> |
-| ------ | ------ |
-| [Credits](https://docs.pollar.xyz/docs/operator-guide/billing/credits)                       | Credit balance, top-up addresses, usage and statements |
-| [Distribution vault](https://docs.pollar.xyz/docs/operator-guide/billing/distribution-vault) | The vault distribution claims pay from, and withdrawals |
-
-**Danger Zone**
+**Settings**
 
 | <br /> | <br /> |
 | ------ | ------ |
-| [Archive app](https://docs.pollar.xyz/docs/operator-guide/danger-zone/archive-app) | Archive / unarchive the app (owner or admin) |
+| [General](https://docs.pollar.xyz/docs/operator-guide/settings/general) | App name, environment and go-live request |
+| [Members](https://docs.pollar.xyz/docs/operator-guide/settings/members) | Team access and roles (owner or admin manage) |
+| [Credits](https://docs.pollar.xyz/docs/operator-guide/settings/credits) | Credit balance, top-up addresses, usage and statements |
+| [Archive app](https://docs.pollar.xyz/docs/operator-guide/settings/archive-app) | Archive / unarchive the app (owner or admin) |
+
+**Monitoring**
+
+| <br /> | <br /> |
+| ------ | ------ |
+| [Transactions](https://docs.pollar.xyz/docs/operator-guide/monitor/transactions) | On-chain transactions, per chain |
+| [Logs](https://docs.pollar.xyz/docs/operator-guide/monitor/logs) | Application logs, live or by date |
+| [Alerts](https://docs.pollar.xyz/docs/operator-guide/monitor/alerts) | Low-balance notifications (upcoming) |
 
 ---
 

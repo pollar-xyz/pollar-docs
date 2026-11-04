@@ -2,7 +2,7 @@
 title: "Members"
 ---
 
-**Dashboard > Build > Members** · Chains: all
+**Dashboard > Settings > Members** · Chains: all
 
 Invite teammates to collaborate on this app. The owner is always listed first.
 

@@ -1,0 +1,10 @@
+{
+  "title": "Developers",
+  "description": "API keys, allowed websites, webhooks, and the SDK versions your users run.",
+  "pages": [
+    "api-keys",
+    "domains",
+    "webhooks",
+    "sdk-versions"
+  ]
+}

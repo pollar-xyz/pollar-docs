@@ -1,16 +1,16 @@
 ---
-title: "Wallet settings"
+title: "Settings"
 ---
 
-**Dashboard > Wallets > Wallet settings** · Chains: all
+**Dashboard > Wallets > Settings** · Chains: all
 
-The chains your app serves, who holds your users' wallet keys, when their wallets are created, and when a signature asks the user. The page has four cards. Funding has its own page, [Account Funding](https://docs.pollar.xyz/docs/operator-guide/wallets/account-funding).
+The chains your app serves, who holds your users' wallet keys, when their wallets are created, and when a signature asks the user. The page has four cards. Funding has its own page, [Starting balance](https://docs.pollar.xyz/docs/operator-guide/wallets/account-funding).
 
 ---
 
 ## Enabled chains
 
-Your users get **one wallet per enabled chain**. Chains are independent of the environment: on a Test mode app Polygon means **Amoy** and Solana means **devnet**; on a live app they are Polygon mainnet and Solana mainnet-beta. The environment follows the app (see [Settings](https://docs.pollar.xyz/docs/operator-guide/build/settings)).
+Your users get **one wallet per enabled chain**. Chains are independent of the environment: on a Test mode app Polygon means **Amoy** and Solana means **devnet**; on a live app they are Polygon mainnet and Solana mainnet-beta. The environment follows the app (see [Settings > General](https://docs.pollar.xyz/docs/operator-guide/settings/general)).
 
 | Chain | Fees | What your treasury holds |
 |---|---|---|
@@ -18,11 +18,11 @@ Your users get **one wallet per enabled chain**. Chains are independent of the e
 | **Polygon** (EVM) | Not sponsored | POL in the Polygon GAS wallet. Every user wallet must hold POL to sign, so Pollar tops each one up from that wallet. |
 | **Solana** | Not sponsored | SOL in the Solana GAS wallet. Same as Polygon, and an account that falls below the rent-exempt minimum is deleted by the network with its balance, so the top-up keeps every wallet above that line. |
 
-For an app on credits, Pollar's pool pays these instead and charges credits (see [Credits](https://docs.pollar.xyz/docs/operator-guide/billing/credits)).
+For an app on credits, Pollar's pool pays these instead and charges credits (see [Credits](https://docs.pollar.xyz/docs/operator-guide/settings/credits)).
 
 ### Enabling a chain
 
-Each toggle opens a confirmation that explains what the chain costs your treasury. When you enable Polygon or Solana and the app has no GAS wallet on that chain yet, the confirmation warns that new wallets will be created but cannot sign anything until the GAS wallet exists and holds the native token. Create and fund the GAS wallet under [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship).
+Each toggle opens a confirmation that explains what the chain costs your treasury. When you enable Polygon or Solana and the app has no GAS wallet on that chain yet, the confirmation warns that new wallets will be created but cannot sign anything until the GAS wallet exists and holds the native token. Create and fund the GAS wallet under [Sponsored fees](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship).
 
 Chains the platform does not serve right now are not listed. If a chain you already enabled stops being served, it stays in the list with its toggle locked and the note "Not available on this platform right now", because it still has wallets behind it. Contact Pollar to have it turned on.
 
@@ -36,7 +36,7 @@ Drive your client's chain selector from `/v3/applications/config` rather than fr
 
 ### Disabling a chain
 
-Turning a chain off **never deletes wallets or keys**. It stops new ones being created and hides the existing ones from your users. The confirmation tells you how many user wallets exist on that chain: your users stop seeing them, along with any funds left in them, until you enable the chain again. Re-enabling restores access. Those wallets stay visible to you in [Wallets](https://docs.pollar.xyz/docs/operator-guide/wallets/user-wallets) with the **Rail** filter.
+Turning a chain off **never deletes wallets or keys**. It stops new ones being created and hides the existing ones from your users. The confirmation tells you how many user wallets exist on that chain: your users stop seeing them, along with any funds left in them, until you enable the chain again. Re-enabling restores access. Those wallets stay visible to you in [All wallets](https://docs.pollar.xyz/docs/operator-guide/wallets/user-wallets) with the **Rail** filter.
 
 ---
 
@@ -57,6 +57,8 @@ Who holds the key of the wallets created from now on. Wallets that already exist
 
 See [Co-signed Wallets](https://docs.pollar.xyz/docs/core-concepts/co-signed-wallets) for how the votes work, how users set up recovery, and what the device checks before it signs.
 
+External wallets are not set here. To let users sign in with a wallet they already have (Freighter, Albedo, xBull, Lobstr, or a Solana wallet), register adapters on the SDK. See [Wallet Adapters](https://docs.pollar.xyz/docs/sdk-reference/wallet-adapters).
+
 ---
 
 ## Wallet creation
@@ -67,7 +69,7 @@ See [Co-signed Wallets](https://docs.pollar.xyz/docs/core-concepts/co-signed-wal
 | **On demand** | Users sign in without a wallet; your app creates it with `createWallet()` in the SDK when they need one | Apps where only some users ever need a wallet |
 | **Never** | Users get a session and no wallet | Authentication only |
 
-Users who already have a wallet keep it in every mode. Once created, a wallet is funded according to [Account Funding](https://docs.pollar.xyz/docs/operator-guide/wallets/account-funding). Before switching to **On demand** or **Never**, make sure your app runs `@pollar/core` / `@pollar/react` 0.11.4 or later.
+Users who already have a wallet keep it in every mode. Once created, a wallet is funded according to [Starting balance](https://docs.pollar.xyz/docs/operator-guide/wallets/account-funding). Before switching to **On demand** or **Never**, make sure your app runs `@pollar/core` / `@pollar/react` 0.11.4 or later.
 
 See [Wallet Creation](https://docs.pollar.xyz/docs/core-concepts/wallet-creation) for what a session without a wallet looks like.
 

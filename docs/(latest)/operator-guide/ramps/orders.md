@@ -2,7 +2,7 @@
 title: "Orders"
 ---
 
-**Dashboard > Ramps > Orders** · Chains: Stellar, Solana, Polygon
+**Dashboard > Cash in and out > Orders** · Chains: Stellar, Solana, Polygon
 
 Your app's ramp orders, newest first: the orders your users open with `@pollar/core` 0.12 or later, and the ones your server opens with `/v3/ramps`. Each order runs its legs one at a time; when one stops, the order says at which leg, why, and who resolves it. Orders from SDKs older than 0.12 are under [Transactions](https://docs.pollar.xyz/docs/operator-guide/ramps/transactions).
 
@@ -51,5 +51,5 @@ When your app may retry, the detail shows **Retry from this leg**. The retry con
 ## Related
 
 - [Routes](https://docs.pollar.xyz/docs/operator-guide/ramps/routes): the paths these orders follow
-- [Wallets](https://docs.pollar.xyz/docs/operator-guide/wallets/user-wallets#rail-wallets): rail wallets that hold funds between two legs
+- [All wallets](https://docs.pollar.xyz/docs/operator-guide/wallets/user-wallets#rail-wallets): rail wallets that hold funds between two legs
 - [Ramps](https://docs.pollar.xyz/docs/core-concepts/ramps): how an order runs

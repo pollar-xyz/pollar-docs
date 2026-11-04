@@ -2,7 +2,7 @@
 title: "Credits"
 ---
 
-**Dashboard > Billing > Credits** · Chains: all (top-ups on several chains)
+**Dashboard > Settings > Credits** · Chains: all (top-ups on several chains)
 
 What Pollar charges this app for: wallets, sponsored reserves and fees, co-signing and the other paid features. **100 credits = 1 USD.** Credits belong to the app's environment and never cross to the other one: a Test mode app and its live counterpart have separate balances. How billing works is explained in [Credits](https://docs.pollar.xyz/docs/core-concepts/credits).
 
@@ -15,7 +15,7 @@ An app pays in one of two ways:
 | Model | Who pays the on-chain costs |
 | --- | --- |
 | **Credits** | Pollar's pool pays reserves, fees, starting balances and top-ups, and charges the app's credits. |
-| **Own wallets** | The app's funding and gas wallets pay, as described in [Account Funding](https://docs.pollar.xyz/docs/operator-guide/wallets/account-funding) and [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship). Nothing is charged in credits. |
+| **Own wallets** | The app's funding and gas wallets pay, as described in [Starting balance](https://docs.pollar.xyz/docs/operator-guide/wallets/account-funding) and [Sponsored fees](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship). Nothing is charged in credits. |
 
 An app on its own wallets sees the banner **This app still pays with its own wallets**. Any gift or bonus Pollar adds still shows on this page and is spent once the app moves to credits. Moving an app to credits is done by Pollar.
 

@@ -85,12 +85,12 @@ Auth flow error codes (surfaced on the `error` `AuthState`) are exported as `AUT
 | ---------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------ |
 | `INVALID_CREDENTIALS`        | Missing or invalid credentials                               | Check the credentials you are sending                              |
 | `FORBIDDEN`                  | Authenticated but not allowed to perform this action         | Verify the key type / permissions                                  |
-| `API_KEY_NOT_FOUND`          | API key does not exist or was revoked                        | Generate a new key from **Build > API Keys**                       |
+| `API_KEY_NOT_FOUND`          | API key does not exist or was revoked                        | Generate a new key from **Developers > API keys**                       |
 | `API_KEY_EXPIRED`            | API key has expired                                          | Rotate the key                                                     |
 | `API_KEY_TYPE_NOT_ALLOWED`   | Publishable key used on a secret-key route (or vice versa)   | Use a secret key on the Server API, publishable on the SDK API     |
-| `ORIGIN_NOT_ALLOWED`         | Request origin is not in the app's allowed origins           | Add the origin under **Build > Domains**                           |
-| `REDIRECT_URI_NOT_ALLOWED`   | OAuth `redirect_uri` is not in the app's allowed redirect URIs | Add its origin under **Build > Domains**                          |
-| `APPLICATION_HAS_NO_REDIRECT_URIS` | The app has no allowed redirect URI registered, so no OAuth login can start | Register the callback under **Build > Domains**              |
+| `ORIGIN_NOT_ALLOWED`         | Request origin is not in the app's allowed origins           | Add the origin under **Developers > Websites**                           |
+| `REDIRECT_URI_NOT_ALLOWED`   | OAuth `redirect_uri` is not in the app's allowed redirect URIs | Add its origin under **Developers > Websites**                          |
+| `APPLICATION_HAS_NO_REDIRECT_URIS` | The app has no allowed redirect URI registered, so no OAuth login can start | Register the callback under **Developers > Websites**              |
 | `RATE_LIMITED`               | Too many requests                                            | Back off and retry                                                 |
 | `API_VERSION_SUNSET` (410)   | The request used a retired API version (SDK API v1). The body carries `message`, `sunsetAt` and `migrationGuide` | Upgrade the SDK; see [API versions](https://docs.pollar.xyz/docs/sdk-reference/api-versions) |
 
@@ -186,7 +186,7 @@ SDK only. Every signing call passes the app's confirmation policy first (see [Si
 | `TRUSTLINE_FAILED`                 | Failed to create/remove a trustline on Stellar          | Retry: transient network issue                   |
 | `INSUFFICIENT_FUNDS_FOR_TRUSTLINE` | Not enough XLM to cover the trustline reserve (0.5 XLM) | Top up the funding wallet                         |
 | `TRUSTLINE_HAS_BALANCE`            | Cannot remove a trustline that still holds a balance    | Move the balance to zero first                   |
-| `NO_DEFAULT_TRUSTLINES`            | No default assets are configured for the app            | Configure assets under **Wallets > Tokens & Trustlines** |
+| `NO_DEFAULT_TRUSTLINES`            | No default assets are configured for the app            | Configure assets under **Wallets > Tokens** |
 
 ---
 
@@ -194,7 +194,7 @@ SDK only. Every signing call passes the app's confirmation policy first (see [Si
 
 | Code | Description | Resolution |
 | --- | --- | --- |
-| `SIGNER_ROTATION_NOT_ENABLED` (403) | The app does not sponsor signer rotations | Turn on **Sponsor signer rotations** and **Include external wallets** under **Wallets > Sponsorship** |
+| `SIGNER_ROTATION_NOT_ENABLED` (403) | The app does not sponsor signer rotations | Turn on **Sponsor signer rotations** and **Include external wallets** under **Wallets > Sponsored fees** |
 | `SIGNER_ROTATION_NOT_GRANTED` (403) | The user holds no unspent rotation grant, or already used it | Grant one from **Users > Accounts** or with `POST /v3/wallets/{publicKey}/signer-rotation` |
 | `SIGNER_ROTATION_PENDING` (409) | A sponsored rotation built for this user can still be submitted | Submit it, or wait until its `expiresAt` passes |
 | `SIGNER_ROTATION_INVALID` (422) | The wallet is custodial or not created yet, or the requested change is not allowed | Read `details`; see [the rotation rules](https://docs.pollar.xyz/docs/guides/custom-wallet-adapter#rotate-the-wallet-signer) |
@@ -242,7 +242,7 @@ When the network refuses a transaction for a known reason, the code names it (al
 
 ## Soroban auth entries
 
-Returned by `POST /tx/sign-auth-entry` (`pollar.signAuthEntry()`) when the app's allowlist refuses to authorize an entry, and by the dashboard/Server API when a row is saved. Configured under **Wallets > [Auth Policy](https://docs.pollar.xyz/docs/operator-guide/wallets/auth-policy)**.
+Returned by `POST /tx/sign-auth-entry` (`pollar.signAuthEntry()`) when the app's allowlist refuses to authorize an entry, and by the dashboard/Server API when a row is saved. Configured under **Wallets > [Signing rules](https://docs.pollar.xyz/docs/operator-guide/wallets/auth-policy)**.
 
 Every denial here also carries `applicationId` and `applicationName`: the app the decision was made against, which is the app your API key resolves to, not necessarily the one open in the dashboard.
 
@@ -291,12 +291,12 @@ Saving an allowlist row (dashboard or Server API) can also answer:
 | Code                                  | Description                                          | Resolution                                                |
 | ------------------------------------- | --------------------------------------------------- | --------------------------------------------------------- |
 | `DISTRIBUTION_RULE_NOT_FOUND`         | The distribution rule does not exist                | Verify the rule id                                        |
-| `DISTRIBUTION_ASSET_NOT_ENABLED`      | The asset is not enabled for distribution           | Enable it under **Treasury > Token Distribution**         |
+| `DISTRIBUTION_ASSET_NOT_ENABLED`      | The asset is not enabled for distribution           | Enable it under **Wallets > Token distribution**         |
 | `DISTRIBUTION_RULE_DISABLED`          | The rule is disabled                                | Enable the rule                                           |
 | `DISTRIBUTION_RULE_EXPIRED`           | The rule's validity window has ended                | None                                                      |
 | `DISTRIBUTION_RULE_EXHAUSTED`         | The rule's total allocation is used up              | None                                                      |
-| `DISTRIBUTION_RATE_LIMIT_EXCEEDED`    | The user exceeded the rule's claim rate limit       | Configured per rule in **Treasury > Token Distribution**  |
-| `DISTRIBUTION_NO_DISTRIBUTION_WALLET` | No distribution wallet is configured                | Configure one under **Treasury > Token Distribution**     |
+| `DISTRIBUTION_RATE_LIMIT_EXCEEDED`    | The user exceeded the rule's claim rate limit       | Configured per rule in **Wallets > Token distribution**  |
+| `DISTRIBUTION_NO_DISTRIBUTION_WALLET` | No distribution wallet is configured                | Configure one under **Wallets > Token distribution**     |
 
 ---
 

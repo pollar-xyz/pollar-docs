@@ -182,12 +182,12 @@ if (built.status === 'built') {
 }
 ```
 
-For step 3 to be paid by the app, the dashboard needs, under **Wallets > Sponsorship > Token transfer sponsorship**:
+For step 3 to be paid by the app, the dashboard needs, under **Wallets > Sponsored fees > Token transfer sponsorship**:
 
 - The token selected.
 - **Include external wallets** on. It is off by default. While it is off, the user pays the fee, and a user with no XLM gets `tx_insufficient_balance`.
 
-The [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship) page lists exactly which transactions qualify. In short: one operation, sourced by the user, and a payment of a selected token, a swap on an enabled venue, or a whitelisted contract call. XLM payments are never sponsored.
+The [Sponsored fees](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship) page lists exactly which transactions qualify. In short: one operation, sourced by the user, and a payment of a selected token, a swap on an enabled venue, or a whitelisted contract call. XLM payments are never sponsored.
 
 ### Using the REST API directly
 
@@ -203,7 +203,7 @@ For account recovery, a wallet can change which key controls it while keeping th
 
 **Having the app pay for it.** A new signer is a ledger subentry with a 0.5 XLM reserve, which a user with no XLM cannot cover. The app can sponsor the rotation, one at a time and only for users it allows:
 
-1. The app turns on **Sponsor signer rotations** and **Include external wallets** under [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship#signer-rotation).
+1. The app turns on **Sponsor signer rotations** and **Include external wallets** under [Sponsored fees](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship#signer-rotation).
 2. When a user asks to recover, the app grants them one rotation: from **Users > Accounts**, or from its backend with `POST /v3/wallets/{publicKey}/signer-rotation` ([Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api)).
 3. The client builds the rotation with the user's session:
 

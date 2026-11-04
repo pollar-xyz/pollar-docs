@@ -38,7 +38,7 @@ KYC lives on `/v3/kyc`, and also on `/v2/kyc` for 0.11.x. `/v1/kyc/*` retires wi
 
 ## Is my app on v1?
 
-- **Dashboard.** Open your app and go to **Monitor > SDK versions** ([guide](https://docs.pollar.xyz/docs/operator-guide/monitor/sdk-versions)). Any build below 0.11.0 calls v1. While your app has called v1 in the last 30 days, a banner on the app's **Home** says so.
+- **Dashboard.** Open your app and go to **Developers > SDK versions** ([guide](https://docs.pollar.xyz/docs/operator-guide/developers/sdk-versions)). Any build below 0.11.0 calls v1. While your app has called v1 in the last 30 days, a banner on the app's **Home** says so.
 - **Response headers.** Every v1 response carries:
 
   ```http
@@ -90,7 +90,7 @@ The exact times are sent by email to the owners of apps still on v1 and shown in
 
    Then follow [Upgrade to SDK 0.12](https://docs.pollar.xyz/docs/guides/upgrade-to-0-12): it lists every change between your release and 0.12, with what to search for in your code.
 2. **Deploy your frontend.** Users pick up the new SDK on their next page load. Their sessions are kept.
-3. **Confirm** on **Monitor > SDK versions** that no live session remains on a build below 0.11.0, and that the banner on Home is gone.
+3. **Confirm** on **Developers > SDK versions** that no live session remains on a build below 0.11.0, and that the banner on Home is gone.
 
 If you pass a custom `baseUrl` to the SDK, pass the origin only (`https://sdk.api.example.com`). The SDK appends the version prefix itself.
 

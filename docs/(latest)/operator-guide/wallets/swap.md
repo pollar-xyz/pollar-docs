@@ -2,7 +2,7 @@
 title: "Swap"
 ---
 
-**Dashboard > Treasury > Swap** · Chains: Stellar, Solana (Live)
+**Dashboard > Wallets > Swap** · Chains: Stellar, Solana (Live)
 
 Choose which swap venues your users can use to exchange one asset for another. On Stellar the venues are SDEX, Soroswap and Aquarius; on Solana they are the Jupiter and Titan aggregators, on a live app only. See [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support).
 
@@ -29,7 +29,7 @@ Extra Stellar tokens your users can swap **into**, on top of your enabled assets
 
 ## Sponsorship and billing
 
-Which swaps your app pays the network fee for is set under [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship#swap-sponsorship). A confirmed swap is billed once, as a swap event.
+Which swaps your app pays the network fee for is set under [Sponsored fees](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship#swap-sponsorship). A confirmed swap is billed once, as a swap event.
 
 ---
 

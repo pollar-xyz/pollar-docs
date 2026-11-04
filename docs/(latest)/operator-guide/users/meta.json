@@ -1,7 +1,9 @@
 {
   "title": "Users",
-  "description": "Browse and manage your end users.",
+  "description": "Your end users, how they sign in, and how the sign-in looks.",
   "pages": [
-    "accounts"
+    "accounts",
+    "sign-in",
+    "sign-in-look"
   ]
 }

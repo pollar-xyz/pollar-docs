@@ -1,8 +1,8 @@
 ---
-title: "API Keys"
+title: "API keys"
 ---
 
-**Dashboard > Build > API Keys** · Chains: all
+**Dashboard > Developers > API keys** · Chains: all
 
 The page has two tables: **Publishable keys** (safe in frontend code) and **Secret keys** (backend only).
 
@@ -12,7 +12,7 @@ The page has two tables: **Publishable keys** (safe in frontend code) and **Secr
 
 | Type | Prefix | Use |
 |---|---|---|
-| Publishable | `pub_testnet_` / `pub_mainnet_` | Passed to `@pollar/core` or `@pollar/react` in your frontend. Calls the SDK API on behalf of a signed-in user, and only from an origin listed under **Build > Domains**. |
+| Publishable | `pub_testnet_` / `pub_mainnet_` | Passed to `@pollar/core` or `@pollar/react` in your frontend. Calls the SDK API on behalf of a signed-in user, and only from an origin listed under **Developers > Websites**. |
 | Secret | `sec_testnet_` / `sec_mainnet_` | Used by your backend for the [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api) (for example `POST /v3/wallets/fund`). Never expose it client-side. |
 
 The environment in the prefix is the **app's** environment: it is not chosen per key.

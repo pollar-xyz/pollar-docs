@@ -40,9 +40,9 @@ The whole move takes about five minutes.
 ## Before you start
 
 1. **Live.** Circle's contracts are on mainnet; on a Test mode app the bridge is off (`getBridgeConfig()` answers `available: false`, `reason: 'mainnet_only'`) and the modal says so.
-2. **Enable both chains** in **Wallets > Wallet settings > Enabled chains**. The user needs a wallet on each side of a move.
+2. **Enable both chains** in **Wallets > Settings > Enabled chains**. The user needs a wallet on each side of a move.
 3. **Network fees.** Your app's network fee wallets pay the burn's fee on Stellar and Solana and the mint on every chain; on Polygon the user's wallet is topped up with the POL its burn needs. On an app on [credits](https://docs.pollar.xyz/docs/core-concepts/credits), Pollar's pool pays and charges the app.
-4. **A Stellar destination trusts USDC.** A move to Stellar is refused before anything happens when the user's Stellar wallet has no USDC trustline. Enable USDC in [Tokens & Trustlines](https://docs.pollar.xyz/docs/operator-guide/wallets/tokens-trustlines) so the wallet trusts it first.
+4. **A Stellar destination trusts USDC.** A move to Stellar is refused before anything happens when the user's Stellar wallet has no USDC trustline. Enable USDC in [Tokens](https://docs.pollar.xyz/docs/operator-guide/wallets/tokens-trustlines) so the wallet trusts it first.
 5. **Pollar's fee.** Each completed move is charged to the app in credits as `bridge.transfer`, a percentage of the amount with a minimum and a maximum. The quote shows it.
 
 ---
@@ -168,7 +168,7 @@ Bridge calls throw a `PollarApiError`:
 ## Related
 
 - [`@pollar/core` Bridge](https://docs.pollar.xyz/docs/sdk-reference/pollar-core)
-- [USDC bridges](https://docs.pollar.xyz/docs/operator-guide/treasury/bridge) in the dashboard, and the [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api) `/v3/bridge` for your backend
+- [USDC bridge](https://docs.pollar.xyz/docs/operator-guide/wallets/bridge) in the dashboard, and the [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api) `/v3/bridge` for your backend
 - [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support)
 - [Credits](https://docs.pollar.xyz/docs/core-concepts/credits)
 - [Ramps](https://docs.pollar.xyz/docs/core-concepts/ramps), which use the same CCTP bridge as one of their legs

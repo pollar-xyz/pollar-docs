@@ -1,0 +1,10 @@
+{
+  "title": "Settings",
+  "description": "General app settings, members, credits, and archiving the app.",
+  "pages": [
+    "general",
+    "members",
+    "credits",
+    "archive-app"
+  ]
+}

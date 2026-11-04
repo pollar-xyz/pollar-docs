@@ -24,7 +24,7 @@ Commit your work first so you can review the diff. `--json` prints the same repo
 
 ## 1. Find the release you are on
 
-Look at `@pollar/core` (and `@pollar/react` or `@pollar/react-native`) in your `package.json` or lockfile. **Monitor > SDK versions** in the dashboard lists the builds your users run ([guide](https://docs.pollar.xyz/docs/operator-guide/monitor/sdk-versions)); builds older than 0.11.4 show as not reporting.
+Look at `@pollar/core` (and `@pollar/react` or `@pollar/react-native`) in your `package.json` or lockfile. **Developers > SDK versions** in the dashboard lists the builds your users run ([guide](https://docs.pollar.xyz/docs/operator-guide/developers/sdk-versions)); builds older than 0.11.4 show as not reporting.
 
 Then read the sections marked for every release after yours. A section marked **0.10** applies if you are on 0.9.x or older.
 
@@ -61,7 +61,7 @@ These need no code, but you should know about them before you ship.
 
 - **Users sign in again once.** Sessions saved by 0.6.x and older (0.7) and by 0.9.x and older (0.10) are not read by the new release. Each user logs in once after you deploy. Nothing to do on your side.
 - **HTTPS is required (0.7).** The SDK binds each session to a key on the device (DPoP), which needs `crypto.subtle` and `crypto.randomUUID`. Browsers expose them on HTTPS and on `localhost` only. In React Native, import `react-native-get-random-values` at the entry of your app.
-- **Every signature asks the user first (0.12).** The default signature confirmation is now `'prompt'`: before each signature, `<ConfirmModal>` opens. The app's policy in the dashboard (**Wallet settings > Signature confirmation**) can turn that into a window or turn it off. A headless app must subscribe to `client.onConfirmationRequest()`, or every signature fails with `SDK_CONFIRMATION_UNAVAILABLE`. See [Signature confirmation](#signature-confirmation).
+- **Every signature asks the user first (0.12).** The default signature confirmation is now `'prompt'`: before each signature, `<ConfirmModal>` opens. The app's policy in the dashboard (**Wallets > Settings > Signature confirmation**) can turn that into a window or turn it off. A headless app must subscribe to `client.onConfirmationRequest()`, or every signature fails with `SDK_CONFIRMATION_UNAVAILABLE`. See [Signature confirmation](#signature-confirmation).
 - **`baseUrl` is an origin.** If you pass `baseUrl`, pass only the origin (`https://sdk.api.pollar.xyz`). The SDK appends `/v3` itself; a `baseUrl` ending in `/v1` or `/v2` breaks every request.
 - **A wallet can be on its way (0.11.4).** The platform creates the user's Stellar account after login, so the first seconds after a sign-up can answer `SDK_WALLET_NOT_READY`. The built-in components wait for it. See [Wallet provisioning](#wallet-provisioning) if you built your own send or receive screen.
 
@@ -153,7 +153,7 @@ If you render `TransactionState` yourself, `state.step` has new values (`signed`
 <PollarProvider client={{ apiKey }}>
 ```
 
-Passing `appConfig` (even `{}`) skips the dashboard configuration entirely: your app then ignores the branding, login methods and chains set in the dashboard. Leave it out unless you mean that. In 0.12 the dashboard's Branding no longer overrides your own CSS: a `--pollar-*` variable you set on a Pollar root wins. See [Theming](https://docs.pollar.xyz/docs/sdk-reference/theming).
+Passing `appConfig` (even `{}`) skips the dashboard configuration entirely: your app then ignores the branding, login methods and chains set in the dashboard. Leave it out unless you mean that. In 0.12 the dashboard's Sign-in look no longer overrides your own CSS: a `--pollar-*` variable you set on a Pollar root wins. See [Theming](https://docs.pollar.xyz/docs/sdk-reference/theming).
 
 ### Wallet address and type
 
@@ -311,6 +311,6 @@ A backend, proxy or test mock that calls `https://sdk.api.pollar.xyz` directly:
 2. **Sign in** with each method your app offers (email, Google, a wallet, a passkey).
 3. **Send a transaction** and confirm it in `<ConfirmModal>` (or your own prompt).
 4. **Open each Pollar screen** your app uses: balance, send, receive, history, ramps.
-5. **Deploy**, then confirm on **Monitor > SDK versions** that no live session remains on a build below 0.11.0, and that the v1 banner on **Home** is gone.
+5. **Deploy**, then confirm on **Developers > SDK versions** that no live session remains on a build below 0.11.0, and that the v1 banner on **Home** is gone.
 
 Release notes for every version are in the [CHANGELOG](https://github.com/pollar-xyz/pollar/blob/main/CHANGELOG.md).

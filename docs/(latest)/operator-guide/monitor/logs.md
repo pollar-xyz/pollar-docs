@@ -2,7 +2,7 @@
 title: "Logs"
 ---
 
-**Dashboard > Monitor > Logs** · Chains: all
+**Dashboard > Monitoring > Logs** · Chains: all
 
 The application logs Pollar's services write for your app: what happened when your users signed in, sent transactions or ramped, with the errors.
 

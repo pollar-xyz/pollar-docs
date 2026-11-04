@@ -34,7 +34,7 @@ The live demo runs with Pollar's own demo keys, in both Test mode and Live. To t
 https://demo.pollar.xyz/?apiKey=pub_testnet_xxxxxxxxxxxxxxxxxxxx
 ```
 
-The environment follows the key's prefix (`pub_testnet_` or `pub_mainnet_`). Your app must list the demo's origin under **Build > [Domains](https://docs.pollar.xyz/docs/operator-guide/build/domains)**, or the SDK refuses the requests.
+The environment follows the key's prefix (`pub_testnet_` or `pub_mainnet_`). Your app must list the demo's origin under **Developers > [Websites](https://docs.pollar.xyz/docs/operator-guide/developers/domains)**, or the SDK refuses the requests.
 
 ---
 

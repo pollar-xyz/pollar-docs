@@ -14,7 +14,7 @@ Unlike Pollar's custodial login (social / email -> platform-custodied G-address)
 
 Smart wallet login is a distinct entry point; there is no `walletType` switch. Turn on the option and the SDK exposes it:
 
-1. **Enable it in the dashboard:** **Build -> Branding -> Smart Wallet (passkey)**. This surfaces a passkey option in the login modal (`styles.smartWallet`).
+1. **Enable it in the dashboard:** **Users -> Sign-in look -> Smart Wallet (passkey)**. This surfaces a passkey option in the login modal (`styles.smartWallet`).
 2. **From the built-in modal:** `openLoginModal()` then renders a **Smart Wallet (passkey)** option with two actions: sign in (returning user) and create (new user).
 3. **Headless:** call the client directly:
 

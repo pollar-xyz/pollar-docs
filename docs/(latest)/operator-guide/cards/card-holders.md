@@ -1,8 +1,8 @@
 ---
-title: "Card holders"
+title: "Issued cards"
 ---
 
-**Dashboard > Cards > Card holders** · Chains: all
+**Dashboard > Cards > Issued cards** · Chains: all
 
 Your users' cards: identity verification, the card and its credit line. Card numbers are never shown here; only the user reveals them, from the SDK.
 
@@ -27,4 +27,4 @@ Expand a row to see the card's movements: date, type (for example bank deposit, 
 ## Related
 
 - [Card providers](https://docs.pollar.xyz/docs/operator-guide/cards/providers)
-- [KYC](https://docs.pollar.xyz/docs/operator-guide/integrations/kyc)
+- [Identity checks](https://docs.pollar.xyz/docs/operator-guide/identity-checks/providers)

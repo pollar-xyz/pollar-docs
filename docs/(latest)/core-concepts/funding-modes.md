@@ -4,7 +4,7 @@ title: "Funding Modes"
 
 Every Stellar account needs a minimum XLM reserve to exist on-chain. Pollar gives you two modes to control when that reserve is funded, so you only pay for users who matter to your app.
 
-Configure the funding mode from **Dashboard > Wallets > Account Funding** (Stellar tab). No code changes required.
+Configure the funding mode from **Dashboard > Wallets > Starting balance** (Stellar tab). No code changes required.
 
 Funding applies once a wallet exists. When the wallet is created (at login, on demand or never) is a separate setting: see [Wallet Creation](https://docs.pollar.xyz/docs/core-concepts/wallet-creation).
 
@@ -48,7 +48,7 @@ A co-signed or self-custody wallet (every new wallet on Live) has its account cr
 > | 2 (e.g. USDC + EURC) | 2 XLM |
 > | 3 | 2.5 XLM |
 >
-> On top of the locked reserve, the **starting balance** configured in **Dashboard > Wallets > Account Funding** (if any) is transferred to each new wallet as spendable XLM. Solana and Polygon have their own starting balances (SOL and POL) on the same page.
+> On top of the locked reserve, the **starting balance** configured in **Dashboard > Wallets > Starting balance** (if any) is transferred to each new wallet as spendable XLM. Solana and Polygon have their own starting balances (SOL and POL) on the same page.
 >
 > References: [Minimum Balance](https://developers.stellar.org/docs/learn/fundamentals/lumens#minimum-balance), [Trustlines](https://developers.stellar.org/docs/learn/fundamentals/stellar-data-structures/accounts#trustlines)
 
@@ -103,7 +103,7 @@ The answers you plan for:
 
 ### Funding manually from the Dashboard
 
-A not-yet-funded Pollar-managed wallet can be funded from **Dashboard > Wallets > Wallets** with the **Fund** action: the same sponsored funding as login. This works in both modes and is useful for support workflows or one-off overrides.
+A not-yet-funded Pollar-managed wallet can be funded from **Dashboard > Wallets > All wallets** with the **Fund** action: the same sponsored funding as login. This works in both modes and is useful for support workflows or one-off overrides.
 
 ### Checking whether a wallet is funded
 

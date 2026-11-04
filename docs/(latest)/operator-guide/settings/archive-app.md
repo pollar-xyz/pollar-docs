@@ -2,7 +2,7 @@
 title: "Archive app"
 ---
 
-**Dashboard > Danger Zone > Archive app** · Chains: all
+**Dashboard > Settings > Archive app** · Chains: all
 
 Destructive but reversible actions for the app. Only the **owner or an admin** sees this page and can perform them.
 

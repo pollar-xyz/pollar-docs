@@ -13,10 +13,10 @@ Every modal in `@pollar/react` and the `<WalletButton>` read their colors, corne
 Each variable resolves from three sources. The first one that sets it wins:
 
 1. **Your stylesheet.** A rule in your app that sets the variable on a Pollar element.
-2. **Dashboard Branding.** The values configured in [Build -> Branding](https://docs.pollar.xyz/docs/operator-guide/build/branding), loaded by the SDK at startup.
-3. **Theme defaults.** The Light set. If your page has `<html class="dark">` and Branding leaves the palette open (see [Dark mode](#dark-mode)), the Dark set is used instead.
+2. **Dashboard Sign-in look.** The values configured in [Users -> Sign-in look](https://docs.pollar.xyz/docs/operator-guide/users/sign-in-look), loaded by the SDK at startup.
+3. **Theme defaults.** The Light set. If your page has `<html class="dark">` and Sign-in look leaves the palette open (see [Dark mode](#dark-mode)), the Dark set is used instead.
 
-You only set what you want to change. Anything you leave out still comes from Branding, and then from the defaults.
+You only set what you want to change. Anything you leave out still comes from Sign-in look, and then from the defaults.
 
 ---
 
@@ -63,9 +63,9 @@ To theme a single modal, target its own class. Each card has one next to `.polla
 
 The SDK picks the palette like this:
 
-- **Branding theme Dark**: dark palette, always.
-- **Branding theme Light with no Background or Text color**: light palette. If your page has `<html class="dark">`, the modals switch to the dark palette, so they follow a Tailwind-style dark toggle without extra code.
-- **Branding sets a Background or Text color**: that palette is pinned, and `html.dark` does not change it.
+- **Sign-in look theme Dark**: dark palette, always.
+- **Sign-in look theme Light with no Background or Text color**: light palette. If your page has `<html class="dark">`, the modals switch to the dark palette, so they follow a Tailwind-style dark toggle without extra code.
+- **Sign-in look sets a Background or Text color**: that palette is pinned, and `html.dark` does not change it.
 
 For a pinned palette, or if your app marks dark mode in some other way, set the variables yourself:
 
@@ -89,7 +89,7 @@ html.dark .pollar-wallet-wrapper {
 
 ## Variable reference
 
-| Variable | Branding setting | Default (light / dark) | What it styles |
+| Variable | Sign-in look setting | Default (light / dark) | What it styles |
 |---|---|---|---|
 | `--pollar-accent` | Accent | `#005db4` | Primary button fill, focus rings, spinners, active tabs, switches |
 | `--pollar-btn-primary-fg` | follows Accent | `#ffffff` or `#111827` | Primary button label. The SDK picks the one readable on the accent, so **set it whenever you override `--pollar-accent`**. |
@@ -118,7 +118,7 @@ html.dark .pollar-wallet-wrapper {
 | `--pollar-font-family` | none | not set: your page's font | Every text, button and input in the modals and `<WalletButton>` |
 | `--pollar-font-family-mono` | none | `ui-monospace, SFMono-Regular, Menlo, monospace` | Addresses, hashes, codes and XDR |
 
-"Blended" means that when Branding sets a Background or Text color, the SDK mixes the border, secondary text and input fill from those two colors, so they match the custom pair. With neither set, they come from the theme.
+"Blended" means that when Sign-in look sets a Background or Text color, the SDK mixes the border, secondary text and input fill from those two colors, so they match the custom pair. With neither set, they come from the theme.
 
 ### Not affected by the variables
 
@@ -132,4 +132,4 @@ html.dark .pollar-wallet-wrapper {
 
 If you render the `*Template` components yourself, pass `theme`, `accentColor` and `styleOverrides` the way the live components do. `modalChrome(usePollar().styles)` returns all three. To theme your own markup the same way, put one of the root classes above on it and spread `buildModalCssVars(theme, accentColor, styleOverrides)` into its `style`.
 
-`buildModalCssVars` writes the Branding values under private `--pollar-brand-*` names. Don't set or read those in your CSS: they are the input to the public variables above, and they may change between versions.
+`buildModalCssVars` writes the Sign-in look values under private `--pollar-brand-*` names. Don't set or read those in your CSS: they are the input to the public variables above, and they may change between versions.

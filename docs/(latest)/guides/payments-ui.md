@@ -14,7 +14,7 @@ All payment functionality is exposed through the single `usePollar()` hook.
 
 `runTx` is the one-shot helper (build, sign, submit). The returned `SubmitOutcome` has a `status` of `'success'`, `'pending'`, `'cosign_pending'` or `'error'`.
 
-Before anything is signed, the call passes the app's [signature confirmation](https://docs.pollar.xyz/docs/sdk-reference/pollar-react#signature-confirmation): by default the provider shows the payment in `<ConfirmModal>` and signs once the user confirms. A user who declines ends the call with `code: 'SDK_CONFIRMATION_DECLINED'` and nothing is signed. The dashboard can let a window of payments sign without asking (**Wallets > Wallet settings**).
+Before anything is signed, the call passes the app's [signature confirmation](https://docs.pollar.xyz/docs/sdk-reference/pollar-react#signature-confirmation): by default the provider shows the payment in `<ConfirmModal>` and signs once the user confirms. A user who declines ends the call with `code: 'SDK_CONFIRMATION_DECLINED'` and nothing is signed. The dashboard can let a window of payments sign without asking (**Wallets > Settings**).
 
 ```tsx
 'use client';
@@ -90,11 +90,11 @@ await sendPayment({
 });
 ```
 
-When the token is marked **sponsor transfers** under **Wallets > Sponsorship**, the app's GAS wallet pays the fee and creates the recipient's token account; the user's wallet needs no SOL. A user signed in with Phantom, Solflare or Backpack signs the transfer in their wallet; a co-signed wallet asks the user to approve it in `<CosignModal>`. Solana has no memo field.
+When the token is marked **sponsor transfers** under **Wallets > Sponsored fees**, the app's GAS wallet pays the fee and creates the recipient's token account; the user's wallet needs no SOL. A user signed in with Phantom, Solflare or Backpack signs the transfer in their wallet; a co-signed wallet asks the user to approve it in `<CosignModal>`. Solana has no memo field.
 
 ### Pre-built send modal
 
-Pollar ships a ready-made send flow (network picker on a multichain app, asset selector, amount with Max, destination with Paste, confirmation; a memo field on Stellar). It sends on Stellar, Solana and Polygon. Open it programmatically; appearance is customizable from **Build > Branding**:
+Pollar ships a ready-made send flow (network picker on a multichain app, asset selector, amount with Max, destination with Paste, confirmation; a memo field on Stellar). It sends on Stellar, Solana and Polygon. Open it programmatically; appearance is customizable from **Users > Sign-in look**:
 
 ```tsx
 const { openSendModal } = usePollar();
@@ -252,7 +252,7 @@ export function Balances() {
 
 ## Fiat on/off-ramp
 
-Ramps integrate third-party providers (configure them under **Ramps > Providers**). A ramp is an order of one or more legs (the provider, a swap, a bridge) that Pollar runs server-side; see [Ramps](https://docs.pollar.xyz/docs/core-concepts/ramps). Open the pre-built widget with `openRampModal()`:
+Ramps integrate third-party providers (configure them under **Cash in and out > Providers**). A ramp is an order of one or more legs (the provider, a swap, a bridge) that Pollar runs server-side; see [Ramps](https://docs.pollar.xyz/docs/core-concepts/ramps). Open the pre-built widget with `openRampModal()`:
 
 ```tsx
 'use client';

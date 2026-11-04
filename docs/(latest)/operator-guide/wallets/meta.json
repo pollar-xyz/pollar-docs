@@ -1,6 +1,6 @@
 {
   "title": "Wallets",
-  "description": "Wallet settings (chains, custody, creation, signature confirmation), user wallets on every chain, funding, sponsorship, tokens, and signing policies.",
+  "description": "Wallet settings, every user wallet, starting balances, sponsored fees, tokens, rules for signing, swap, the USDC bridge, savings, and token distribution.",
   "pages": [
     "settings",
     "user-wallets",
@@ -8,6 +8,11 @@
     "sponsorship",
     "tokens-trustlines",
     "transaction-policy",
-    "auth-policy"
+    "auth-policy",
+    "swap",
+    "bridge",
+    "earn",
+    "token-distribution",
+    "distribution-vault"
   ]
 }

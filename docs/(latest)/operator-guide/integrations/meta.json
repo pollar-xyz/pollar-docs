@@ -1,9 +1,0 @@
-{
-  "title": "Integrations",
-  "description": "Authentication, KYC, and Pollar Pay.",
-  "pages": [
-    "authentication",
-    "kyc",
-    "pollar-pay"
-  ]
-}

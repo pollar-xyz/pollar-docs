@@ -83,7 +83,7 @@ Content-Type: application/json
 | `200 OK` | Wallet funded (`SERVER_WALLET_FUNDED`). Its reserve is sponsored on-chain. |
 | `202 Accepted` | Turnkey wallet: the account creation waits for the user's approval (`SERVER_WALLET_ACCOUNT_REQUESTED`, content `{ publicKey, requestId }`). |
 | `400 Bad Request` | Missing or malformed `publicKey` (`VALIDATION_ERROR`), or a wallet your user brings (`TX_EXTERNAL_WALLET_SERVER_SIGN`). |
-| `402 Payment Required` | App on credits: its credits do not cover the account (`SDK_CREDITS_INSUFFICIENT`), or a postpaid statement is overdue (`SDK_BILLING_OVERDUE`). Top up from **Billing > Credits**. |
+| `402 Payment Required` | App on credits: its credits do not cover the account (`SDK_CREDITS_INSUFFICIENT`), or a postpaid statement is overdue (`SDK_BILLING_OVERDUE`). Top up from **Settings > Credits**. |
 | `403 Forbidden` | `publicKey` belongs to a wallet owned by another app (`FORBIDDEN`). |
 | `404 Not Found` | `publicKey` is not a known wallet (`WALLET_NOT_FOUND`), or the app has no funding or global wallet to sponsor it (`APP_WALLET_NOT_FOUND`). |
 | `409 Conflict` | Wallet is already funded (`WALLET_ALREADY_FUNDED`). Safe to ignore. |
@@ -102,7 +102,7 @@ Content-Type: application/json
 }
 ```
 
-`startingBalance` is the XLM the wallet was seeded with (the app's starting balance from **Dashboard > Wallets > Account Funding**; `"0"` when unset). The sponsored base reserve stays locked in the sponsor's account, not transferred.
+`startingBalance` is the XLM the wallet was seeded with (the app's starting balance from **Dashboard > Wallets > Starting balance**; `"0"` when unset). The sponsored base reserve stays locked in the sponsor's account, not transferred.
 
 ### `POST /v3/wallets/{publicKey}/signer-rotation`
 
@@ -113,7 +113,7 @@ POST https://server.api.pollar.xyz/v3/wallets/GBW4...CX7H/signer-rotation
 x-pollar-api-key: sec_mainnet_xxxxxxxxxxxxxxxxxxxx
 ```
 
-Requires **Sponsor signer rotations** and its **Include external wallets** sub-option on under **Dashboard > Wallets > Sponsorship**. Granting while the user already holds an unspent grant returns that grant.
+Requires **Sponsor signer rotations** and its **Include external wallets** sub-option on under **Dashboard > Wallets > Sponsored fees**. Granting while the user already holds an unspent grant returns that grant.
 
 **Response codes:**
 
@@ -132,7 +132,7 @@ Revokes the user's unspent grant. Returns `200` with `code: "SERVER_SIGNER_ROTAT
 
 ## Trustlines
 
-There is no server-side trustline endpoint. `change_trust` is a signed operation and the Server API never signs for an end-user wallet, so trustlines are set from the SDK, where the wallet signs client-side: `setTrustline()` on the client, or the app's default assets configured in **Dashboard > Wallets > Tokens & Trustlines**, which are applied at login.
+There is no server-side trustline endpoint. `change_trust` is a signed operation and the Server API never signs for an end-user wallet, so trustlines are set from the SDK, where the wallet signs client-side: `setTrustline()` on the client, or the app's default assets configured in **Dashboard > Wallets > Tokens**, which are applied at login.
 
 ---
 
@@ -344,7 +344,7 @@ Who signs the burn depends on the source wallet. A Pollar-managed wallet burns a
 
 ## Billing
 
-Reads only, for the app behind the key. Credits are explained in [Credits](https://docs.pollar.xyz/docs/core-concepts/credits). Taking assets out of the distribution vault is not possible with a secret key: a withdrawal needs the owner's session in the dashboard (see [Distribution vault](https://docs.pollar.xyz/docs/operator-guide/billing/distribution-vault)), so a leaked key cannot empty it.
+Reads only, for the app behind the key. Credits are explained in [Credits](https://docs.pollar.xyz/docs/core-concepts/credits). Taking assets out of the distribution vault is not possible with a secret key: a withdrawal needs the owner's session in the dashboard (see [Distribution vault](https://docs.pollar.xyz/docs/operator-guide/wallets/distribution-vault)), so a leaked key cannot empty it.
 
 | Route | Answers |
 |---|---|

@@ -2,7 +2,7 @@
 title: "Providers"
 ---
 
-**Dashboard > Ramps > Providers** · Chains: Stellar, Solana, Polygon (per route)
+**Dashboard > Cash in and out > Providers** · Chains: Stellar, Solana, Polygon (per route)
 
 Fiat-to-crypto and crypto-to-fiat providers for your users. The page lists the providers Pollar offers in your app's environment; turn one on and its routes become available to your users through the SDK's ramp widget (`openRampModal()`) or the headless ramp API. How a ramp runs is explained in [Ramps](https://docs.pollar.xyz/docs/core-concepts/ramps).
 
@@ -36,7 +36,7 @@ Under each enabled provider the card lists its **corridors**: direction (Buy / S
 
 Each corridor has its own switch, so your app can serve some corridors of a provider and not others. Limits and prices come from the provider with each quote; they are not set here.
 
-A corridor does not have to end on the provider's own chain. Pollar builds **routes**: a provider leg, then swap or bridge legs that carry the funds to the asset and chain your user wants, and only to chains your app enables. See [Routes](https://docs.pollar.xyz/docs/operator-guide/ramps/routes). When a leg runs on a chain your app does not serve, Pollar creates the user's wallet there (a rail wallet, see [Wallets](https://docs.pollar.xyz/docs/operator-guide/wallets/user-wallets#rail-wallets)).
+A corridor does not have to end on the provider's own chain. Pollar builds **routes**: a provider leg, then swap or bridge legs that carry the funds to the asset and chain your user wants, and only to chains your app enables. See [Routes](https://docs.pollar.xyz/docs/operator-guide/ramps/routes). When a leg runs on a chain your app does not serve, Pollar creates the user's wallet there (a rail wallet, see [All wallets](https://docs.pollar.xyz/docs/operator-guide/wallets/user-wallets#rail-wallets)).
 
 ---
 
@@ -53,7 +53,7 @@ With **Use my own keys** checked, fill in:
 | **Company ID** / **Secret key** | Stereum only. The secret key is optional and signs customer registrations, needed on routes that register the user with Stereum |
 | **Your fee (%)** | Your markup, for example `1.0` = 1%. Blank means no fee. Abroad and Stereum price all-in, so their fee is reference only |
 
-Your own provider keys need your own KYC: both or neither. For every route of the provider that requires KYC, pick one of your own KYC options. Create them under [Integrations > KYC](https://docs.pollar.xyz/docs/operator-guide/integrations/kyc) ("Use your own Didit account"). Until each such route has one, users cannot use it.
+Your own provider keys need your own KYC: both or neither. For every route of the provider that requires KYC, pick one of your own KYC options. Create them under [Identity checks > Providers](https://docs.pollar.xyz/docs/operator-guide/identity-checks/providers) ("Use your own Didit account"). Until each such route has one, users cannot use it.
 
 ---
 

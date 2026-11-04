@@ -2,7 +2,7 @@
 title: "Transactions"
 ---
 
-**Dashboard > Ramps > Transactions** · Chains: Stellar, Solana, Polygon
+**Dashboard > Cash in and out > Transactions** · Chains: Stellar, Solana, Polygon
 
 The ramp transactions your users started with SDKs older than 0.12 (SDK API v2). Ramps opened with `@pollar/core` 0.12 or later, or with `/v3/ramps`, are under [Orders](https://docs.pollar.xyz/docs/operator-guide/ramps/orders). On v2, starting a new ramp answers `410 SDK_RAMPS_MOVED_TO_V3`, so this list only follows the transactions already open.
 

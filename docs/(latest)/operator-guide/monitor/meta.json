@@ -1,10 +1,9 @@
 {
-  "title": "Monitor",
-  "description": "Transactions, logs, SDK versions, and alerts for your app.",
+  "title": "Monitoring",
+  "description": "Transactions, logs, and alerts for your app.",
   "pages": [
     "transactions",
     "logs",
-    "sdk-versions",
     "alerts"
   ]
 }

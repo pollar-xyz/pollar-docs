@@ -1,11 +1,11 @@
 {
-  "title": "Ramps",
-  "description": "Fiat on/off-ramp providers, the routes they open, your ramp orders, who signs each leg, and the pre-0.12 ramp transactions.",
+  "title": "Cash in and out",
+  "description": "Your ramp orders, the pre-0.12 ramp transactions, the routes providers open, who signs each leg, and the fiat on/off-ramp providers.",
   "pages": [
-    "providers",
-    "routes",
     "orders",
+    "transactions",
+    "routes",
     "signing",
-    "transactions"
+    "providers"
   ]
 }

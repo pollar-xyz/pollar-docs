@@ -16,7 +16,7 @@ Pollar uses webhooks in two directions:
 >
 > The first delivery is planned as a single generic `stellar.tx` event carrying the raw Stellar operation data, posted once with no retry; the structured `wallet.*` / `payment.*` events come after it.
 
-When available, you'll configure a webhook URL in **Build > Webhooks**. Pollar sends a `POST` request to your URL when an event occurs.
+When available, you'll configure a webhook URL in **Developers > Webhooks**. Pollar sends a `POST` request to your URL when an event occurs.
 
 ### Authentication
 
@@ -61,7 +61,7 @@ Respond with `200` as quickly as possible: Pollar waits up to **10 seconds** for
 | 4       | 1 hour     |
 | 5       | 24 hours   |
 
-After 5 failed attempts the event is marked as failed and visible in **Build > Webhooks > Event log**.
+After 5 failed attempts the event is marked as failed and visible in **Developers > Webhooks > Event log**.
 
 ---
 

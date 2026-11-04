@@ -28,7 +28,7 @@ The providers registered today:
 
 Bridge and PagFinance are being integrated and are not offered on any route yet.
 
-Which routes an app offers depends on the providers and corridors it enables under **Ramps > Providers** and on the chains it serves. **Ramps > Routes** in the dashboard lists them leg by leg. Routes end only on chains the app serves.
+Which routes an app offers depends on the providers and corridors it enables under **Cash in and out > Providers** and on the chains it serves. **Cash in and out > Routes** in the dashboard lists them leg by leg. Routes end only on chains the app serves.
 
 ---
 
@@ -60,11 +60,11 @@ The order moves leg by leg. Read it with `getRampOrder(id)`, or follow it with `
 
 ### Signing
 
-**A ramp leg always asks the user**, whatever the app's signature confirmation policy. `signRampLeg` reads the order again and signs only the action the user saw; polling an order never signs. Every chain and encoding needs a signer registered with `registerRampSigningHandler(chain, encoding, handler)`; `<RampWidget>` lends the connected wallet for it while the user authorizes. How each wallet signs is set per app under **Ramps > Signing**.
+**A ramp leg always asks the user**, whatever the app's signature confirmation policy. `signRampLeg` reads the order again and signs only the action the user saw; polling an order never signs. Every chain and encoding needs a signer registered with `registerRampSigningHandler(chain, encoding, handler)`; `<RampWidget>` lends the connected wallet for it while the user authorizes. How each wallet signs is set per app under **Cash in and out > Signing**.
 
 ### When a leg fails
 
-A leg that cannot finish stops the order with a `failure` naming the leg, whether it can be retried, and who resolves it; `rampResolutionText(failure)` says what the user can do. A leg that stopped with funds still in the user's wallet or in transit is **held**, not failed, so nothing is lost. `retryRampOrder(id)` runs the order again from the leg that stopped; the operator can do the same from **Ramps > Orders**.
+A leg that cannot finish stops the order with a `failure` naming the leg, whether it can be retried, and who resolves it; `rampResolutionText(failure)` says what the user can do. A leg that stopped with funds still in the user's wallet or in transit is **held**, not failed, so nothing is lost. `retryRampOrder(id)` runs the order again from the leg that stopped; the operator can do the same from **Cash in and out > Orders**.
 
 ---
 
@@ -72,7 +72,7 @@ A leg that cannot finish stops the order with a `failure` naming the leg, whethe
 
 A route can pass through a chain the app does not show its users: a provider that settles on Polygon, bridged to Stellar, needs a wallet on Polygon for that leg. Pollar gives the user a **rail wallet** there. When a route needs one, the quote says so as a wallet step (`rampWalletStep`), and `runRampWalletStep(step)` or `setUpRampWallet(chain)` creates it with this device as its key, in the app's custody. A rail wallet in Turnkey signs only once it has a recovery method; a route waiting on that offers the recovery step first.
 
-Rail wallets show up under **Wallets > Wallets** with a Rail badge, next to the user's other wallets.
+Rail wallets show up under **Wallets > All wallets** with a Rail badge, next to the user's other wallets.
 
 ---
 

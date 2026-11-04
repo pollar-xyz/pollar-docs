@@ -82,7 +82,7 @@ const config: PollarClientConfig = {
 };
 ```
 
-Add the same redirect URI to your application in the Pollar dashboard (**Build > Domains**).
+Add the same redirect URI to your application in the Pollar dashboard (**Developers > Websites**).
 
 ### 4. App state (optional)
 

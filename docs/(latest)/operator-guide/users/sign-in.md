@@ -1,12 +1,25 @@
 ---
-title: "Authentication"
+title: "Sign-in"
 ---
 
-**Dashboard > Integrations > Authentication** · Chains: all
+**Dashboard > Users > Sign-in** · Chains: all
 
-> The per-app provider **configuration UI is upcoming** (the dashboard page is currently a "coming soon" stub). The providers below reflect what `login()` supports today.
+How long your users stay signed in, and how they sign in.
 
-Configure which authentication providers are available to your users.
+> Choosing providers per app is **upcoming**: that part of the page is marked "coming soon". The providers below are what `login()` supports today.
+
+---
+
+## Authentication & Sessions
+
+Control how long the tokens the SDK issues to end users live:
+
+| Field | Range | Default |
+| --- | --- | --- |
+| **Access token TTL** | 5-60 minutes | 10 minutes |
+| **Refresh token TTL** | 1-90 days | 30 days |
+
+Leave a field empty (or click **Reset to defaults**) to use the platform default. Members with write access (owner, admin, editor) can change them. Changes apply to tokens issued from then on; active sessions keep their lifetime until their next refresh.
 
 ---
 

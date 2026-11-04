@@ -1,0 +1,8 @@
+{
+  "title": "Identity checks",
+  "description": "The KYC options your app offers and the verification steps your users complete.",
+  "pages": [
+    "providers",
+    "steps"
+  ]
+}

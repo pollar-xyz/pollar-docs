@@ -36,9 +36,9 @@ Steps 1 to 3 and 5 do not depend on the chain. Funding does.
 ## Before you start
 
 1. **Enable a card provider** in **Dashboard > Cards > Providers** ([Providers](https://docs.pollar.xyz/docs/operator-guide/cards/providers)). Cards are off until one is enabled: `getCardProviders()` returns an empty list and the modal shows nothing to start.
-2. **Enable the chains your users fund from** in **Wallets > Wallet settings > Enabled chains**: Stellar, Solana, Polygon or any of them. The chain the provider receives on does not have to be one of them.
+2. **Enable the chains your users fund from** in **Wallets > Settings > Enabled chains**: Stellar, Solana, Polygon or any of them. The chain the provider receives on does not have to be one of them.
 3. **Live.** The card provider available today works on Live only.
-4. **Who pays the network fee.** The app, on every route and whatever its [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship) settings say, as in a ramp. On an app on [credits](https://docs.pollar.xyz/docs/core-concepts/credits), Pollar's pool pays and charges the app; each route's price is in [Credits](https://docs.pollar.xyz/docs/core-concepts/credits).
+4. **Who pays the network fee.** The app, on every route and whatever its [Sponsored fees](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship) settings say, as in a ramp. On an app on [credits](https://docs.pollar.xyz/docs/core-concepts/credits), Pollar's pool pays and charges the app; each route's price is in [Credits](https://docs.pollar.xyz/docs/core-concepts/credits).
 
 ---
 
@@ -173,7 +173,7 @@ Card calls throw a `PollarApiError`:
 
 ## Related
 
-- [Providers](https://docs.pollar.xyz/docs/operator-guide/cards/providers) and [Card holders](https://docs.pollar.xyz/docs/operator-guide/cards/card-holders) in the dashboard
+- [Providers](https://docs.pollar.xyz/docs/operator-guide/cards/providers) and [Issued cards](https://docs.pollar.xyz/docs/operator-guide/cards/card-holders) in the dashboard
 - [`@pollar/core` Cards](https://docs.pollar.xyz/docs/sdk-reference/pollar-core)
 - [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support)
 - [KYC flow](https://docs.pollar.xyz/docs/core-concepts/kyc-flow)

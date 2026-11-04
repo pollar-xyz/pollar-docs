@@ -45,12 +45,12 @@ The same model holds the keys of your app's operator wallets (funding, gas, dist
 
 Every Stellar transaction Pollar signs, for a Pollar-managed wallet or as the second vote of a co-signed one, passes the same per-transaction policy first:
 
-- The fee stays within the app's fee cap, and the operation count within its operations cap (**Wallets > Transaction Policy**).
+- The fee stays within the app's fee cap, and the operation count within its operations cap (**Wallets > Transaction rules**).
 - The transaction has timebounds and its operations run as the wallet's own account.
 - `accountMerge` is blocked unless the app allows its destination.
 - Signer, master weight and threshold changes are blocked.
 
-On top of that, Pollar sponsors only what the app's **Sponsorship** settings say it sponsors, and on an app on credits a paid flow answers **402 `SDK_CREDITS_INSUFFICIENT`** when the credits do not cover it. These checks run server-side and cannot be bypassed from the SDK.
+On top of that, Pollar sponsors only what the app's **Sponsored fees** settings say it sponsors, and on an app on credits a paid flow answers **402 `SDK_CREDITS_INSUFFICIENT`** when the credits do not cover it. These checks run server-side and cannot be bypassed from the SDK.
 
 ### Why a sponsor signature cannot move a user's funds
 
@@ -64,7 +64,7 @@ For a Pollar-managed wallet, Pollar's wallet service does hold the user's key, w
 
 | Data | Retention |
 | --- | --- |
-| Application logs (**Monitor > Logs**) | 12 months; older entries cannot be read |
+| Application logs (**Monitoring > Logs**) | 12 months; older entries cannot be read |
 | Transaction records (history) | At least 5 years |
 
 12 months of logs meets the longest log retention common audit frameworks ask for (PCI DSS keeps audit logs for a year), and 5 years of transaction records meets anti-money-laundering record keeping.

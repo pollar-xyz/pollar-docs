@@ -1,8 +1,8 @@
 ---
-title: "USDC bridges"
+title: "USDC bridge"
 ---
 
-**Dashboard > Treasury > USDC bridges** · Chains: Stellar, Solana, Polygon (Live)
+**Dashboard > Wallets > USDC bridge** · Chains: Stellar, Solana, Polygon (Live)
 
 Your users moving USDC between their own wallets on Stellar, Solana and Polygon. Each move goes through Circle's CCTP: the USDC is burned on the source chain, Circle attests the burn in a few minutes, and your app's network fee wallet sends the mint on the destination. To offer it, see the [Bridge guide](https://docs.pollar.xyz/docs/guides/bridge-guide).
 
@@ -28,7 +28,7 @@ Open a move to see its addresses, the amount that arrived, the failure code if a
 
 ## Fees
 
-Each completed move is charged to your app in credits as `bridge.transfer`, a percentage of the amount with a minimum and a maximum; see **Billing > Credits > Prices**. The network fees your app's wallets pay are charged as usual (`gas.sponsored_tx`).
+Each completed move is charged to your app in credits as `bridge.transfer`, a percentage of the amount with a minimum and a maximum; see **Settings > Credits > Prices**. The network fees your app's wallets pay are charged as usual (`gas.sponsored_tx`).
 
 ---
 

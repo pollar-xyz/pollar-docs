@@ -56,7 +56,7 @@ Every other `PollarClientConfig` option (`walletAdapters`, `cosignManual`, `reco
 
 By default every signing call waits for the user: the provider shows the transaction in `<ConfirmModal>` and signs only when the user confirms, whatever the wallet's custody.
 
-The app's policy is set in the dashboard, under **Wallets > Wallet settings > Signature confirmation** ([guide](https://docs.pollar.xyz/docs/operator-guide/wallets/settings)): always ask, ask once and then sign for a window (5 minutes and 50 USD by default), or never ask. With `confirmation` unset the SDK follows the dashboard. When you set it, the stricter of the two applies: `'auto'` in code skips the prompt only if the dashboard says never ask too.
+The app's policy is set in the dashboard, under **Wallets > Settings > Signature confirmation** ([guide](https://docs.pollar.xyz/docs/operator-guide/wallets/settings)): always ask, ask once and then sign for a window (5 minutes and 50 USD by default), or never ask. With `confirmation` unset the SDK follows the dashboard. When you set it, the stricter of the two applies: `'auto'` in code skips the prompt only if the dashboard says never ask too.
 
 - Inside a window, a signature signs without asking while the USD total of the window stays within `maxUsd`. Only a payment the SDK builds itself (`sendPayment`, `runTx('payment', ...)`) has a value it can read; any other signature (a raw `signTx`, a swap, a contract call) asks, and so does an asset with no price. The window closes on logout.
 - A ramp leg always asks, whatever the policy.
@@ -66,7 +66,7 @@ The app's policy is set in the dashboard, under **Wallets > Wallet settings > Si
 
 Every modal is in English, Spanish and Portuguese. The language is, in this order:
 
-1. The language pinned in the dashboard, **Build > Branding > Language** ([guide](https://docs.pollar.xyz/docs/operator-guide/build/branding)). With **User's device language** (the default) nothing is pinned.
+1. The language pinned in the dashboard, **Users > Sign-in look > Language** ([guide](https://docs.pollar.xyz/docs/operator-guide/users/sign-in-look)). With **User's device language** (the default) nothing is pinned.
 2. The `language` prop of a modal that takes one (`<RampWidget>`, `<KycModal>`, `<RequirementFormModal>`, `<RegistryCheckModal>`, `<ProviderRegistrationModal>`).
 3. The `language` prop of `<PollarProvider>` (since 0.12.1).
 4. The client's `locale`.
@@ -443,7 +443,7 @@ const { confirmations } = usePollar();
 
 Its focus trap also moves keyboard focus back into the dialog.
 
-**Stacking.** The overlay's z-index is the app's **Stacking order** (Dashboard > Branding) or `--pollar-overlay-z-index`, `50` by default. A Pollar modal opened after the app's modal comes later in `body` and covers one with the same z-index. Raise it above a library that stacks its modals higher (MUI uses 1300, Chakra 1400).
+**Stacking.** The overlay's z-index is the app's **Stacking order** (Users > Sign-in look) or `--pollar-overlay-z-index`, `50` by default. A Pollar modal opened after the app's modal comes later in `body` and covers one with the same z-index. Raise it above a library that stacks its modals higher (MUI uses 1300, Chakra 1400).
 
 ---
 
@@ -451,7 +451,7 @@ Its focus trap also moves keyboard focus back into the dialog.
 
 ### `useChains()`
 
-The chains the app serves **and** the user holds a wallet on, in the order configured under **Wallets > Wallet settings** ([guide](https://docs.pollar.xyz/docs/operator-guide/wallets/settings)). Drive every chain selector from this, not from `wallets` alone: a chain can be enabled before this user is provisioned on it.
+The chains the app serves **and** the user holds a wallet on, in the order configured under **Wallets > Settings** ([guide](https://docs.pollar.xyz/docs/operator-guide/wallets/settings)). Drive every chain selector from this, not from `wallets` alone: a chain can be enabled before this user is provisioned on it.
 
 ```tsx
 import { useChains, ChainSelect } from '@pollar/react';

@@ -1,8 +1,8 @@
 ---
-title: "Settings"
+title: "General"
 ---
 
-**Dashboard > Build > Settings** · Chains: all
+**Dashboard > Settings > General** · Chains: all
 
 General configuration for your Pollar app.
 
@@ -30,23 +30,10 @@ An archived app cannot request to go live until it is restored.
 
 ---
 
-## Authentication & Sessions
-
-Control how long the tokens the SDK issues to end users live:
-
-| Field | Range | Default |
-| --- | --- | --- |
-| **Access token TTL** | 5-60 minutes | 10 minutes |
-| **Refresh token TTL** | 1-90 days | 30 days |
-
-Leave a field empty (or click **Reset to defaults**) to use the platform default. Changes apply to tokens issued from then on; active sessions keep their lifetime until their next refresh.
-
----
-
 ## App ID
 
 The app's identifier, used to associate your Pollar client with this app. Read-only, with a copy button.
 
 ---
 
-> Allowed origins and redirect URIs live under **Build > Domains**. To take an app offline, use **Danger Zone > Archive app**: archiving disables the app's API keys and SDK access and is reversible. There is no permanent delete.
+> Token lifetimes live under **Users > Sign-in**. Allowed origins and redirect URIs live under **Developers > Websites**. To take an app offline, use **Settings > Archive app**: archiving disables the app's API keys and SDK access and is reversible. There is no permanent delete.

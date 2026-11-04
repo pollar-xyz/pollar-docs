@@ -2,7 +2,7 @@
 title: "Home"
 ---
 
-**Dashboard > Overview > Home** · Chains: all
+**Dashboard > Home** · Chains: all
 
 The per-app landing page. From top to bottom:
 
@@ -14,4 +14,4 @@ The per-app landing page. From top to bottom:
   - **Distribution**: share of transactions by token
   - **Transaction count**: daily transactions
 
-The metrics count transactions; they are not amounts. Each app has its own Home; switch apps from the top navigation bar.
+The metrics count transactions; they are not amounts. Each app has its own Home; switch apps from the app picker at the top of the sidebar.

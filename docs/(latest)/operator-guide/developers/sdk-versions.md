@@ -2,7 +2,7 @@
 title: "SDK versions"
 ---
 
-**Dashboard > Monitor > SDK versions** · Chains: all
+**Dashboard > Developers > SDK versions** · Chains: all
 
 Which `@pollar/core` builds your app is running, and how many live sessions are still on each. Recorded at sign-in and on every session resume.
 
@@ -27,5 +27,5 @@ Versions appear once your users sign in or reload with `@pollar/core` **0.11.4 o
 
 ## Related
 
-- [Wallet settings](https://docs.pollar.xyz/docs/operator-guide/wallets/settings): the features gated on an SDK version
+- [Wallets > Settings](https://docs.pollar.xyz/docs/operator-guide/wallets/settings): the features gated on an SDK version
 - [`@pollar/core`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core)

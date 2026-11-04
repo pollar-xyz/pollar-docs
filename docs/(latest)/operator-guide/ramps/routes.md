@@ -2,7 +2,7 @@
 title: "Routes"
 ---
 
-**Dashboard > Ramps > Routes** · Chains: Stellar, Solana, Polygon
+**Dashboard > Cash in and out > Routes** · Chains: Stellar, Solana, Polygon
 
 Where your users' ramps can go right now, leg by leg. Routes come from the providers and corridors you enabled under [Providers](https://docs.pollar.xyz/docs/operator-guide/ramps/providers), and end only on the chains your app enables.
 

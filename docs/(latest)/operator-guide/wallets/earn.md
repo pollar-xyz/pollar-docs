@@ -1,10 +1,10 @@
 ---
-title: "Earn"
+title: "Savings"
 ---
 
-**Dashboard > Treasury > Earn** · Chains: Stellar
+**Dashboard > Wallets > Savings** · Chains: Stellar
 
-Let your users deposit into yield vaults (DeFindex) and lending pools (Blend), signing with their Pollar wallet. **If nothing is enabled, the Earn UI is hidden for your users.** DeFindex and Blend settle on Stellar, so Earn applies to the user's Stellar wallet; see [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support).
+Let your users deposit into yield vaults (DeFindex) and lending pools (Blend), signing with their Pollar wallet. **If nothing is enabled, the Savings UI is hidden for your users.** DeFindex and Blend settle on Stellar, so Savings applies to the user's Stellar wallet; see [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support).
 
 ---
 

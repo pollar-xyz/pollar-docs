@@ -11,7 +11,7 @@ Running wallets costs money on-chain: account reserves, network fees, starting b
 | What the app keeps funded | XLM, SOL or POL in its wallets | A credit balance |
 | Distribution claims pay from | The distribution (or global) wallet | The app's distribution vault |
 
-**Billing > Credits** in the dashboard says which model the app is on. An app still on its own wallets sees "This app still pays with its own wallets": nothing is charged in credits yet, and any gift or bonus Pollar adds waits there until the app moves. Pollar moves an app to credits.
+**Settings > Credits** in the dashboard says which model the app is on. An app still on its own wallets sees "This app still pays with its own wallets": nothing is charged in credits yet, and any gift or bonus Pollar adds waits there until the app moves. Pollar moves an app to credits.
 
 ---
 
@@ -26,7 +26,7 @@ Running wallets costs money on-chain: account reserves, network fees, starting b
 | **Margin** | How far below zero Pollar lets the app go. |
 | **Available** | What the app can spend now. |
 
-Every billable event (a wallet, a sponsored reserve or fee, a co-signed signature, a KYC check, a ramp leg, a move of USDC between networks, and so on) has a price in the app's price list, shown on **Billing > Credits > Prices**. An event with no price counts at 0.
+Every billable event (a wallet, a sponsored reserve or fee, a co-signed signature, a KYC check, a ramp leg, a move of USDC between networks, and so on) has a price in the app's price list, shown on **Settings > Credits > Prices**. An event with no price counts at 0.
 
 On Solana, a sponsored transfer to an address that never held the token also creates its token account, and the pool pays its rent (about 0.002 SOL). That rent is charged once per account created, as `reserve.token_account`, the Solana counterpart of a Stellar trustline reserve. A swap that creates the user's output account is charged the same way.
 
@@ -49,7 +49,7 @@ Only the official contracts count (Circle's USDC, Tether's USDT); any other toke
 
 A paid flow answers **402 `SDK_CREDITS_INSUFFICIENT`** when the available credits do not cover it. The SDK shows the user a generic message pointing to the app's support (`appUnavailableMessage(error)` gives the text) and logs one warning for the developer. A flow the pool would pay for during login or session resume is skipped rather than refused.
 
-Set a low-balance alert on **Billing > Credits**: Pollar emails you once when the available credits drop below the amount, and again only after they went back above it.
+Set a low-balance alert on **Settings > Credits**: Pollar emails you once when the available credits drop below the amount, and again only after they went back above it.
 
 ### Postpaid apps
 
@@ -59,7 +59,7 @@ A postpaid app is billed once a month for what it used. Each statement has a due
 
 ## Distribution vault
 
-On an app on credits, token distribution claims pay from the app's **distribution vault**: a Pollar-held balance per app. Pollar's pool pays the claim's network fee. The owner or an admin withdraws from the vault on **Billing > Distribution vault**, from the dashboard only, and always to the payout address Pollar has on file for the app: a withdrawal cannot name a destination, and no API key or token can start one. The Server API and the MCP gateway read the vault but cannot move it.
+On an app on credits, token distribution claims pay from the app's **distribution vault**: a Pollar-held balance per app. Pollar's pool pays the claim's network fee. The owner or an admin withdraws from the vault on **Wallets > Distribution vault**, from the dashboard only, and always to the payout address Pollar has on file for the app: a withdrawal cannot name a destination, and no API key or token can start one. The Server API and the MCP gateway read the vault but cannot move it.
 
 ---
 
@@ -71,4 +71,4 @@ On an app on credits, token distribution claims pay from the app's **distributio
 | MCP gateway | `get_application_credits`, `get_application_usage`, `get_application_statements`, `get_application_deposit_addresses`, `get_distribution_vault`. Read-only |
 | SDK | `402` answers on paid flows, and `appUnavailableMessage` |
 
-See [Credits](https://docs.pollar.xyz/docs/operator-guide/billing/credits) and [Distribution vault](https://docs.pollar.xyz/docs/operator-guide/billing/distribution-vault) in the Operator Guide for the screens.
+See [Credits](https://docs.pollar.xyz/docs/operator-guide/settings/credits) and [Distribution vault](https://docs.pollar.xyz/docs/operator-guide/wallets/distribution-vault) in the Operator Guide for the screens.

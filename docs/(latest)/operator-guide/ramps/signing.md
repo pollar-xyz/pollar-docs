@@ -2,7 +2,7 @@
 title: "Signing"
 ---
 
-**Dashboard > Ramps > Signing** · Chains: Stellar, Solana, Polygon
+**Dashboard > Cash in and out > Signing** · Chains: Stellar, Solana, Polygon
 
 Who signs the legs of your users' ramps. Pollar enables the modes for your app; a route that needs a mode your app does not have is not offered to your users.
 

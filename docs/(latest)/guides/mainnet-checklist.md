@@ -8,7 +8,7 @@ Every app starts in Test mode. Going live is requested from the dashboard and ap
 
 ## Live access [#mainnet-access]
 
-- [ ] Requested to go live from **Build > Settings > Go live** (or the environment control in the top bar). Only the app's owner or an admin can request it.
+- [ ] Requested to go live from **Settings > General > Go live** (or the environment control in the top bar). Only the app's owner or an admin can request it.
 
 - [ ] The request is approved, and the live app appears in the project. A rejected request carries Pollar's review note; fix what it says and resubmit.
 
@@ -18,29 +18,29 @@ Every app starts in Test mode. Going live is requested from the dashboard and ap
 
 ## Dashboard configuration
 
-- [ ] Added your production domain(s) in **Build > Domains**
+- [ ] Added your production domain(s) in **Developers > Websites**
 
-- [ ] **Wallets > Wallet settings > Wallet custody** set to **Co-signed with Turnkey (2-of-2)** or **Self-custody with Turnkey (1-of-1)**. Pollar custody is not available on Live. See [Co-signed and Self-custody Wallets](https://docs.pollar.xyz/docs/core-concepts/co-signed-wallets).
+- [ ] **Wallets > Settings > Wallet custody** set to **Co-signed with Turnkey (2-of-2)** or **Self-custody with Turnkey (1-of-1)**. Pollar custody is not available on Live. See [Co-signed and Self-custody Wallets](https://docs.pollar.xyz/docs/core-concepts/co-signed-wallets).
 
-- [ ] **Wallets > Wallet settings > Signature confirmation** set to the policy you want (always ask, ask once for a window, or never ask). Ramp legs always ask.
+- [ ] **Wallets > Settings > Signature confirmation** set to the policy you want (always ask, ask once for a window, or never ask). Ramp legs always ask.
 
 - [ ] Funding mode configured for your use case. In Deferred mode on Live, `POST /v3/wallets/fund` opens each Turnkey wallet's account creation and the user approves it in their next session (`202`). See [Funding Modes](https://docs.pollar.xyz/docs/core-concepts/funding-modes).
 
-- [ ] At least one asset configured in **Wallets > Tokens & Trustlines**
+- [ ] At least one asset configured in **Wallets > Tokens**
 
-- [ ] Branding configured with your production logo and colors
+- [ ] Sign-in look configured with your production logo and colors
 
 ---
 
 ## Paying for the chain
 
-Check which [billing model](https://docs.pollar.xyz/docs/core-concepts/credits) the app is on (**Billing > Credits** says it).
+Check which [billing model](https://docs.pollar.xyz/docs/core-concepts/credits) the app is on (**Settings > Credits** says it).
 
 **On credits:**
 
 - [ ] A credit balance that covers your expected activations and transactions, topped up at one of the app's deposit addresses (USDC or USDT)
 
-- [ ] The low-balance alert on **Billing > Credits** set, so you hear about it before paid flows start answering 402
+- [ ] The low-balance alert on **Settings > Credits** set, so you hear about it before paid flows start answering 402
 
 **On your own wallets:**
 
@@ -51,7 +51,7 @@ Check which [billing model](https://docs.pollar.xyz/docs/core-concepts/credits) 
 - [ ] Gas wallet active and funded
   - Recommended minimum: 10 XLM
 
-- [ ] Solana or Polygon GAS wallet created and funded under **Wallets > Sponsorship**, if the app enables those chains
+- [ ] Solana or Polygon GAS wallet created and funded under **Wallets > Sponsored fees**, if the app enables those chains
 
 - [ ] Distribution wallet funded (if distributing tokens)
 
@@ -111,7 +111,7 @@ Check which [billing model](https://docs.pollar.xyz/docs/core-concepts/credits) 
 
 - [ ] At least one real USDC payment sent and confirmed
 
-- [ ] Transaction appears in **Monitor > Transactions**
+- [ ] Transaction appears in **Monitoring > Transactions**
 
 - [ ] Wallet visible on [Stellar Expert](https://stellar.expert)
 
@@ -119,7 +119,7 @@ Check which [billing model](https://docs.pollar.xyz/docs/core-concepts/credits) 
 
 ## Observability
 
-- [ ] **Monitor > Logs** watched after the first real users
+- [ ] **Monitoring > Logs** watched after the first real users
 
 - [ ] Error alerting set up (Sentry, Datadog, or similar) for your backend
 

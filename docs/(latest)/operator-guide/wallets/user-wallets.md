@@ -1,8 +1,8 @@
 ---
-title: "Wallets"
+title: "All wallets"
 ---
 
-**Dashboard > Wallets > Wallets** · Chains: Stellar, Solana, Polygon
+**Dashboard > Wallets > All wallets** · Chains: Stellar, Solana, Polygon
 
 Every wallet of your app, on every chain. A user has one wallet per enabled chain, so the same user appears once per chain. Search, filters, sorting and pagination run on the server; the cards on top count the whole set.
 
@@ -35,7 +35,7 @@ Every wallet of your app, on every chain. A user has one wallet per enabled chai
 
 Search by public key, API key or type. Filters: **Type** (SDK User / Application), **Status** (Active / Not funded / Lost), **Custody**, **Rail** and **Auth type**. **Refresh balances** reloads the on-chain reads.
 
-On an app on [credits](https://docs.pollar.xyz/docs/operator-guide/billing/credits), Pollar's pool pays for the app, so only the users' wallets are listed and the Type filter is hidden.
+On an app on [credits](https://docs.pollar.xyz/docs/operator-guide/settings/credits), Pollar's pool pays for the app, so only the users' wallets are listed and the Type filter is hidden.
 
 ---
 
@@ -54,7 +54,7 @@ A Stellar wallet expands only once its account exists on-chain.
 
 A Stellar wallet that is **Not funded** (Deferred mode, or an Immediate-mode wallet whose funding did not complete) shows a **Fund** button next to its status. It creates the account exactly as the login does: the funding wallet sponsors the reserve and sends the configured starting XLM. On an app on credits, Pollar's pool sponsors it and the app's credits pay. The status flips to **Active** as soon as the account is on the ledger.
 
-Solana and Polygon wallets have no account to create: they are topped up from the chain's GAS wallet according to [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship), and a new Solana wallet receives its starting SOL from [Account Funding](https://docs.pollar.xyz/docs/operator-guide/wallets/account-funding).
+Solana and Polygon wallets have no account to create: they are topped up from the chain's GAS wallet according to [Sponsored fees](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship), and a new Solana wallet receives its starting SOL from [Starting balance](https://docs.pollar.xyz/docs/operator-guide/wallets/account-funding).
 
 ---
 
@@ -65,4 +65,4 @@ A rail wallet is a user's wallet on a chain this app does not serve. It exists f
 - a **ramp settled through it**: a ramp route can run a leg on another chain (Stereum, for example, settles on Polygon) and creates the user's wallet there, so an app that serves only Stellar can still have Polygon wallets for its users;
 - the app **switched the chain off** after the wallets existed (see [Disabling a chain](https://docs.pollar.xyz/docs/operator-guide/wallets/settings#disabling-a-chain)).
 
-It belongs to the user, and nothing in your app shows it to them, so a balance there is money waiting between two steps of a ramp. Use the **Rail** filter (**Rail: all** / **Only rail** / **Hide rail**) to see them; [Accounts](https://docs.pollar.xyz/docs/operator-guide/users/accounts) also marks them. The ramp orders that moved funds through them are under [Ramps > Orders](https://docs.pollar.xyz/docs/operator-guide/ramps/orders).
+It belongs to the user, and nothing in your app shows it to them, so a balance there is money waiting between two steps of a ramp. Use the **Rail** filter (**Rail: all** / **Only rail** / **Hide rail**) to see them; [Accounts](https://docs.pollar.xyz/docs/operator-guide/users/accounts) also marks them. The ramp orders that moved funds through them are under [Cash in and out > Orders](https://docs.pollar.xyz/docs/operator-guide/ramps/orders).

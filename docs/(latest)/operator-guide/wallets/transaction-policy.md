@@ -1,8 +1,8 @@
 ---
-title: "Transaction Policy"
+title: "Transaction rules"
 ---
 
-**Dashboard > Wallets > Transaction Policy** · Chains: Stellar
+**Dashboard > Wallets > Transaction rules** · Chains: Stellar
 
 Control which sensitive Stellar operations custodial wallets are allowed to sign. Rules are enforced server-side: a custodial wallet refuses to sign anything the policy blocks.
 

@@ -1,8 +1,8 @@
 ---
-title: "Domains"
+title: "Websites"
 ---
 
-**Dashboard > Build > Domains** · Chains: all
+**Dashboard > Developers > Websites** · Chains: all
 
 Two separate allowlists live on this page:
 

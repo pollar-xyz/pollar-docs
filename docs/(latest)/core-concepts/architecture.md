@@ -86,7 +86,7 @@ An app on its own wallets has Stellar accounts that cover costs on behalf of its
 
 A new app has one wallet, the **global** wallet, that covers all three roles. An app that was split earlier keeps a separate wallet per role. Solana and Polygon each have a GAS wallet of their own, created from the dashboard. On an app on credits, distribution claims pay from the app's distribution vault instead.
 
-For balances and funding see [Account Funding](https://docs.pollar.xyz/docs/operator-guide/wallets/account-funding).
+For balances and funding see [Starting balance](https://docs.pollar.xyz/docs/operator-guide/wallets/account-funding).
 
 ---
 

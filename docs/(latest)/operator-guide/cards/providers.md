@@ -14,7 +14,7 @@ Let your users get a card funded from their Pollar wallet. Enable the card provi
 | --- | --- |
 | **Provider toggle** | Enables the provider for this app. Each provider lists the identity-verification option it requires; the user completes it from `<KycModal>` or the card flow itself |
 | **Card label** | The name printed in the card flow, at most 40 characters |
-| **Redirect URL** | Where the provider sends the user back after a hosted step. It must be an allowed app origin or a registered redirect URI (see [Domains](https://docs.pollar.xyz/docs/operator-guide/build/domains)) |
+| **Redirect URL** | Where the provider sends the user back after a hosted step. It must be an allowed app origin or a registered redirect URI (see [Websites](https://docs.pollar.xyz/docs/operator-guide/developers/domains)) |
 
 ---
 
@@ -26,5 +26,5 @@ From the SDK the user creates a card holder, passes the provider's identity chec
 
 ## Related
 
-- [Card holders](https://docs.pollar.xyz/docs/operator-guide/cards/card-holders): your users' cards and their state
+- [Issued cards](https://docs.pollar.xyz/docs/operator-guide/cards/card-holders): your users' cards and their state
 - [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support)

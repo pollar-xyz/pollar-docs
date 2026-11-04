@@ -34,9 +34,9 @@ When you ask for the `auto` route, Pollar quotes every enabled venue and returns
 
 ### 1. Enable venues in the dashboard
 
-Go to **Dashboard > Treasury > Swap** and enable at least one venue. **Until a venue is enabled, swap is turned off for your app**: `getSwapConfig()` returns an empty list and the pre-built modal shows "Swap is not available for this app."
+Go to **Dashboard > Wallets > Swap** and enable at least one venue. **Until a venue is enabled, swap is turned off for your app**: `getSwapConfig()` returns an empty list and the pre-built modal shows "Swap is not available for this app."
 
-On the same page, the **Buy tokens** card lets you add tokens from the platform catalog that your users can buy, on top of your enabled assets. See [Swap](https://docs.pollar.xyz/docs/operator-guide/treasury/swap).
+On the same page, the **Buy tokens** card lets you add tokens from the platform catalog that your users can buy, on top of your enabled assets. See [Swap](https://docs.pollar.xyz/docs/operator-guide/wallets/swap).
 
 ### 2. Check the wallet type
 
@@ -79,7 +79,7 @@ That's the whole integration. The modal handles:
 - **Trustline**: if the buy asset needs a trustline, the button reads **"Create trustline & swap"** and the modal warns about the 0.5 XLM reserve.
 - **Execution**: signing, submission and the result screen, with a retry on error.
 
-Its appearance follows your **Build > Branding** settings, like every other Pollar modal.
+Its appearance follows your **Users > Sign-in look** settings, like every other Pollar modal.
 
 ### Hide the button when swap is off
 
@@ -120,7 +120,7 @@ useEffect(() => {
 
 ### Custom look, Pollar layout
 
-If you need more than Branding allows, `@pollar/react` also exports `<SwapModalTemplate>`: the same screen as a pure presentational component that receives all data and callbacks as props. Pair it with the hook methods in Part 2 (`getSwapQuote`, `swap`, ...). See [Template components](https://docs.pollar.xyz/docs/sdk-reference/pollar-react#template-components).
+If you need more than Sign-in look allows, `@pollar/react` also exports `<SwapModalTemplate>`: the same screen as a pure presentational component that receives all data and callbacks as props. Pair it with the hook methods in Part 2 (`getSwapQuote`, `swap`, ...). See [Template components](https://docs.pollar.xyz/docs/sdk-reference/pollar-react#template-components).
 
 ---
 
@@ -340,7 +340,7 @@ export async function swapXlmToUsdc(amount: string) {
 
 ## Going live [#going-to-mainnet]
 
-- Your live app is a separate app with its own API key. Enable venues and buy tokens again in **Treasury > Swap** of the live app.
+- Your live app is a separate app with its own API key. Enable venues and buy tokens again in **Wallets > Swap** of the live app.
 - Use mainnet asset issuers: testnet issuers are not valid on mainnet.
 - Live wallets are not funded by friendbot: make sure users hold XLM for fees and trustline reserves.
 

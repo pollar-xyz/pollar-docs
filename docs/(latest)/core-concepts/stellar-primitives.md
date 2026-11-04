@@ -22,7 +22,7 @@ Every Stellar transaction requires a small XLM fee paid by the submitter. Withou
 
 Fee-bump transactions solve this: a third party (the sponsor) wraps the user's transaction and pays the fee on their behalf. The user's transaction is valid, the sponsor pays, and the user needs zero XLM.
 
-**What Pollar does:** Transactions submitted through the SDK are wrapped in a fee-bump when your app's **Sponsorship** settings cover them. The fee is paid from your app's gas wallet, or from Pollar's pool on an app on credits.
+**What Pollar does:** Transactions submitted through the SDK are wrapped in a fee-bump when your app's **Sponsored fees** settings cover them. The fee is paid from your app's gas wallet, or from Pollar's pool on an app on credits.
 
 ```
 User transaction (inner tx)
@@ -70,7 +70,7 @@ SEP-10 is a Stellar standard for authenticating ownership of a Stellar account u
 
 SEP-24 is a Stellar standard for fiat on/off-ramps. It defines a protocol between a wallet app and an **anchor** (a licensed financial institution) for depositing and withdrawing fiat currency in exchange for Stellar assets like USDC.
 
-**What Pollar uses it for:** Ramps through a SEP-24 anchor (Anclap). The anchor's flow opens as a hosted route of a ramp order, where the user picks the payment method inside the anchor's own page. Enable the provider under **Ramps > Providers**; see [Ramps](https://docs.pollar.xyz/docs/core-concepts/ramps).
+**What Pollar uses it for:** Ramps through a SEP-24 anchor (Anclap). The anchor's flow opens as a hosted route of a ramp order, where the user picks the payment method inside the anchor's own page. Enable the provider under **Cash in and out > Providers**; see [Ramps](https://docs.pollar.xyz/docs/core-concepts/ramps).
 
 ---
 

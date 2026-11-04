@@ -30,7 +30,7 @@ The environment is what the API and SDK call `network`. Test mode is what the AP
 ## Generating a key
 
 1. Go to [dashboard.pollar.xyz](https://dashboard.pollar.xyz) and sign in with Google or an email code
-2. Open your app and go to **Build > API Keys**
+2. Open your app and go to **Developers > API keys**
 3. Click **+ Create key** under **Publishable keys** or **Secret keys**
 4. Give it a **Name** and, optionally, an **Expiration** date
 5. Copy the key and store it securely: the full key is shown only once, right after you create it, for both types
@@ -92,4 +92,4 @@ POLLAR_SECRET_KEY=sec_testnet_xxxxxxxxxxxxxxxxxxxx
 
 - For Live, use build-time environment injection or a backend proxy: never hardcode `pub_mainnet_` in source
 
-- Delete a compromised key immediately from **Dashboard > Build > API Keys** and create a new one
+- Delete a compromised key immediately from **Dashboard > Developers > API keys** and create a new one

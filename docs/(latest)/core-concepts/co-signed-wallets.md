@@ -48,7 +48,7 @@ A transaction built when the request opens would be stale by the time a user get
 
 ## Turning it on
 
-**Wallets > Wallet settings > Wallet custody** in the dashboard (see [Wallet settings](https://docs.pollar.xyz/docs/operator-guide/wallets/settings)):
+**Wallets > Settings > Wallet custody** in the dashboard (see [Wallets > Settings](https://docs.pollar.xyz/docs/operator-guide/wallets/settings)):
 
 - **Co-signed with Turnkey (2-of-2)**
 - **Self-custody with Turnkey (1-of-1)**: a user who loses every recovery method loses the wallet, and Pollar cannot help.
@@ -61,7 +61,7 @@ Turnkey wallets need `@pollar/core` **0.12.0 or later**: the device proposes eac
 
 ## What the user sees
 
-Every signature asks the user unless the app's dashboard says otherwise. The policy comes from **Wallet settings > Signature confirmation** (always ask, ask once and then sign for a window, or never ask), and the SDK's `confirmation` option can only make it stricter:
+Every signature asks the user unless the app's dashboard says otherwise. The policy comes from **Wallets > Settings > Signature confirmation** (always ask, ask once and then sign for a window, or never ask), and the SDK's `confirmation` option can only make it stricter:
 
 ```ts
 const pollar = new PollarClient({

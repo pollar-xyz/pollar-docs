@@ -1,8 +1,8 @@
 ---
-title: "Tokens & Trustlines"
+title: "Tokens"
 ---
 
-**Dashboard > Wallets > Tokens & Trustlines** · Chains: Stellar, Solana, Polygon
+**Dashboard > Wallets > Tokens** · Chains: Stellar, Solana, Polygon
 
 Configure which tokens your users' wallets hold, on every chain the app enables. One table lists them all, with a filter tab per chain (**All**, **Stellar**, **Solana**, **Polygon**) once more than one chain is on.
 
@@ -12,11 +12,11 @@ Configure which tokens your users' wallets hold, on every chain the app enables.
 
 | Chain | What enabling a token does |
 | --- | --- |
-| **Stellar** | When a user wallet is created or activated, Pollar sets up a **trustline** for each enabled asset, sponsored by your funding wallet (0.5 XLM of reserve each, see [Account Funding](https://docs.pollar.xyz/docs/operator-guide/wallets/account-funding)). Users never enable assets by hand |
+| **Stellar** | When a user wallet is created or activated, Pollar sets up a **trustline** for each enabled asset, sponsored by your funding wallet (0.5 XLM of reserve each, see [Starting balance](https://docs.pollar.xyz/docs/operator-guide/wallets/account-funding)). Users never enable assets by hand |
 | **Solana** | The SPL token shows up in the user's balance, send and receive modals. Solana needs no trustline: the user's **associated token account** is created by Pollar the first time the token reaches the wallet, with the rent paid by the app |
 | **Polygon** | The ERC-20 shows up in the user's modals; nothing is created on-chain |
 
-Each enabled token also carries a **sponsor transfers** switch on the [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship) page: on Stellar a fee bump, on Solana the GAS wallet as fee payer.
+Each enabled token also carries a **sponsor transfers** switch on the [Sponsored fees](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship) page: on Stellar a fee bump, on Solana the GAS wallet as fee payer.
 
 ---
 

@@ -2,7 +2,7 @@
 title: "Quickstart"
 ---
 
-Get from zero to a working wallet with USDC payments in under 10 minutes. The steps below use Stellar; a Solana app follows the same steps with Solana enabled under **Wallets > Wallet settings > Enabled chains** ([Wallet settings](https://docs.pollar.xyz/docs/operator-guide/wallets/settings)) and `sendPayment({ chain: 'SOLANA', ... })` for the payment (see [Payments UI](https://docs.pollar.xyz/docs/guides/payments-ui#on-solana)).
+Get from zero to a working wallet with USDC payments in under 10 minutes. The steps below use Stellar; a Solana app follows the same steps with Solana enabled under **Wallets > Settings > Enabled chains** ([Wallets > Settings](https://docs.pollar.xyz/docs/operator-guide/wallets/settings)) and `sendPayment({ chain: 'SOLANA', ... })` for the payment (see [Payments UI](https://docs.pollar.xyz/docs/guides/payments-ui#on-solana)).
 
 **Requirements:** Node.js 20+ · React 18+ · A publishable key from [dashboard.pollar.xyz](https://dashboard.pollar.xyz)
 
@@ -129,7 +129,7 @@ export function SendButton() {
 
 `runTx(operation, params)` is the one-shot helper that builds, signs, and submits in a single call (alias of `buildAndSignAndSubmitTx`). For step-by-step control, and to drive the transaction modal UI, use `buildTx()` then `signAndSubmitTx()`; see [`@pollar/core`](https://docs.pollar.xyz/docs/sdk-reference/pollar-core). For a native XLM payment use `asset: { type: 'native' }`.
 
-Before signing, the SDK shows the transaction in `<ConfirmModal>` and waits for the user: that is the default policy, set per app under **Wallets > Wallet settings > Signature confirmation** (always ask, ask once for a window, or never ask). Transaction fees are paid from your app's gas wallet, or from Pollar's pool on an [app on credits](https://docs.pollar.xyz/docs/core-concepts/credits). Users pay zero XLM.
+Before signing, the SDK shows the transaction in `<ConfirmModal>` and waits for the user: that is the default policy, set per app under **Wallets > Settings > Signature confirmation** (always ask, ask once for a window, or never ask). Transaction fees are paid from your app's gas wallet, or from Pollar's pool on an [app on credits](https://docs.pollar.xyz/docs/core-concepts/credits). Users pay zero XLM.
 
 ---
 
