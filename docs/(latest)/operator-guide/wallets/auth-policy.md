@@ -31,7 +31,7 @@ Add **every contract in the call tree**, not just the entry point. Pollar walks 
 
 The dashboard checks each name against the deployed contract when you save the row, so a misspelling is refused there rather than surfacing later as a denied request in your app. Two things follow from that check:
 
-- Saving a row for a contract that is **not deployed on this app's network** is refused. Test mode and live apps have separate allowlists; a mainnet contract id cannot be saved on a Test mode app.
+- Saving a row for a contract that is **not deployed in this app's environment** is refused. Test mode and live apps have separate allowlists; a mainnet contract id cannot be saved on a Test mode app.
 - If Pollar cannot reach the network when you save, the row is stored anyway. The allowlist stays editable while the ledger is unreachable, and the names are still enforced when a signature is requested.
 
 ---

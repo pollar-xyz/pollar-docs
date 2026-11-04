@@ -10,7 +10,7 @@ The chains your app serves, who holds your users' wallet keys, when their wallet
 
 ## Enabled chains
 
-Your users get **one wallet per enabled chain**. Chains are independent of the network: on a Test mode app Polygon means **Amoy** and Solana means **devnet**; on a live app they are Polygon mainnet and Solana mainnet-beta. The network follows the app (see [Settings](https://docs.pollar.xyz/docs/operator-guide/build/settings)).
+Your users get **one wallet per enabled chain**. Chains are independent of the environment: on a Test mode app Polygon means **Amoy** and Solana means **devnet**; on a live app they are Polygon mainnet and Solana mainnet-beta. The environment follows the app (see [Settings](https://docs.pollar.xyz/docs/operator-guide/build/settings)).
 
 | Chain | Fees | What your treasury holds |
 |---|---|---|

@@ -23,7 +23,7 @@ The per-app sidebar has eleven groups. Each page below lists the **chains** it a
 
 | Section | What you do here | Chains |
 | --- | --- | --- |
-| **Settings** | App name, network, go-live request and auth token lifetimes | All |
+| **Settings** | App name, environment, go-live request and auth token lifetimes | All |
 | **API Keys** | Create and delete publishable and secret keys, with names, expirations and native-client access | All |
 | **Domains** | Allowed origins (CORS) and redirect URIs so the SDK can call Pollar from your app | All |
 | **Webhooks** `upcoming` | Configure webhook URLs and view event logs | Stellar |
@@ -119,8 +119,8 @@ New apps show a checklist under [Get started](https://docs.pollar.xyz/docs/opera
 
 ## Test mode vs Live
 
-Each app targets a single network, fixed when it is created. Apps start in **Test mode**. Going **Live** is a review: the **owner or an admin** requests it from **Build > Settings** or from the **Live** segment of the network control in the top bar. Once approved, Pollar creates the app's live counterpart in the same project, and the network control switches between the two apps. API keys, wallets and configuration belong to each app.
+Each app runs in a single environment, fixed when it is created. Apps start in **Test mode**. Going **Live** is a review: the **owner or an admin** requests it from **Build > Settings** or from the **Live** segment of the environment control in the top bar. Once approved, Pollar creates the app's live counterpart in the same project, and the environment control switches between the two apps. API keys, wallets and configuration belong to each app.
 
-Test mode is what the API and SDK call `testnet`. Live is what they call `mainnet`. The mode decides the cluster on every chain: a Test mode app uses Stellar testnet, Solana **devnet** and Polygon **Amoy**; a live app uses the main networks, which are Stellar public, Solana **mainnet-beta** and Polygon mainnet. Chains themselves are enabled under [Wallet settings](https://docs.pollar.xyz/docs/operator-guide/wallets/settings#enabled-chains).
+The environment is what the API and SDK call `network`. Test mode is what the API and SDK call `testnet`. Live is what they call `mainnet`. The mode decides the cluster on every chain: a Test mode app uses Stellar testnet, Solana **devnet** and Polygon **Amoy**; a live app uses the main networks, which are Stellar public, Solana **mainnet-beta** and Polygon mainnet. Chains themselves are enabled under [Wallet settings](https://docs.pollar.xyz/docs/operator-guide/wallets/settings#enabled-chains).
 
 Start in Test mode. Request to go live when you are ready for production; see the [Go-live checklist](https://docs.pollar.xyz/docs/guides/mainnet-checklist) first.

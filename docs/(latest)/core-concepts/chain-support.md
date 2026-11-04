@@ -84,7 +84,7 @@ A Solana-enabled app gets the whole wallet lifecycle without any Solana-specific
 - **History.** Every Solana transaction lands in the same history as Stellar ones, with its own reconcile job and explorer link; the dashboard's Monitor shows the fee in lamports.
 - **Swap.** On a live app, `getSolanaSwapQuote` prices a swap on Jupiter and Titan and `swapSolana` runs the picked route; the swap modal offers Solana next to Stellar. A co-signed or self-custody wallet approves the swap on the device, an external wallet signs it in the connected wallet, and Pollar refuses any route whose simulation pays the user less than its minimum. Neither aggregator has devnet liquidity, so a Test mode app has no Solana swap.
 - **Ramps.** No ramp provider settles natively on Solana. A route reaches a Solana wallet by adding a Circle CCTP bridge leg to a provider that settles USDC on Stellar or Polygon, so the user receives USDC on Solana. See [Ramps](https://docs.pollar.xyz/docs/core-concepts/ramps).
-- **Networks.** A Test mode app uses **devnet**; a live app uses **mainnet-beta**. The cluster follows the app's network, never a request parameter.
+- **Networks.** A Test mode app uses **devnet**; a live app uses **mainnet-beta**. The cluster follows the app's environment, never a request parameter.
 
 Two Solana facts the client has to respect:
 

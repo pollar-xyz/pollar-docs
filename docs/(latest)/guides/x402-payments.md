@@ -16,7 +16,7 @@ In the dashboard, for the app whose API key you use:
 
 1. **Wallets > [Auth Policy](https://docs.pollar.xyz/docs/operator-guide/wallets/auth-policy).** Add a row for the USDC contract with the function **`transfer`**, in lowercase. `Transfer` is a different name and authorizes nothing.
 
-   | Network | USDC contract |
+   | Environment | USDC contract |
    | --- | --- |
    | Live (Stellar mainnet) | `CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75` |
    | Test mode (Stellar testnet) | `CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA` |
@@ -77,7 +77,7 @@ The first request comes back `402`; `payFetch` reads the requirements, has the w
 
 [Nirium](https://github.com/nirium-protocol) runs paid x402 endpoints you can call to check your setup. Each call costs 0.05 USDC, the server asks for a 300-second signature (60 ledgers, inside the default window), and the facilitator pays the fee:
 
-| Network | Endpoint |
+| Environment | Endpoint |
 | --- | --- |
 | Test mode (Stellar testnet) | `https://nirium-agent.fly.dev/api/v1/premium/market` |
 | Live (Stellar mainnet) | `https://nirium-agent-mainnet.fly.dev/api/v1/premium/market` |

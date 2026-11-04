@@ -71,7 +71,7 @@ The sections below mirror the Dashboard sidebar: **Overview, Build, Users, Walle
 
 | <br /> | <br /> |
 | ------ | ------ |
-| [Settings](https://docs.pollar.xyz/docs/operator-guide/build/settings)   | App name, network and token lifetimes |
+| [Settings](https://docs.pollar.xyz/docs/operator-guide/build/settings)   | App name, environment and token lifetimes |
 | [API Keys](https://docs.pollar.xyz/docs/operator-guide/build/api-keys)   | Generate and manage keys              |
 | [Domains](https://docs.pollar.xyz/docs/operator-guide/build/domains)     | Allowed origins and redirect URIs     |
 | [Webhooks](https://docs.pollar.xyz/docs/operator-guide/build/webhooks)   | Event delivery endpoints (upcoming)   |

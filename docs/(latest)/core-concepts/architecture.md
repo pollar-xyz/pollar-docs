@@ -48,16 +48,16 @@ Behind the server, Pollar's wallet services hold the encrypted keys of Pollar-ma
 
 ---
 
-## Networks
+## Environments
 
-| Network | Notes |
+| Environment | Notes |
 | --- | --- |
 | **Test mode** | Development and testing. Stellar testnet, Solana devnet, Polygon Amoy. |
 | **Live** | Production. Real assets. A new app starts in Test mode; going live is requested from the dashboard and approved by Pollar. |
 
 Futurenet is not supported by default. If your project requires it, [contact us](mailto:hello@pollar.xyz).
 
-Each network has its own API keys: see [API Keys](https://docs.pollar.xyz/docs/getting-started/api-keys) for prefixes and usage rules. The API and SDK call these networks `testnet` and `mainnet`: see [Test mode vs Live](https://docs.pollar.xyz/docs/operator-guide/dashboard-overview#test-mode-vs-live).
+Each environment has its own API keys: see [API Keys](https://docs.pollar.xyz/docs/getting-started/api-keys) for prefixes and usage rules. The API and SDK call these environments `testnet` and `mainnet`: see [Test mode vs Live](https://docs.pollar.xyz/docs/operator-guide/dashboard-overview#test-mode-vs-live).
 
 > Full details on Stellar networks at [developers.stellar.org/docs/networks](https://developers.stellar.org/docs/networks).
 

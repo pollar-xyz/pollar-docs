@@ -8,7 +8,7 @@ Every app starts in Test mode. Going live is requested from the dashboard and ap
 
 ## Live access
 
-- [ ] Requested to go live from **Build > Settings > Go live** (or the network control in the top bar). Only the app's owner or an admin can request it.
+- [ ] Requested to go live from **Build > Settings > Go live** (or the environment control in the top bar). Only the app's owner or an admin can request it.
 
 - [ ] The request is approved, and the live app appears in the project. A rejected request carries Pollar's review note; fix what it says and resubmit.
 

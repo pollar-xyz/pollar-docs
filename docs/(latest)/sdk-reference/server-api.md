@@ -25,7 +25,7 @@ A backend on `/v1` that does not call the three user routes moves by changing th
 x-pollar-api-key: sec_testnet_xxxxxxxxxxxxxxxxxxxx
 ```
 
-The key decides the app and its network: every call acts on the app that owns the key, and on no other.
+The key decides the app and its environment: every call acts on the app that owns the key, and on no other.
 
 | Code | Meaning |
 |---|---|

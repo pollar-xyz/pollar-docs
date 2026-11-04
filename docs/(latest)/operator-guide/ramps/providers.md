@@ -4,7 +4,7 @@ title: "Providers"
 
 **Dashboard > Ramps > Providers** · Chains: Stellar, Solana, Polygon (per route)
 
-Fiat-to-crypto and crypto-to-fiat providers for your users. The page lists the providers Pollar offers on your app's network; turn one on and its routes become available to your users through the SDK's ramp widget (`openRampModal()`) or the headless ramp API. How a ramp runs is explained in [Ramps](https://docs.pollar.xyz/docs/core-concepts/ramps).
+Fiat-to-crypto and crypto-to-fiat providers for your users. The page lists the providers Pollar offers in your app's environment; turn one on and its routes become available to your users through the SDK's ramp widget (`openRampModal()`) or the headless ramp API. How a ramp runs is explained in [Ramps](https://docs.pollar.xyz/docs/core-concepts/ramps).
 
 ---
 
@@ -19,7 +19,7 @@ Fiat-to-crypto and crypto-to-fiat providers for your users. The page lists the p
 | **Bridge** `upcoming` | REST | Being integrated |
 | **PagFinance** `upcoming` | REST | Being integrated |
 
-The provider card is the source of truth for what it serves on your network.
+The provider card is the source of truth for what it serves in your environment.
 
 ---
 

@@ -96,7 +96,7 @@ GET https://sdk.api.pollar.xyz/v3/tx/history?limit=20&offset=0
 | `offset`  | `number` | `0`     | Offset for pagination.               |
 | `chain`   | `'STELLAR' \| 'SOLANA' \| 'POLYGON'` | all | Only this chain's records. |
 
-The network is the one of the API key; there is no `network` parameter. A `limit` outside 1 to 50 answers `400 VALIDATION_ERROR`.
+The environment is the one of the API key; there is no `network` parameter. A `limit` outside 1 to 50 answers `400 VALIDATION_ERROR`.
 
 **Response (`content`):**
 

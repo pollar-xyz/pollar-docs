@@ -17,7 +17,7 @@ Running wallets costs money on-chain: account reserves, network fees, starting b
 
 ## Credits
 
-**100 credits = 1 USD.** Credits belong to one app and one network: a Test mode app's credits never cross to its live pair. Test mode charges the same prices as Live, paid with testnet USDC.
+**100 credits = 1 USD.** Credits belong to one app and one environment: a Test mode app's credits never cross to its live pair. Test mode charges the same prices as Live, paid with testnet USDC.
 
 | Balance | What it is |
 | --- | --- |
@@ -34,9 +34,9 @@ An app that sponsors Earn on Solana pays the network fee and the rent of every a
 
 ### Topping up
 
-Each app has a deposit address of its own on Stellar, Polygon and Solana, on the app's network. Send a stablecoin it accepts; the balance updates once the deposit confirms, at par (1 USDC or 1 USDT = 100 credits):
+Each app has a deposit address of its own on Stellar, Polygon and Solana, in the app's environment. Send a stablecoin it accepts; the balance updates once the deposit confirms, at par (1 USDC or 1 USDT = 100 credits):
 
-| Network | Stellar | Polygon | Solana |
+| Environment | Stellar | Polygon | Solana |
 | --- | --- | --- | --- |
 | Live | USDC | USDC, USDT | USDC, USDT |
 | Test mode | USDC (Circle's test USDC) | USDC (Circle's test USDC) | USDC (Circle's test USDC) |

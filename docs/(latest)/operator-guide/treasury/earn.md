@@ -10,7 +10,7 @@ Let your users deposit into yield vaults (DeFindex) and lending pools (Blend), s
 
 ## Vaults & pools
 
-The **Vaults & pools** card lists the individual DeFindex vaults and Blend pools available on your app's network. Turn on the ones you want your users to see; all are off by default. Only the enabled vaults and pools are offered in the SDK.
+The **Vaults & pools** card lists the individual DeFindex vaults and Blend pools available in your app's environment. Turn on the ones you want your users to see; all are off by default. Only the enabled vaults and pools are offered in the SDK.
 
 ## DeFindex API key
 

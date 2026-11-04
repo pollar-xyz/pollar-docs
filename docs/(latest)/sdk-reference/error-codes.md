@@ -94,7 +94,7 @@ Auth flow error codes (surfaced on the `error` `AuthState`) are exported as `AUT
 | `RATE_LIMITED`               | Too many requests                                            | Back off and retry                                                 |
 | `API_VERSION_SUNSET` (410)   | The request used a retired API version (SDK API v1). The body carries `message`, `sunsetAt` and `migrationGuide` | Upgrade the SDK; see [API versions](https://docs.pollar.xyz/docs/sdk-reference/api-versions) |
 
-> Keys are network-specific by prefix: `pub_testnet_` / `pub_mainnet_` (publishable) and `sec_testnet_` / `sec_mainnet_` (secret).
+> Keys are environment-specific by prefix: `pub_testnet_` / `pub_mainnet_` (publishable) and `sec_testnet_` / `sec_mainnet_` (secret).
 
 ---
 
@@ -148,7 +148,7 @@ Apps whose wallets live in Turnkey (see [Co-signed Wallets](https://docs.pollar.
 | Code                               | Description                                                  | Resolution                                                  |
 | ---------------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------- |
 | `SDK_UPGRADE_REQUIRED` (409)       | The app creates Turnkey wallets and this SDK did not send the device key | Upgrade `@pollar/core` to 0.12.0 or later |
-| `SDK_COSIGN_NOT_CONFIGURED` (503)  | Co-signing is not available on the app's network           | Contact Pollar                                              |
+| `SDK_COSIGN_NOT_CONFIGURED` (503)  | Co-signing is not available in the app's environment       | Contact Pollar                                              |
 | `SDK_COSIGN_REQUEST_NOT_FOUND` (404) | No request with that id or fingerprint belongs to this user | Refresh `pollar.cosign.pending()`                        |
 | `SDK_COSIGN_REQUEST_NOT_PENDING` (409) | The request already reached a final state (approved, rejected, expired) | Read it with `?sync=1` to see the outcome       |
 | `SDK_COSIGN_DEVICE_NOT_ENROLLED` (403) | The key that stamped the vote is not one of the user's devices | Approve this device from an enrolled one, or recover it with a passkey or email code |
@@ -271,7 +271,7 @@ Saving an allowlist row (dashboard or Server API) can also answer:
 | Code                                          | Description                                                          |
 | --------------------------------------------- | -------------------------------------------------------------------- |
 | `CONTRACT_FUNCTION_UNKNOWN`                   | The row names a function the contract does not expose. `message` names which |
-| `CONTRACT_NOT_FOUND`                          | The contract is not deployed on this app's network                   |
+| `CONTRACT_NOT_FOUND`                          | The contract is not deployed in this app's environment               |
 | `CONTRACT_INTROSPECTION_FAILED`               | Pollar could not read the contract (RPC unreachable)                 |
 | `SOROBAN_AUTH_WILDCARD_REQUIRES_ANY_FUNCTION` | The "any contract" row may only carry the "any function" wildcard    |
 

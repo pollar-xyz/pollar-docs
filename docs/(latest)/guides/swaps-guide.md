@@ -207,7 +207,7 @@ const quotes = await pollar.getSwapQuote({
 | `provider`    | `'auto' \| 'aquarius' \| 'soroswap' \| 'sdex'` | `'auto'` | `auto` quotes every enabled venue; a venue name quotes only that one. |
 | `slippageBps` | `number`                                     | `50`     | Allowed slippage in basis points (100 = 1%). Sets `minReceived`.   |
 
-The connected wallet's address and the network are filled in by the SDK. The network comes from your API key.
+The connected wallet's address and the environment are filled in by the SDK. The environment comes from your API key.
 
 **Each `SwapQuote` has:**
 

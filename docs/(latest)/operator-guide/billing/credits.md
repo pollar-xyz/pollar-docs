@@ -4,7 +4,7 @@ title: "Credits"
 
 **Dashboard > Billing > Credits** · Chains: all (top-ups on several chains)
 
-What Pollar charges this app for: wallets, sponsored reserves and fees, co-signing and the other paid features. **100 credits = 1 USD.** Credits belong to the app's network and never cross to the other one: a Test mode app and its live counterpart have separate balances. How billing works is explained in [Credits](https://docs.pollar.xyz/docs/core-concepts/credits).
+What Pollar charges this app for: wallets, sponsored reserves and fees, co-signing and the other paid features. **100 credits = 1 USD.** Credits belong to the app's environment and never cross to the other one: a Test mode app and its live counterpart have separate balances. How billing works is explained in [Credits](https://docs.pollar.xyz/docs/core-concepts/credits).
 
 ---
 

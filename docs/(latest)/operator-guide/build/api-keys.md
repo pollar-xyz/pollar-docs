@@ -15,7 +15,7 @@ The page has two tables: **Publishable keys** (safe in frontend code) and **Secr
 | Publishable | `pub_testnet_` / `pub_mainnet_` | Passed to `@pollar/core` or `@pollar/react` in your frontend. Calls the SDK API on behalf of a signed-in user, and only from an origin listed under **Build > Domains**. |
 | Secret | `sec_testnet_` / `sec_mainnet_` | Used by your backend for the [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api) (for example `POST /v3/wallets/fund`). Never expose it client-side. |
 
-The network in the prefix is the **app's** network: it is not chosen per key.
+The environment in the prefix is the **app's** environment: it is not chosen per key.
 
 ---
 
