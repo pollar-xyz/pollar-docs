@@ -6,7 +6,7 @@ Every app starts in Test mode. Going live is requested from the dashboard and ap
 
 ---
 
-## Live access
+## Live access [#mainnet-access]
 
 - [ ] Requested to go live from **Build > Settings > Go live** (or the environment control in the top bar). Only the app's owner or an admin can request it.
 

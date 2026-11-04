@@ -338,7 +338,7 @@ export async function swapXlmToUsdc(amount: string) {
 
 ---
 
-## Going live
+## Going live [#going-to-mainnet]
 
 - Your live app is a separate app with its own API key. Enable venues and buy tokens again in **Treasury > Swap** of the live app.
 - Use mainnet asset issuers: testnet issuers are not valid on mainnet.

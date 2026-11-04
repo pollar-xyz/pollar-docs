@@ -117,7 +117,7 @@ New apps show a checklist under [Get started](https://docs.pollar.xyz/docs/opera
 
 ---
 
-## Test mode vs Live
+## Test mode vs Live [#testnet-vs-mainnet]
 
 Each app runs in a single environment, fixed when it is created. Apps start in **Test mode**. Going **Live** is a review: the **owner or an admin** requests it from **Build > Settings** or from the **Live** segment of the environment control in the top bar. Once approved, Pollar creates the app's live counterpart in the same project, and the environment control switches between the two apps. API keys, wallets and configuration belong to each app.
 

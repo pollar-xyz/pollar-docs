@@ -146,7 +146,7 @@ export function KycFlow({ publicKey }: { publicKey: string }) {
 
 ---
 
-## Try it in Test mode
+## Try it in Test mode [#testing-on-testnet]
 
 1. Set funding mode to **Deferred** in the Dashboard
 2. Log in: the wallet is created unfunded (no XLM reserve)

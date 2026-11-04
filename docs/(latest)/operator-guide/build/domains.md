@@ -44,7 +44,7 @@ Only the **origin** of each entry is matched today, so one entry covers every pa
 
 ---
 
-## Development entries on a live app
+## Development entries on a live app [#development-entries-on-a-mainnet-app]
 
 The dashboard marks any `localhost` or plain-`http` entry on a live app. It does not block it: testing a live app from your machine is a normal thing to do. It is there to remind you that a publishable key is public, so while that entry is in the **origins** list, anyone serving a page on that host can use the key. Remove it once you stop testing.
 
