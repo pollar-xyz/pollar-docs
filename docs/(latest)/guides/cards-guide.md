@@ -36,24 +36,26 @@ Steps 1 to 3 and 5 do not depend on the chain. Funding does.
 ## Before you start
 
 1. **Enable a card provider** in **Dashboard > Cards > Providers** ([Providers](https://docs.pollar.xyz/docs/operator-guide/cards/providers)). Cards are off until one is enabled: `getCardProviders()` returns an empty list and the modal shows nothing to start.
-2. **Enable the chain your users fund from** in **Wallets > Wallet settings > Enabled chains**: Stellar, Solana or both.
-3. **Mainnet.** The card provider available today works on mainnet only.
-4. **Who pays the network fee.** On an app on [credits](https://docs.pollar.xyz/docs/core-concepts/credits), Pollar's pool pays it and charges the app. On Solana, the first funding to a card also creates the provider's USDC account, and its rent (about 0.002 SOL) is charged once the same way. Turn this off per token in [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship), and the user pays from their own SOL or XLM.
+2. **Enable the chains your users fund from** in **Wallets > Wallet settings > Enabled chains**: Stellar, Solana, Polygon or any of them. The chain the provider receives on does not have to be one of them.
+3. **Live.** The card provider available today works on Live only.
+4. **Who pays the network fee.** The app, on every route and whatever its [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship) settings say, as in a ramp. On an app on [credits](https://docs.pollar.xyz/docs/core-concepts/credits), Pollar's pool pays and charges the app; each route's price is in [Credits](https://docs.pollar.xyz/docs/core-concepts/credits).
 
 ---
 
-## Funding: Stellar or Solana
+## Funding: the route
 
-| | From Stellar | From Solana |
+The user picks the chain to pay from, and Pollar finds the route to the provider. Each provider receives on certain chains: from one of those the funding is a transfer to its address, and from any other it crosses over Circle's CCTP and is minted straight to that address. The user needs no wallet on the provider's chain. `getCardFundingRoutes()` lists what the user can pick.
+
+| | Crossing chains (`CCTP`) | On the provider's chain (`DIRECT`) |
 |---|---|---|
-| How the USDC moves | The user pays Pollar's bridge, which moves it to the provider over Circle's CCTP | Straight to the provider's Solana address, one transfer |
+| How the USDC moves | Burned on the user's chain, minted to the provider's address | One transfer to the provider's address |
 | States | `CREATED` -> `BURNED` -> `ATTESTED` -> `MINTED` -> `CREDITED` | `CREATED` -> `SENT` -> `CREDITED` |
-| Time to `CREDITED` | One to two minutes, plus the provider's credit | Seconds, plus the provider's credit |
+| Time to `CREDITED` | A few minutes, plus the provider's credit | Seconds, plus the provider's credit |
 | Pollar-managed wallet | Paid at once | Paid at once |
 | Co-signed wallet | The user approves on the device | The user approves on the device |
-| External wallet | The connected wallet signs (Freighter, Albedo, Stellar Wallets Kit) | The connected wallet signs (Phantom, Solflare, Backpack) |
+| External wallet | The connected wallet signs | The connected wallet signs |
 
-`FAILED` carries `error` on either chain. A funding the user never signs fails after 24 hours. The minimum is 1 USDC.
+`FAILED` carries `error` on any route. A funding the user never signs fails after 24 hours. The minimum is 1 USDC.
 
 A funding from Stellar is refused with `SDK_CARDS_FUNDING_UNAVAILABLE` (`reason: bridge_low_gas`) while Pollar's bridge cannot pay its own gas; it is a temporary state Pollar is alerted about.
 
@@ -72,9 +74,9 @@ function CardButton() {
 
 `<CardModal>` walks the user through every step above. Under **Add funds**:
 
-- When the user holds a wallet on both Stellar and Solana, a **Network** picker chooses where the USDC comes from, and the available balance is the one on that chain.
-- Each funding shows its own steps ("Step 1 of 2" on Solana, "Step 1 of 4" on Stellar) until it is credited. The user can close the modal; the funding goes on.
-- **Prefer to send from another wallet?** shows the provider's deposit address for each network, for a transfer from an exchange or any other wallet.
+- A **Network** picker offers the chains with a route, where the user holds a wallet and the app enabled them, and the available balance is the one on that chain.
+- Each funding shows its own steps ("Step 1 of 2" on the provider's chain, "Step 1 of 4" crossing chains) until it is credited. The user can close the modal; the funding goes on.
+- **Prefer to send from another wallet?** shows the provider's deposit address on each chain it receives on, for a transfer from an exchange or any other wallet.
 
 The modal is translated to English, Spanish and Portuguese with the rest of the SDK. See [`<CardModal>`](https://docs.pollar.xyz/docs/sdk-reference/pollar-react).
 
@@ -102,10 +104,13 @@ const card = (await pollar.getCards())[0] ?? (await pollar.issueCard({ nickname:
 
 ### Fund the card
 
-`fundCard` takes the amount and, optionally, the chain. Without `chain` it funds from Stellar.
+`fundCard` takes the amount and the chain to pay from, one of those `getCardFundingRoutes()` lists.
 
 ```ts
-const outcome = await pollar.fundCard({ amount: '25', chain: 'SOLANA' });
+const routes = await pollar.getCardFundingRoutes();
+// [{ source: 'SOLANA', deposit: 'POLYGON', route: 'CCTP', wallet: '...' }]
+
+const outcome = await pollar.fundCard({ amount: '25', chain: routes[0].source });
 
 switch (outcome.status) {
   case 'ok':
@@ -124,7 +129,7 @@ What `fundCard` does depends on the wallet:
 
 - **Pollar-managed:** Pollar pays from the wallet and returns the funding.
 - **Co-signed:** the device votes on the payment and the call returns once it is sent.
-- **External:** the connected wallet is asked to sign the payment, and the SDK submits it.
+- **External:** the connected wallet is asked to sign the payment, and the SDK submits it. Crossing chains outside `<CardModal>`, register a signer with `registerRampSigningHandler` or pass `signBridgeStep`.
 
 Then follow the funding until the provider credits it:
 
@@ -137,7 +142,7 @@ while (!['CREDITED', 'FAILED'].includes(funding.status)) {
 const balance = await pollar.getCardBalance();
 ```
 
-`CardFunding.chain` is the chain it is paid from, and `sourceTxHash` the user's transfer on Solana. On Stellar, `stellarTxHash`, `burnTxHash` and `polygonMintTxHash` are the legs.
+`CardFunding.chain` is the chain it is paid from, `depositChain` the one the provider receives on, `route` how it gets there, and `sourceTxHash` the user's transaction. Crossing chains, `burnTxHash` and `polygonMintTxHash` are the legs, and `bridgeTransferId` the transfer behind it.
 
 ### Reveal the card details
 
@@ -159,7 +164,7 @@ Card calls throw a `PollarApiError`:
 | `SDK_CARDS_REQUIREMENT_REQUIRED` | A platform step is still open. The body names `requirementType` and `optionId` |
 | `SDK_CARDS_KYC_NOT_APPROVED` | Issuing or funding before the provider approved the user |
 | `SDK_CARDS_FUNDING_WALLET_NOT_READY` | The wallet cannot pay: `reason` is `insufficient_usdc`, `no_usdc_trustline` (Stellar), `balance_unavailable` (Solana), `payment_rejected` or `build_failed` |
-| `SDK_CARDS_FUNDING_UNAVAILABLE` | Funding cannot start now: `reason` is `bridge_not_available`, `bridge_low_gas`, `solana_not_available`, `no_solana_usdc_deposit_address`, `no_polygon_usdc_deposit_address` or `wallet_not_supported` |
+| `SDK_CARDS_FUNDING_UNAVAILABLE` | Funding cannot start now: `reason` is `no_route`, `bridge_not_available`, `bridge_low_gas`, `solana_not_available`, `no_solana_usdc_deposit_address`, `no_polygon_usdc_deposit_address` or `wallet_not_supported` |
 | `SDK_WALLET_REQUIRED` | The user has no wallet on the chain asked for |
 | `SDK_CARDS_PROVIDER_USER_TAKEN` | The email is already registered with the provider through another app |
 | `SDK_CARDS_PROVIDER_ERROR` | The provider did not answer |
