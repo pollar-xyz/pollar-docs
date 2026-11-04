@@ -9,7 +9,7 @@ Pollar can create wallets whose key it never holds. The key lives in a [Turnkey]
 | **Co-signed (2-of-2)** | The user's device and Pollar's approver, threshold 2 | Both: every signature needs the device's proposal and Pollar's vote | Refuse to vote on a transaction that breaks the app's policy. It cannot move funds alone |
 | **Self-custody (1-of-1)** | The user's device alone, threshold 1 | The device alone | Relay the signatures and decide which fees to sponsor. It cannot move, freeze or recover the funds |
 
-On **mainnet** every wallet Pollar creates is one of these two: Pollar does not custody end-user funds there, and an app cannot pick Pollar custody on a mainnet app. On **testnet** wallets stay in Pollar custody (see [Security Model](https://docs.pollar.xyz/docs/core-concepts/security-model)) unless Pollar has enabled Turnkey wallets on testnet for that app.
+On **Live** every wallet Pollar creates is one of these two: Pollar does not custody end-user funds there, and an app cannot pick Pollar custody on a live app. In **Test mode** wallets stay in Pollar custody (see [Security Model](https://docs.pollar.xyz/docs/core-concepts/security-model)) unless Pollar has enabled Turnkey wallets in Test mode for that app.
 
 ---
 

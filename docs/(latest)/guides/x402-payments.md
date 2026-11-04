@@ -18,13 +18,13 @@ In the dashboard, for the app whose API key you use:
 
    | Network | USDC contract |
    | --- | --- |
-   | Mainnet | `CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75` |
-   | Testnet | `CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA` |
+   | Live (Stellar mainnet) | `CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75` |
+   | Test mode (Stellar testnet) | `CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA` |
 
 2. **Signature validity window** (same page). x402 asks the signature to last the `maxTimeoutSeconds` the server sends in its `402`, converted to ledgers (about 5 seconds each). It must fit in the app's window, 120 ledgers by default and 300 at most, or the signature is refused with `SOROBAN_AUTH_EXPIRATION_TOO_LONG`.
 3. **Wallets > [Tokens & Trustlines](https://docs.pollar.xyz/docs/operator-guide/wallets/tokens-trustlines).** Enable USDC, so your users' wallets hold the trustline they pay from.
 4. **Wallets > Settings > Signature confirmation.** An x402 payment is a signature like any other, so it follows this setting: under **Always ask** the user confirms each payment in `<ConfirmModal>`, which shows the destination, amount and asset. An agent that pays with no one in front of it sets **Never ask**, or **Ask, then remember for a while** with a USD limit, so payments sign without asking until the limit is spent. With nothing to show the prompt (a headless client under **Always ask**), the payment fails with `SDK_CONFIRMATION_UNAVAILABLE`.
-5. **Mainnet.** A mainnet app has to be approved first; see the [Mainnet Checklist](https://docs.pollar.xyz/docs/guides/mainnet-checklist). Your users need USDC on the wallet to pay.
+5. **Going live.** A live app has to be approved first; see the [Go-live checklist](https://docs.pollar.xyz/docs/guides/mainnet-checklist). Your users need USDC on the wallet to pay.
 
 ---
 
@@ -79,8 +79,8 @@ The first request comes back `402`; `payFetch` reads the requirements, has the w
 
 | Network | Endpoint |
 | --- | --- |
-| Testnet | `https://nirium-agent.fly.dev/api/v1/premium/market` |
-| Mainnet | `https://nirium-agent-mainnet.fly.dev/api/v1/premium/market` |
+| Test mode (Stellar testnet) | `https://nirium-agent.fly.dev/api/v1/premium/market` |
+| Live (Stellar mainnet) | `https://nirium-agent-mainnet.fly.dev/api/v1/premium/market` |
 
 The [Nirium example app](https://github.com/pollar-xyz/pollar-apps/tree/main/apps/adapters/nirium) is a complete Pollar app that pays these endpoints ([live demo](https://nirium-pollar-x402-demo.vercel.app)). It uses [`nirium-pollar-adapter`](https://www.npmjs.com/package/nirium-pollar-adapter), whose `createPollarSigner(pollar)` does what `pollar.stellar.authEntrySigner()` does, for apps on an SDK version without it.
 

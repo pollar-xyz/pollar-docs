@@ -10,16 +10,18 @@ Pollar issues two types of keys for each app. Understanding the difference is im
 
 ## Key types
 
-| Type        | Prefix         | Network | Use                                     |
-| ----------- | -------------- | ------- | --------------------------------------- |
-| Publishable | `pub_testnet_` | Testnet | Frontend only (safe to expose)          |
-| Publishable | `pub_mainnet_` | Mainnet | Frontend only (safe to expose)          |
-| Secret      | `sec_testnet_` | Testnet | Backend only (never expose client-side) |
-| Secret      | `sec_mainnet_` | Mainnet | Backend only (never expose client-side) |
+| Type        | Prefix         | Network   | Use                                     |
+| ----------- | -------------- | --------- | --------------------------------------- |
+| Publishable | `pub_testnet_` | Test mode | Frontend only (safe to expose)          |
+| Publishable | `pub_mainnet_` | Live      | Frontend only (safe to expose)          |
+| Secret      | `sec_testnet_` | Test mode | Backend only (never expose client-side) |
+| Secret      | `sec_mainnet_` | Live      | Backend only (never expose client-side) |
 
 The **publishable key** is passed to `@pollar/core` or `@pollar/react` in your frontend. The **secret key** stays on your backend and calls the [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api), for privileged operations like funding deferred wallets with `POST /v3/wallets/fund`.
 
-A key belongs to one app, and its network is the app's: a testnet app issues `_testnet_` keys and a mainnet app issues `_mainnet_` keys. To get mainnet keys, request mainnet for your app and create the keys on its mainnet counterpart.
+A key belongs to one app, and its network is the app's: a Test mode app issues `_testnet_` keys and a live app issues `_mainnet_` keys. To get live keys, request to go live for your app and create the keys on its live counterpart.
+
+Test mode is what the API and SDK call `testnet`. Live is what they call `mainnet`. That is why key prefixes use those words. See [Test mode vs Live](https://docs.pollar.xyz/docs/operator-guide/dashboard-overview#test-mode-vs-live) for the chain cluster each one uses.
 
 > For details on Stellar networks (Testnet vs Mainnet) see the [Stellar Networks docs](https://developers.stellar.org/docs/networks).
 
@@ -43,7 +45,7 @@ Start with `pub_testnet_` for development. Switch to `pub_mainnet_` when ready f
 
 ## Rate limits
 
-Limits are per minute and the same on testnet and mainnet:
+Limits are per minute and the same in Test mode and on Live:
 
 | API | Limit |
 |---|---|
@@ -88,6 +90,6 @@ POLLAR_SECRET_KEY=sec_testnet_xxxxxxxxxxxxxxxxxxxx
 
 - The secret key must never appear in client-side code, browser bundles, or public repositories
 
-- For mainnet, use build-time environment injection or a backend proxy: never hardcode `pub_mainnet_` in source
+- For Live, use build-time environment injection or a backend proxy: never hardcode `pub_mainnet_` in source
 
 - Delete a compromised key immediately from **Dashboard > Build > API Keys** and create a new one

@@ -10,13 +10,13 @@ This page explains who holds the key of each kind of wallet, where Pollar-manage
 
 | Model | Who holds the key | Where it applies |
 |---|---|---|
-| **Pollar-managed** | Pollar's wallet services, encrypted at rest | Testnet wallets, and mainnet wallets created before the app moved to Turnkey |
-| **Co-signed (Turnkey 2-of-2)** | A Turnkey enclave; every signature needs the user's device and Pollar's vote. See [Co-signed and Self-custody Wallets](https://docs.pollar.xyz/docs/core-concepts/co-signed-wallets) | Mainnet |
-| **Self-custody (Turnkey 1-of-1)** | A Turnkey enclave; the user's device alone signs. Pollar cannot move, freeze or recover the funds | Mainnet |
+| **Pollar-managed** | Pollar's wallet services, encrypted at rest | Test mode wallets, and live wallets created before the app moved to Turnkey |
+| **Co-signed (Turnkey 2-of-2)** | A Turnkey enclave; every signature needs the user's device and Pollar's vote. See [Co-signed and Self-custody Wallets](https://docs.pollar.xyz/docs/core-concepts/co-signed-wallets) | Live |
+| **Self-custody (Turnkey 1-of-1)** | A Turnkey enclave; the user's device alone signs. Pollar cannot move, freeze or recover the funds | Live |
 | **External wallet** | The user's own wallet (Freighter, a Solana wallet, your own adapter). Pollar never sees the key | Any network |
 | **Smart wallet (passkey)** | A Soroban contract account whose signer is the user's passkey. See [Smart Wallets](https://docs.pollar.xyz/docs/smart-wallets/overview) | Stellar |
 
-On mainnet, every wallet Pollar creates for a user is a Turnkey wallet: Pollar does not custody end-user funds there, and the dashboard does not offer Pollar custody on a mainnet app.
+On Live, every wallet Pollar creates for a user is a Turnkey wallet: Pollar does not custody end-user funds there, and the dashboard does not offer Pollar custody on a live app.
 
 ---
 

@@ -24,9 +24,9 @@ The Stellar account that sponsors the XLM reserve of new user wallets (CAP-33) a
 - its balance, split into **Available** and **Locked in reserve** (Stellar locks a minimum per trustline, offer and sponsorship the account pays for; only the available amount can be spent)
 - an estimate of how many more wallets the available XLM can fund
 - its public key, with copy and explorer links
-- **Fund on testnet** (testnet apps only): funds it from the Stellar testnet faucet
+- **Fund in test mode** (Test mode apps only): funds it from the Stellar testnet faucet
 
-To top it up on mainnet, copy the public key and send XLM to it from any Stellar wallet or exchange. A wallet that is created but not yet on Stellar needs at least 2 XLM sent to it to activate.
+To top it up on Live, copy the public key and send XLM to it from any Stellar wallet or exchange. A wallet that is created but not yet on Stellar needs at least 2 XLM sent to it to activate.
 
 If the app has no Stellar wallet yet, the tab offers **Create wallet**. By default one app wallet covers funding, gas and distribution. An app that Pollar has set up with one wallet per role shows its funding wallet here, its gas wallet under [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship) and its distribution wallet under [Token Distribution](https://docs.pollar.xyz/docs/operator-guide/treasury/token-distribution).
 
@@ -74,7 +74,7 @@ Solana has no sponsored reserve: a new wallet holds only the SOL you give it her
 
 After creation, every Solana wallet is topped up from the GAS wallet whenever it falls below the floor; that policy is on the Solana tab of [Sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship). Keep the GAS wallet funded: when it is empty no user of this app can sign on Solana.
 
-On a testnet app the GAS wallet lives on **devnet**; the balance modal in the SDK offers your users the devnet SOL faucet and Circle's USDC faucet.
+On a Test mode app the GAS wallet lives on **devnet**; the balance modal in the SDK offers your users the devnet SOL faucet and Circle's USDC faucet.
 
 ---
 

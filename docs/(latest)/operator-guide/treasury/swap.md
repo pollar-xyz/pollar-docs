@@ -2,9 +2,9 @@
 title: "Swap"
 ---
 
-**Dashboard > Treasury > Swap** · Chains: Stellar, Solana (mainnet)
+**Dashboard > Treasury > Swap** · Chains: Stellar, Solana (Live)
 
-Choose which swap venues your users can use to exchange one asset for another. On Stellar the venues are SDEX, Soroswap and Aquarius; on Solana they are the Jupiter and Titan aggregators, on a mainnet app only. See [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support).
+Choose which swap venues your users can use to exchange one asset for another. On Stellar the venues are SDEX, Soroswap and Aquarius; on Solana they are the Jupiter and Titan aggregators, on a live app only. See [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support).
 
 ---
 

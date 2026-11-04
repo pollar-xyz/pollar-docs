@@ -1,18 +1,18 @@
 ---
-title: "Mainnet Checklist"
+title: "Go-live checklist"
 ---
 
-Every app starts on testnet. Mainnet access is requested from the dashboard and approved by Pollar; the approval creates the app's mainnet counterpart in the same project. Before you request it, and before you send real users to it, verify every item below.
+Every app starts in Test mode. Going live is requested from the dashboard and approved by Pollar; the approval creates the app's live counterpart in the same project. Before you request it, and before you send real users to it, verify every item below.
 
 ---
 
-## Mainnet access
+## Live access
 
-- [ ] Requested mainnet access from **Build > Settings > Request Mainnet access** (or the network control in the top bar). Only the app's owner or an admin can request it.
+- [ ] Requested to go live from **Build > Settings > Go live** (or the network control in the top bar). Only the app's owner or an admin can request it.
 
-- [ ] The request is approved, and the mainnet app appears in the project. A rejected request carries Pollar's review note; fix what it says and resubmit.
+- [ ] The request is approved, and the live app appears in the project. A rejected request carries Pollar's review note; fix what it says and resubmit.
 
-- [ ] Generated `pub_mainnet_` and `sec_mainnet_` keys in the mainnet app.
+- [ ] Generated `pub_mainnet_` and `sec_mainnet_` keys in the live app.
 
 ---
 
@@ -20,11 +20,11 @@ Every app starts on testnet. Mainnet access is requested from the dashboard and 
 
 - [ ] Added your production domain(s) in **Build > Domains**
 
-- [ ] **Wallets > Wallet settings > Wallet custody** set to **Co-signed with Turnkey (2-of-2)** or **Self-custody with Turnkey (1-of-1)**. Pollar custody is not available on mainnet. See [Co-signed and Self-custody Wallets](https://docs.pollar.xyz/docs/core-concepts/co-signed-wallets).
+- [ ] **Wallets > Wallet settings > Wallet custody** set to **Co-signed with Turnkey (2-of-2)** or **Self-custody with Turnkey (1-of-1)**. Pollar custody is not available on Live. See [Co-signed and Self-custody Wallets](https://docs.pollar.xyz/docs/core-concepts/co-signed-wallets).
 
 - [ ] **Wallets > Wallet settings > Signature confirmation** set to the policy you want (always ask, ask once for a window, or never ask). Ramp legs always ask.
 
-- [ ] Funding mode configured for your use case. In Deferred mode on mainnet, `POST /v3/wallets/fund` opens each Turnkey wallet's account creation and the user approves it in their next session (`202`). See [Funding Modes](https://docs.pollar.xyz/docs/core-concepts/funding-modes).
+- [ ] Funding mode configured for your use case. In Deferred mode on Live, `POST /v3/wallets/fund` opens each Turnkey wallet's account creation and the user approves it in their next session (`202`). See [Funding Modes](https://docs.pollar.xyz/docs/core-concepts/funding-modes).
 
 - [ ] At least one asset configured in **Wallets > Tokens & Trustlines**
 
@@ -63,7 +63,7 @@ Check which [billing model](https://docs.pollar.xyz/docs/core-concepts/credits) 
 
 - [ ] `sec_mainnet_` key set in your backend production environment
 
-- [ ] No testnet keys present in production environment variables
+- [ ] No Test mode keys present in production environment variables
 
 - [ ] Keys not committed to version control
 
@@ -107,7 +107,7 @@ Check which [billing model](https://docs.pollar.xyz/docs/core-concepts/credits) 
 
 ## Testing
 
-- [ ] Full onboarding flow tested end-to-end on mainnet with a real user account, including approving the wallet setup and adding a recovery method
+- [ ] Full onboarding flow tested end-to-end on Live with a real user account, including approving the wallet setup and adding a recovery method
 
 - [ ] At least one real USDC payment sent and confirmed
 

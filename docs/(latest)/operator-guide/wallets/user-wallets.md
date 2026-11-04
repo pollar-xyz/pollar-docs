@@ -22,7 +22,7 @@ Every wallet of your app, on every chain. A user has one wallet per enabled chai
 
 | Column | Description |
 |---|---|
-| **Public key** | The wallet's address with copy and explorer links (stellar.expert for Stellar, Solscan for Solana, devnet on a testnet app, Polygonscan for Polygon, Amoy on testnet), and its type: **SDK User**, or the application wallet's role (for example "Funding wallet"). A user's wallet also links to its account in [Accounts](https://docs.pollar.xyz/docs/operator-guide/users/accounts). |
+| **Public key** | The wallet's address with copy and explorer links (stellar.expert for Stellar, Solscan for Solana, devnet on a Test mode app, Polygonscan for Polygon, Amoy in Test mode), and its type: **SDK User**, or the application wallet's role (for example "Funding wallet"). A user's wallet also links to its account in [Accounts](https://docs.pollar.xyz/docs/operator-guide/users/accounts). |
 | **User** | The user's name or email |
 | **Network** | Stellar, Solana or Polygon. A **Rail** badge marks a rail wallet (below). |
 | **Custody** | **Custodial**, **Co-signed (Turnkey)**, **External** (the user's own wallet) or **Smart wallet** (passkey) |

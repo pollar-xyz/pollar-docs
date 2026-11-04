@@ -10,7 +10,7 @@ Destructive but reversible actions for the app. Only the **owner or an admin** s
 
 ## Archive application
 
-Archiving an app **disables all of its API keys and SDK access entirely**: every SDK call behaves as if the key never existed. It hides the app from collaborators and locks its settings (members, mainnet requests) until it is restored. No data is deleted, and existing user wallets are unaffected: they exist independently on-chain.
+Archiving an app **disables all of its API keys and SDK access entirely**: every SDK call behaves as if the key never existed. It hides the app from collaborators and locks its settings (members, go-live requests) until it is restored. No data is deleted, and existing user wallets are unaffected: they exist independently on-chain.
 
 Archiving is confirmed with an explicit prompt. Once archived, the app shows an **Archived** badge and a notice that its keys and SDK access are disabled.
 

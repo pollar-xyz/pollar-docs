@@ -78,7 +78,7 @@ The goal is that a passkey smart wallet is a login choice, not a rewrite. The di
 
 ## Cost considerations
 
-On testnet, rent and fees are effectively free. On mainnet, each smart wallet carries a small recurring cost to keep its storage TTL extended, which replaces the one-time XLM reserve of the classic model. Pollar's sponsor account covers it automatically; account for it when estimating per-user costs at scale.
+In Test mode, rent and fees are effectively free. On Live, each smart wallet carries a small recurring cost to keep its storage TTL extended, which replaces the one-time XLM reserve of the classic model. Pollar's sponsor account covers it automatically; account for it when estimating per-user costs at scale.
 
 ## References
 

@@ -17,7 +17,7 @@ These pages document `@pollar/*` **0.12**, SDK API v3 and Server API v3. The ref
 | <br />                                            | <br />                                          |
 | ------------------------------------------------- | ----------------------------------------------- |
 | [Overview](https://docs.pollar.xyz/docs/getting-started/overview)       | What Pollar is and the problem it solves        |
-| [API Keys](https://docs.pollar.xyz/docs/getting-started/api-keys)       | Publishable vs secret keys, testnet vs mainnet  |
+| [API Keys](https://docs.pollar.xyz/docs/getting-started/api-keys)       | Publishable vs secret keys, Test mode vs Live   |
 | [Quickstart](https://docs.pollar.xyz/docs/getting-started/quickstart)   | Install, configure, and send your first payment |
 | [Example App](https://docs.pollar.xyz/docs/getting-started/example-app) | Clone and run a full working integration        |
 
@@ -162,4 +162,4 @@ The sections below mirror the Dashboard sidebar: **Overview, Build, Users, Walle
 | [Payments UI](https://docs.pollar.xyz/docs/guides/payments-ui)                 | Send, receive, and history components, on Stellar and Solana |
 | [Swaps](https://docs.pollar.xyz/docs/guides/swaps-guide)                       | Asset swaps: pre-built modal or headless  |
 | [Custom Wallet Adapter](https://docs.pollar.xyz/docs/guides/custom-wallet-adapter) | Bring your own signer                 |
-| [Mainnet Checklist](https://docs.pollar.xyz/docs/guides/mainnet-checklist)     | Everything to verify before going live    |
+| [Go-live checklist](https://docs.pollar.xyz/docs/guides/mainnet-checklist)     | Everything to verify before going live    |

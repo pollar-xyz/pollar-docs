@@ -4,7 +4,7 @@ title: "@pollar/react"
 
 React hooks and pre-built UI components for Pollar, for Stellar and Solana applications. Built on top of `@pollar/core`.
 
-The modals are multichain: Send, Receive, Wallet balance, Enabled assets and Transaction history carry a network picker on an app with more than one chain, and each scopes its rows to the selected chain (Solana rows link to explorer.solana.com and show fees in lamports). Swap offers Stellar and, on a mainnet app with Jupiter or Titan enabled, Solana, with a Network selector when the app has both. Earn is a Stellar modal. See [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support).
+The modals are multichain: Send, Receive, Wallet balance, Enabled assets and Transaction history carry a network picker on an app with more than one chain, and each scopes its rows to the selected chain (Solana rows link to explorer.solana.com and show fees in lamports). Swap offers Stellar and, on a live app with Jupiter or Titan enabled, Solana, with a Network selector when the app has both. Earn is a Stellar modal. See [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support).
 
 **Version:** `0.12.0`. It requires `@pollar/core@^0.12.0` and talks to SDK API v3. For 0.11.x, see the [0.11 reference](https://docs.pollar.xyz/docs/v0.11/pollar-react).
 
@@ -268,7 +268,7 @@ The transaction modal opens automatically when `buildTx` is called. Each signing
 | `getSwapTokens`  | `() => Promise<SwapToken[]>`                                    | Curated "buy" token catalog.                             |
 | `getSwapQuote`   | `(params: SwapQuoteParams) => Promise<SwapQuote[]>`            | Quotes ranked best-first.                                |
 | `swap`           | `(quote: SwapQuote, opts?: { autoTrustline? }) => Promise<SubmitOutcome>` | Executes a quote; drives `tx`.                  |
-| `getSolanaSwapConfig` | `() => Promise<SolanaSwapVenue[]>`                         | Solana venues this app exposes (Jupiter, Titan; mainnet). |
+| `getSolanaSwapConfig` | `() => Promise<SolanaSwapVenue[]>`                         | Solana venues this app exposes (Jupiter, Titan; Live).   |
 | `getSolanaSwapQuote`  | `(params: SolanaSwapQuoteParams) => Promise<SolanaSwapQuote[]>` | Solana quotes in base units, best first.            |
 | `swapSolana`          | `(quote: SolanaSwapQuote, opts?: { slippageBps? }) => Promise<SubmitOutcome>` | Runs a Solana swap; drives `tx`.     |
 | `openSwapModal`  | `(options?: SwapModalOptions) => void`                         | Opens the swap modal. On an app that offers swaps on Stellar and Solana it shows a Network selector. See [Modal options](#modal-options). |
@@ -370,7 +370,7 @@ All Pollar modals are mounted inside `<PollarProvider>` and controlled programma
 | `openSessionsModal()`            | Opens the active-sessions modal.        |
 | `openDistributionRulesModal()`   | Opens the distribution-rules modal.     |
 | `openCardModal(options?)`        | Opens the Cards modal: sign-up, identity verification, issuing, the card and its activity. |
-| `openBridgeModal(options?)`      | Opens the modal that moves USDC between the user's wallets on Stellar, Solana and Polygon (mainnet). |
+| `openBridgeModal(options?)`      | Opens the modal that moves USDC between the user's wallets on Stellar, Solana and Polygon (Live). |
 | `openCosignModal()`              | Opens the co-sign approval prompt.      |
 | `openRecoveryModal()`            | Opens the wallet recovery modal.        |
 
@@ -666,7 +666,7 @@ Headless: the card methods on `PollarClient` (see [`@pollar/core`](https://docs.
 
 ### `<BridgeModal>`
 
-Moves USDC between the user's own wallets on Stellar, Solana and Polygon, on mainnet: the directions the user holds wallets for, the amount against the USDC available on the source chain, a quote with what arrives, Pollar's fee to the app and the estimated time, and the move followed step by step (leaves the source, confirmed by Circle, arrives on the destination) with a link to each transaction. An external wallet's step shows **Authorize** and the connected Stellar or Solana wallet signs it; a co-signed wallet's opens the co-sign approval. See the [Bridge guide](https://docs.pollar.xyz/docs/guides/bridge-guide).
+Moves USDC between the user's own wallets on Stellar, Solana and Polygon, on Live: the directions the user holds wallets for, the amount against the USDC available on the source chain, a quote with what arrives, Pollar's fee to the app and the estimated time, and the move followed step by step (leaves the source, confirmed by Circle, arrives on the destination) with a link to each transaction. An external wallet's step shows **Authorize** and the connected Stellar or Solana wallet signs it; a co-signed wallet's opens the co-sign approval. See the [Bridge guide](https://docs.pollar.xyz/docs/guides/bridge-guide).
 
 ```tsx
 import { BridgeModal } from '@pollar/react';

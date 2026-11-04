@@ -2,7 +2,7 @@
 title: "USDC bridges"
 ---
 
-**Dashboard > Treasury > USDC bridges** · Chains: Stellar, Solana, Polygon (mainnet)
+**Dashboard > Treasury > USDC bridges** · Chains: Stellar, Solana, Polygon (Live)
 
 Your users moving USDC between their own wallets on Stellar, Solana and Polygon. Each move goes through Circle's CCTP: the USDC is burned on the source chain, Circle attests the burn in a few minutes, and your app's network fee wallet sends the mint on the destination. To offer it, see the [Bridge guide](https://docs.pollar.xyz/docs/guides/bridge-guide).
 

@@ -338,10 +338,10 @@ export async function swapXlmToUsdc(amount: string) {
 
 ---
 
-## Going to mainnet
+## Going live
 
-- Your mainnet app is a separate app with its own API key. Enable venues and buy tokens again in **Treasury > Swap** of the mainnet app.
+- Your live app is a separate app with its own API key. Enable venues and buy tokens again in **Treasury > Swap** of the live app.
 - Use mainnet asset issuers: testnet issuers are not valid on mainnet.
-- Mainnet wallets are not funded by friendbot: make sure users hold XLM for fees and trustline reserves.
+- Live wallets are not funded by friendbot: make sure users hold XLM for fees and trustline reserves.
 
-See the [Mainnet Checklist](https://docs.pollar.xyz/docs/guides/mainnet-checklist).
+See the [Go-live checklist](https://docs.pollar.xyz/docs/guides/mainnet-checklist).

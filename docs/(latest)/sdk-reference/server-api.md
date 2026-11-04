@@ -311,11 +311,11 @@ There is no server-side equivalent of the SDK's `POST /orders/{id}/check`: read 
 
 ## Bridge
 
-Move a user's USDC between their own wallets on Stellar, Solana and Polygon, through Circle's CCTP, on a mainnet app: the routes and answers of the SDK's `/v3/bridge`, for the user your backend names in `x-pollar-external-user-id` (the same user as the server-side ramps). See the [Bridge guide](https://docs.pollar.xyz/docs/guides/bridge-guide) for how a move runs.
+Move a user's USDC between their own wallets on Stellar, Solana and Polygon, through Circle's CCTP, on a live app: the routes and answers of the SDK's `/v3/bridge`, for the user your backend names in `x-pollar-external-user-id` (the same user as the server-side ramps). See the [Bridge guide](https://docs.pollar.xyz/docs/guides/bridge-guide) for how a move runs.
 
 | Route | What it does |
 |---|---|
-| `GET /v3/bridge/config` | The directions the user can move in now: both chains on the app, a wallet on each. `available: false` on testnet |
+| `GET /v3/bridge/config` | The directions the user can move in now: both chains on the app, a wallet on each. `available: false` in Test mode |
 | `POST /v3/bridge/quote` | `{ fromChain, toChain, amount }`: what arrives, Pollar's fee to the app, and how the source wallet signs (`signing`) |
 | `POST /v3/bridge/transfers` | `{ fromChain, toChain, amount, idempotencyKey? }`: starts the move and its first step. A retry with the same key answers the transfer it started (`200`) |
 | `GET /v3/bridge/transfers` | The user's latest 20 moves, newest first |

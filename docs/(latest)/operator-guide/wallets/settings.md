@@ -10,7 +10,7 @@ The chains your app serves, who holds your users' wallet keys, when their wallet
 
 ## Enabled chains
 
-Your users get **one wallet per enabled chain**. Chains are independent of the network: on a testnet app Polygon means **Amoy** and Solana means **devnet**; on a mainnet app they are Polygon mainnet and Solana mainnet-beta. The network follows the app (see [Settings](https://docs.pollar.xyz/docs/operator-guide/build/settings)).
+Your users get **one wallet per enabled chain**. Chains are independent of the network: on a Test mode app Polygon means **Amoy** and Solana means **devnet**; on a live app they are Polygon mainnet and Solana mainnet-beta. The network follows the app (see [Settings](https://docs.pollar.xyz/docs/operator-guide/build/settings)).
 
 | Chain | Fees | What your treasury holds |
 |---|---|---|
@@ -46,13 +46,13 @@ Who holds the key of the wallets created from now on. Wallets that already exist
 
 | Mode | What happens | Offered on |
 | --- | --- | --- |
-| **Pollar** | Pollar keeps the encrypted key and signs on behalf of the user. | Testnet only |
-| **Co-signed with Turnkey (2-of-2)** | Each user gets a Turnkey sub-organization where their device and Pollar must both approve every signature. Neither side can move funds alone, and the user can export the wallet without Pollar. | Testnet and mainnet |
-| **Self-custody with Turnkey (1-of-1)** | Each user gets a Turnkey sub-organization where only their device signs. Pollar cannot move, freeze or recover the funds: it only relays the signatures and decides which fees to sponsor. A user who loses every recovery method loses the wallet. | Testnet and mainnet |
+| **Pollar** | Pollar keeps the encrypted key and signs on behalf of the user. | Test mode only |
+| **Co-signed with Turnkey (2-of-2)** | Each user gets a Turnkey sub-organization where their device and Pollar must both approve every signature. Neither side can move funds alone, and the user can export the wallet without Pollar. | Test mode and Live |
+| **Self-custody with Turnkey (1-of-1)** | Each user gets a Turnkey sub-organization where only their device signs. Pollar cannot move, freeze or recover the funds: it only relays the signatures and decides which fees to sponsor. A user who loses every recovery method loses the wallet. | Test mode and Live |
 
-- **Pollar custody is not offered on mainnet.** A mainnet app that still has it keeps it until it picks another mode, and once it does it cannot come back.
+- **Pollar custody is not offered on Live.** A live app that still has it keeps it until it picks another mode, and once it does it cannot come back.
 - **Letting each user choose** is not offered either. An app that still has it sees it as its current mode and can only leave it.
-- On a **testnet** app the Turnkey modes can be saved, but its wallets stay in Pollar custody unless Pollar has enabled Turnkey wallets on testnet for testing. The card says so.
+- On a **Test mode** app the Turnkey modes can be saved, but its wallets stay in Pollar custody unless Pollar has enabled Turnkey wallets in Test mode. The card says so.
 - The Turnkey modes need an SDK that registers the device key and shows the approval prompt (`@pollar/core` 0.12.0 or later). Users on an older SDK cannot create a wallet until they upgrade.
 
 See [Co-signed Wallets](https://docs.pollar.xyz/docs/core-concepts/co-signed-wallets) for how the votes work, how users set up recovery, and what the device checks before it signs.

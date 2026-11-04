@@ -31,7 +31,7 @@ A token grants `resource:action` permissions. A tool fails with `403 PAT_INSUFFI
 |---|---|
 | `applications:read` / `:write` | Read apps, their metrics, credits, usage, statements and deposit addresses; create apps; edit allowed domains and redirect URIs |
 | `api_keys:read` / `:write` | List API keys; create and revoke keys |
-| `wallets:read` / `:write` | Read wallets and balances; fund testnet wallets |
+| `wallets:read` / `:write` | Read wallets and balances; fund Test mode wallets |
 | `assets:read` / `:write` | Read assets; enable assets |
 | `transactions:read` | Read transaction history |
 | `users:read` | Read SDK end-users |
@@ -81,7 +81,7 @@ There is no tool that withdraws from the distribution vault: a withdrawal needs 
 | `create_distribution_rule` | `id`, `assetId`, `name`, `amountPerUser`, `maxClaims`, `period`, `globalCap?`, `validFrom?`, `validUntil?`, `enabled?` | `distribution:write` |
 | `fund_testnet_wallet` | `id`, `publicKey` | `wallets:write` |
 
-`create_api_key` returns the full key once. `fund_testnet_wallet` tops up a wallet through the Stellar **testnet** friendbot, typically the app's global (or funding) wallet; get the public key from `get_application_wallets` first. It has no effect on mainnet apps.
+`create_api_key` returns the full key once. `fund_testnet_wallet` tops up a wallet through the Stellar **testnet** friendbot, typically the app's global (or funding) wallet; get the public key from `get_application_wallets` first. It has no effect on live apps.
 
 ### Edit
 
@@ -104,7 +104,7 @@ These combine several reads (and, where noted, a conditional write) into one ans
 | Tool | Arguments | Does |
 |---|---|---|
 | `get_application_wallet_by_role` | `id`, `role?` | Resolve a wallet by role (GLOBAL / FUNDING / GAS / DISTRIBUTION) and report whether it is funded |
-| `ensure_wallet_funded` | `id`, `role?` | Fund the role's wallet via the testnet friendbot **only if** it is not already funded (mainnet wallets are reported, not funded) |
+| `ensure_wallet_funded` | `id`, `role?` | Fund the role's wallet via the testnet friendbot **only if** it is not already funded (live wallets are reported, not funded) |
 | `check_application_readiness` | `id` | Evaluate the dashboard "Get started" config steps (API keys, domains, OAuth redirect URIs, app-wallet funding, trustlines) and report whether the app is ready to use. A step shows `done: null` when the token lacks the scope to read it |
 
 `role` defaults to `GLOBAL`; use `FUNDING` / `GAS` / `DISTRIBUTION` once an app has split wallets. "Funded" means the wallet's account exists on Stellar; for exact balances call `get_wallet_balances`.
@@ -150,7 +150,7 @@ The token's scopes apply the same way as for the tools.
 
 Clients that support MCP tool annotations use them to decide when to prompt:
 
-- **Reads and creates run automatically** (including `fund_testnet_wallet` and `ensure_wallet_funded`, which are harmless idempotent testnet top-ups).
+- **Reads and creates run automatically** (including `fund_testnet_wallet` and `ensure_wallet_funded`, which are harmless idempotent Test mode top-ups).
 - **Edits that overwrite or remove existing state** (`update_application_domains`, `update_application_redirect_uris` and `revoke_api_key`) **prompt for confirmation** before running.
 
 ---

@@ -28,7 +28,7 @@ Pages marked **Soon** are not live yet. A few groups still in testing open only 
 
 ## Live demo
 
-The live demo runs with Pollar's own demo keys on testnet and mainnet. To try it against your own app, pass your publishable key in the URL:
+The live demo runs with Pollar's own demo keys, in both Test mode and Live. To try it against your own app, pass your publishable key in the URL:
 
 ```
 https://demo.pollar.xyz/?apiKey=pub_testnet_xxxxxxxxxxxxxxxxxxxx

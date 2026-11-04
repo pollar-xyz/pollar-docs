@@ -4,7 +4,7 @@ title: "Chain Support"
 
 Pollar is multichain. An app enables the chains it wants under **Wallets > Wallet settings > Enabled chains** ([Wallet settings](https://docs.pollar.xyz/docs/operator-guide/wallets/settings)), and every user gets **one wallet per enabled chain** from the same login. This page is the single place that says what works where.
 
-**Solana is fully supported** for the product's core: sign-in, Pollar-managed, co-signed and self-custody wallets, SOL and SPL token balances, sponsored transfers, history and, on mainnet, swaps through Jupiter and Titan. Stellar additionally carries earn, token distribution and the Soroban policies. Polygon has wallets, balances, token sends and ramps. Ramps reach Solana through a Circle CCTP bridge leg.
+**Solana is fully supported** for the product's core: sign-in, Pollar-managed, co-signed and self-custody wallets, SOL and SPL token balances, sponsored transfers, history and, on Live, swaps through Jupiter and Titan. Stellar additionally carries earn, token distribution and the Soroban policies. Polygon has wallets, balances, token sends and ramps. Ramps reach Solana through a Circle CCTP bridge leg.
 
 ---
 
@@ -16,10 +16,10 @@ Legend: **Yes** = works today on that chain. **n/a** = the chain has no such con
 
 | Feature | Stellar | Solana | Polygon | Where |
 |---|:---:|:---:|:---:|---|
-| Social / email login creates a wallet (Pollar-managed on testnet, Turnkey on mainnet) | Yes | Yes | Yes | `@pollar/core` `login()`; one wallet per chain in `getWallets()` |
+| Social / email login creates a wallet (Pollar-managed in Test mode, Turnkey on Live) | Yes | Yes | Yes | `@pollar/core` `login()`; one wallet per chain in `getWallets()` |
 | Sign in with the user's own wallet | Yes (SEP-10: Freighter, Albedo, Stellar Wallets Kit) | Yes (Sign In With Solana: Phantom, Solflare, Backpack) | No | [Wallet Adapters](https://docs.pollar.xyz/docs/sdk-reference/wallet-adapters) |
 | Passkey smart wallets (C-address) | Yes | n/a | n/a | [Smart Wallets](https://docs.pollar.xyz/docs/smart-wallets/overview) |
-| Turnkey wallets: co-signed 2-of-2 or self-custody 1-of-1 (mainnet) | Yes | Yes | Yes | [Co-signed and Self-custody Wallets](https://docs.pollar.xyz/docs/core-concepts/co-signed-wallets) |
+| Turnkey wallets: co-signed 2-of-2 or self-custody 1-of-1 (Live) | Yes | Yes | Yes | [Co-signed and Self-custody Wallets](https://docs.pollar.xyz/docs/core-concepts/co-signed-wallets) |
 | Wallet recovery (passkey, email code, another device) | Yes | Yes | Yes | same; one Turnkey wallet holds every chain |
 | Wallet creation timing (at login / on demand / never) | Yes | Yes | Yes | [Wallet settings](https://docs.pollar.xyz/docs/operator-guide/wallets/settings) |
 | Wallet-less sessions (authentication only) | Yes | Yes | Yes | [Wallet Creation](https://docs.pollar.xyz/docs/core-concepts/wallet-creation) |
@@ -63,8 +63,8 @@ Legend: **Yes** = works today on that chain. **n/a** = the chain has no such con
 
 | Feature | Stellar | Solana | Polygon | Where |
 |---|:---:|:---:|:---:|---|
-| Swap | Yes (SDEX, Soroswap, Aquarius) | Yes, mainnet only (Jupiter, Titan) | No | [Swap](https://docs.pollar.xyz/docs/operator-guide/treasury/swap) |
-| Move USDC between the user's wallets (Circle CCTP, every direction) | Yes, mainnet | Yes, mainnet | Yes, mainnet | [Bridge guide](https://docs.pollar.xyz/docs/guides/bridge-guide) |
+| Swap | Yes (SDEX, Soroswap, Aquarius) | Yes, Live only (Jupiter, Titan) | No | [Swap](https://docs.pollar.xyz/docs/operator-guide/treasury/swap) |
+| Move USDC between the user's wallets (Circle CCTP, every direction) | Yes, Live | Yes, Live | Yes, Live | [Bridge guide](https://docs.pollar.xyz/docs/guides/bridge-guide) |
 | Earn (DeFindex, Blend) | Yes | No | No | [Earn](https://docs.pollar.xyz/docs/operator-guide/treasury/earn) |
 | Token distribution (claimable rules) | Yes | No | No | [Token Distribution](https://docs.pollar.xyz/docs/operator-guide/treasury/token-distribution) |
 | Transaction policy (account merge, max fee) | Yes | n/a | n/a | [Transaction Policy](https://docs.pollar.xyz/docs/operator-guide/wallets/transaction-policy) |
@@ -78,13 +78,13 @@ Legend: **Yes** = works today on that chain. **n/a** = the chain has no such con
 A Solana-enabled app gets the whole wallet lifecycle without any Solana-specific code in the client:
 
 - **Login.** Email, Google or GitHub gives the user a Pollar-managed Solana wallet at sign-in, with no seed phrase. A user who already has Phantom, Solflare or Backpack signs in with **Sign In With Solana** through `@pollar/solana-wallet-standard-adapter`, the Solana counterpart of the Stellar Wallets Kit adapter.
-- **Custody.** On testnet, managed keys live in Pollar's Solana wallet service, encrypted at rest. On mainnet, the Solana account lives in the user's Turnkey wallet, **co-signed** (a 2-of-2 vote between the user's device and Pollar) or **self-custody**, and the device verifies the serialized transaction (including a Solana CCTP burn) before it signs. A custodial Solana wallet that moves to Turnkey gets a new address, and its funds move with it.
+- **Custody.** In Test mode, managed keys live in Pollar's Solana wallet service, encrypted at rest. On Live, the Solana account lives in the user's Turnkey wallet, **co-signed** (a 2-of-2 vote between the user's device and Pollar) or **self-custody**, and the device verifies the serialized transaction (including a Solana CCTP burn) before it signs. A custodial Solana wallet that moves to Turnkey gets a new address, and its funds move with it.
 - **Funding.** Solana has no sponsored reserve, so the app's **Solana GAS wallet** (or Pollar's pool, on an [app on credits](https://docs.pollar.xyz/docs/core-concepts/credits)) sends each new wallet its starting SOL (0, or at least the platform floor that keeps the account above the rent-exempt minimum) and tops it up whenever it falls below the floor.
 - **Payments.** `sendPayment({ chain: 'SOLANA', destination, amount, mint? })` sends SOL or any SPL token. Amounts are integer base units (lamports, or the mint's smallest unit). When the token is marked **sponsor transfers**, the GAS wallet is the fee payer and the recipient's associated token account is created in the same transaction.
 - **History.** Every Solana transaction lands in the same history as Stellar ones, with its own reconcile job and explorer link; the dashboard's Monitor shows the fee in lamports.
-- **Swap.** On a mainnet app, `getSolanaSwapQuote` prices a swap on Jupiter and Titan and `swapSolana` runs the picked route; the swap modal offers Solana next to Stellar. A co-signed or self-custody wallet approves the swap on the device, an external wallet signs it in the connected wallet, and Pollar refuses any route whose simulation pays the user less than its minimum. Neither aggregator has devnet liquidity, so a testnet app has no Solana swap.
+- **Swap.** On a live app, `getSolanaSwapQuote` prices a swap on Jupiter and Titan and `swapSolana` runs the picked route; the swap modal offers Solana next to Stellar. A co-signed or self-custody wallet approves the swap on the device, an external wallet signs it in the connected wallet, and Pollar refuses any route whose simulation pays the user less than its minimum. Neither aggregator has devnet liquidity, so a Test mode app has no Solana swap.
 - **Ramps.** No ramp provider settles natively on Solana. A route reaches a Solana wallet by adding a Circle CCTP bridge leg to a provider that settles USDC on Stellar or Polygon, so the user receives USDC on Solana. See [Ramps](https://docs.pollar.xyz/docs/core-concepts/ramps).
-- **Networks.** A testnet app uses **devnet**; a mainnet app uses **mainnet-beta**. The cluster follows the app's network, never a request parameter.
+- **Networks.** A Test mode app uses **devnet**; a live app uses **mainnet-beta**. The cluster follows the app's network, never a request parameter.
 
 Two Solana facts the client has to respect:
 

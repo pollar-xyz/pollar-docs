@@ -10,7 +10,7 @@ Configures **distribution rules**: assets your app makes available for users to 
 
 ## Distribution wallet
 
-The top of the page shows the wallet claims are paid from: the app's **distribution vault**. By default that is the app wallet (or its DISTRIBUTION wallet, when Pollar has set up one wallet per role). Fund it by sending assets to its address; on testnet the card offers **Fund on testnet**. If the app has no wallet, claims fail with `DISTRIBUTION_NO_DISTRIBUTION_WALLET`.
+The top of the page shows the wallet claims are paid from: the app's **distribution vault**. By default that is the app wallet (or its DISTRIBUTION wallet, when Pollar has set up one wallet per role). Fund it by sending assets to its address; in Test mode the card offers **Fund in test mode**. If the app has no wallet, claims fail with `DISTRIBUTION_NO_DISTRIBUTION_WALLET`.
 
 On an app on credits, the vault holds the app's own assets and has its own page, [Distribution vault](https://docs.pollar.xyz/docs/operator-guide/billing/distribution-vault), where the owner or an admin can withdraw from it.
 

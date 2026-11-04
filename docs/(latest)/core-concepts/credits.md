@@ -17,7 +17,7 @@ Running wallets costs money on-chain: account reserves, network fees, starting b
 
 ## Credits
 
-**100 credits = 1 USD.** Credits belong to one app and one network: a testnet app's credits never cross to its mainnet pair. Testnet charges the same prices as mainnet, paid with testnet USDC.
+**100 credits = 1 USD.** Credits belong to one app and one network: a Test mode app's credits never cross to its live pair. Test mode charges the same prices as Live, paid with testnet USDC.
 
 | Balance | What it is |
 | --- | --- |
@@ -38,8 +38,8 @@ Each app has a deposit address of its own on Stellar, Polygon and Solana, on the
 
 | Network | Stellar | Polygon | Solana |
 | --- | --- | --- | --- |
-| Mainnet | USDC | USDC, USDT | USDC, USDT |
-| Testnet | USDC (Circle's test USDC) | USDC (Circle's test USDC) | USDC (Circle's test USDC) |
+| Live | USDC | USDC, USDT | USDC, USDT |
+| Test mode | USDC (Circle's test USDC) | USDC (Circle's test USDC) | USDC (Circle's test USDC) |
 
 Only the official contracts count (Circle's USDC, Tether's USDT); any other token sent to the address is not credited. A Stellar address is listed once its account and trustlines exist, which Pollar opens at its own cost.
 

@@ -23,7 +23,7 @@ The per-app sidebar has eleven groups. Each page below lists the **chains** it a
 
 | Section | What you do here | Chains |
 | --- | --- | --- |
-| **Settings** | App name, network, mainnet access request and auth token lifetimes | All |
+| **Settings** | App name, network, go-live request and auth token lifetimes | All |
 | **API Keys** | Create and delete publishable and secret keys, with names, expirations and native-client access | All |
 | **Domains** | Allowed origins (CORS) and redirect URIs so the SDK can call Pollar from your app | All |
 | **Webhooks** `upcoming` | Configure webhook URLs and view event logs | Stellar |
@@ -40,7 +40,7 @@ The per-app sidebar has eleven groups. Each page below lists the **chains** it a
 
 | Section | What you do here | Chains |
 | --- | --- | --- |
-| **Wallet settings** | Enabled chains and their order, custody (Pollar on testnet, Turnkey co-signed or self-custody), when wallets are created, and signature confirmation | All |
+| **Wallet settings** | Enabled chains and their order, custody (Pollar in Test mode, Turnkey co-signed or self-custody), when wallets are created, and signature confirmation | All |
 | **Wallets** | Every wallet on every chain: status, custody, balances, tokens, rail wallets, manual funding | Stellar, Solana, Polygon |
 | **Account Funding** | A Stellar tab (funding wallet, Immediate / Deferred, starting XLM) and a Solana tab (starting SOL) | Stellar, Solana |
 | **Sponsorship** | One tab per enabled chain: Stellar fee bumps and reserves, Solana GAS wallet, top-up policy and transfer sponsorship, Polygon GAS wallet and top-up policy | Stellar, Solana, Polygon |
@@ -117,10 +117,10 @@ New apps show a checklist under [Get started](https://docs.pollar.xyz/docs/opera
 
 ---
 
-## Testnet vs Mainnet
+## Test mode vs Live
 
-Each app targets a single network, fixed when it is created. Apps start on **Testnet**. **Mainnet** access is a review: the **owner or an admin** requests it from **Build > Settings** or from the **MainNet** segment of the network control in the top bar. Once approved, Pollar creates the app's mainnet counterpart in the same project, and the network control switches between the two apps. API keys, wallets and configuration belong to each app.
+Each app targets a single network, fixed when it is created. Apps start in **Test mode**. Going **Live** is a review: the **owner or an admin** requests it from **Build > Settings** or from the **Live** segment of the network control in the top bar. Once approved, Pollar creates the app's live counterpart in the same project, and the network control switches between the two apps. API keys, wallets and configuration belong to each app.
 
-The network decides the cluster on every chain: a testnet app is Stellar testnet, Solana **devnet** and Polygon **Amoy**; a mainnet app is Stellar public, Solana **mainnet-beta** and Polygon mainnet. Chains themselves are enabled under [Wallet settings](https://docs.pollar.xyz/docs/operator-guide/wallets/settings#enabled-chains).
+Test mode is what the API and SDK call `testnet`. Live is what they call `mainnet`. The mode decides the cluster on every chain: a Test mode app uses Stellar testnet, Solana **devnet** and Polygon **Amoy**; a live app uses the main networks, which are Stellar public, Solana **mainnet-beta** and Polygon mainnet. Chains themselves are enabled under [Wallet settings](https://docs.pollar.xyz/docs/operator-guide/wallets/settings#enabled-chains).
 
-Start on Testnet. Request Mainnet when you are ready for production; see the [Mainnet Checklist](https://docs.pollar.xyz/docs/guides/mainnet-checklist) first.
+Start in Test mode. Request to go live when you are ready for production; see the [Go-live checklist](https://docs.pollar.xyz/docs/guides/mainnet-checklist) first.

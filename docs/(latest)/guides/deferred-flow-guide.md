@@ -4,7 +4,7 @@ title: "Deferred Flow Guide"
 
 Deferred mode gives each user an address at sign-in but creates no account on-chain. The XLM reserve is only sponsored when your backend calls `POST /v3/wallets/fund`, typically after a business event like KYC approval or a first deposit.
 
-> **Turnkey wallets.** For a co-signed or self-custody wallet (every new wallet on mainnet) the call answers `202 SERVER_WALLET_ACCOUNT_REQUESTED` with a `requestId`: the account creation waits for the user, who approves it in their next session. Treat it as pending, not as an error. See the [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api).
+> **Turnkey wallets.** For a co-signed or self-custody wallet (every new wallet on Live) the call answers `202 SERVER_WALLET_ACCOUNT_REQUESTED` with a `requestId`: the account creation waits for the user, who approves it in their next session. Treat it as pending, not as an error. See the [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api).
 
 This guide walks through the full implementation end-to-end.
 
@@ -146,7 +146,7 @@ export function KycFlow({ publicKey }: { publicKey: string }) {
 
 ---
 
-## Testing on testnet
+## Try it in Test mode
 
 1. Set funding mode to **Deferred** in the Dashboard
 2. Log in: the wallet is created unfunded (no XLM reserve)

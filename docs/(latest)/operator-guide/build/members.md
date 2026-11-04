@@ -13,7 +13,7 @@ Invite teammates to collaborate on this app. The owner is always listed first.
 | Role | Permissions |
 | --- | --- |
 | **Owner** | Everything, including managing members. One per app. |
-| **Admin** | Same as the owner, including what editors cannot do: manage members (other admins included), request mainnet access, withdraw from the distribution vault, accept the app-custody terms for ramps, and archive or restore the app. |
+| **Admin** | Same as the owner, including what editors cannot do: manage members (other admins included), request to go live, withdraw from the distribution vault, accept the app-custody terms for ramps, and archive or restore the app. |
 | **Editor** | Read and write: can change the app's settings. |
 | **Viewer** | Read only: sees everything, changes nothing. |
 

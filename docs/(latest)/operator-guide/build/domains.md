@@ -44,9 +44,9 @@ Only the **origin** of each entry is matched today, so one entry covers every pa
 
 ---
 
-## Development entries on a mainnet app
+## Development entries on a live app
 
-The dashboard marks any `localhost` or plain-`http` entry on a mainnet app. It does not block it: testing a mainnet app from your machine is a normal thing to do. It is there to remind you that a publishable key is public, so while that entry is in the **origins** list, anyone serving a page on that host can use the key. Remove it once you stop testing.
+The dashboard marks any `localhost` or plain-`http` entry on a live app. It does not block it: testing a live app from your machine is a normal thing to do. It is there to remind you that a publishable key is public, so while that entry is in the **origins** list, anyone serving a page on that host can use the key. Remove it once you stop testing.
 
 Listing localhost only as a **redirect URI** does not carry that risk.
 

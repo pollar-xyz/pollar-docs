@@ -16,7 +16,7 @@ Requires `@pollar/core` / `@pollar/react` / `@pollar/react-native` 0.12.0 or lat
 
 A Turnkey wallet signs with a key on the user's device (see [Co-signed Wallets](https://docs.pollar.xyz/docs/core-concepts/co-signed-wallets)). Pollar holds no copy of it. If the user loses the device and the wallet has no other way in, nobody can move its funds again.
 
-So a Turnkey wallet needs a **recovery method** before it signs. Until it has one, every signature other than the wallet's own setup (account creation, trustlines, a new chain) and on-ramps is refused with **409 `SDK_WALLET_RECOVERY_REQUIRED`**, on testnet and mainnet. A ramp order that reaches a step needing the wallet waits until a method is added.
+So a Turnkey wallet needs a **recovery method** before it signs. Until it has one, every signature other than the wallet's own setup (account creation, trustlines, a new chain) and on-ramps is refused with **409 `SDK_WALLET_RECOVERY_REQUIRED`**, in both Test mode and Live. A ramp order that reaches a step needing the wallet waits until a method is added.
 
 A wallet counts as recoverable when it has at least one of:
 

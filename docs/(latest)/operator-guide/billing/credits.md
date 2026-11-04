@@ -4,7 +4,7 @@ title: "Credits"
 
 **Dashboard > Billing > Credits** · Chains: all (top-ups on several chains)
 
-What Pollar charges this app for: wallets, sponsored reserves and fees, co-signing and the other paid features. **100 credits = 1 USD.** Credits belong to the app's network and never cross to the other one: a testnet app and its mainnet counterpart have separate balances. How billing works is explained in [Credits](https://docs.pollar.xyz/docs/core-concepts/credits).
+What Pollar charges this app for: wallets, sponsored reserves and fees, co-signing and the other paid features. **100 credits = 1 USD.** Credits belong to the app's network and never cross to the other one: a Test mode app and its live counterpart have separate balances. How billing works is explained in [Credits](https://docs.pollar.xyz/docs/core-concepts/credits).
 
 ---
 
@@ -41,7 +41,7 @@ In the SDK and the APIs these refusals are `402 SDK_CREDITS_INSUFFICIENT` and `4
 
 ## Top up
 
-Send a stablecoin to the app's address on any of the chains listed; each address has a copy button. On mainnet each address takes USDC, and the Polygon and Solana ones also take USDT; on testnet every address takes Circle's test USDC only. The balance updates once the deposit confirms; 1 USD buys 100 credits, and only the official contracts are credited. Testnet charges the same prices as mainnet. See [Credits](https://docs.pollar.xyz/docs/core-concepts/credits) for the full table. The same addresses are available from the [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api) and the [MCP Gateway](https://docs.pollar.xyz/docs/sdk-reference/mcp-gateway).
+Send a stablecoin to the app's address on any of the chains listed; each address has a copy button. On Live each address takes USDC, and the Polygon and Solana ones also take USDT; in Test mode every address takes Circle's test USDC only. The balance updates once the deposit confirms; 1 USD buys 100 credits, and only the official contracts are credited. Test mode charges the same prices as Live. See [Credits](https://docs.pollar.xyz/docs/core-concepts/credits) for the full table. The same addresses are available from the [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api) and the [MCP Gateway](https://docs.pollar.xyz/docs/sdk-reference/mcp-gateway).
 
 ---
 

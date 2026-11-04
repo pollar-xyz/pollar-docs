@@ -39,7 +39,7 @@ The whole move takes about five minutes.
 
 ## Before you start
 
-1. **Mainnet.** Circle's contracts are on mainnet; on a testnet app the bridge is off (`getBridgeConfig()` answers `available: false`, `reason: 'mainnet_only'`) and the modal says so.
+1. **Live.** Circle's contracts are on mainnet; on a Test mode app the bridge is off (`getBridgeConfig()` answers `available: false`, `reason: 'mainnet_only'`) and the modal says so.
 2. **Enable both chains** in **Wallets > Wallet settings > Enabled chains**. The user needs a wallet on each side of a move.
 3. **Network fees.** Your app's network fee wallets pay the burn's fee on Stellar and Solana and the mint on every chain; on Polygon the user's wallet is topped up with the POL its burn needs. On an app on [credits](https://docs.pollar.xyz/docs/core-concepts/credits), Pollar's pool pays and charges the app.
 4. **A Stellar destination trusts USDC.** A move to Stellar is refused before anything happens when the user's Stellar wallet has no USDC trustline. Enable USDC in [Tokens & Trustlines](https://docs.pollar.xyz/docs/operator-guide/wallets/tokens-trustlines) so the wallet trusts it first.

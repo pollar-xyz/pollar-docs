@@ -31,7 +31,7 @@ Add **every contract in the call tree**, not just the entry point. Pollar walks 
 
 The dashboard checks each name against the deployed contract when you save the row, so a misspelling is refused there rather than surfacing later as a denied request in your app. Two things follow from that check:
 
-- Saving a row for a contract that is **not deployed on this app's network** is refused. Testnet and mainnet apps have separate allowlists; a mainnet contract id cannot be saved on a testnet app.
+- Saving a row for a contract that is **not deployed on this app's network** is refused. Test mode and live apps have separate allowlists; a mainnet contract id cannot be saved on a Test mode app.
 - If Pollar cannot reach the network when you save, the row is stored anyway. The allowlist stays editable while the ledger is unreachable, and the names are still enforced when a signature is requested.
 
 ---
@@ -40,7 +40,7 @@ The dashboard checks each name against the deployed contract when you save the r
 
 A single switch that authorizes **every** contract and function, ignoring the rows below it entirely. While it is on, no row can deny a signature, not even a row for the very same contract.
 
-Use it only while you still control transaction construction end to end, typically during an integration spike. An explicit allowlist is what makes the custodial signer safe to expose; the switch removes that protection for every wallet in the app at once. Turn it off before you take the app to mainnet.
+Use it only while you still control transaction construction end to end, typically during an integration spike. An explicit allowlist is what makes the custodial signer safe to expose; the switch removes that protection for every wallet in the app at once. Turn it off before you take the app live.
 
 The switch reads **on** only when it is actually bypassing. If it shows off after you turned it on, the underlying row was disabled or edited through the API; turn it on again to restore it.
 
@@ -78,7 +78,7 @@ Full list, with the save-time codes: [Error Codes](https://docs.pollar.xyz/docs/
 
 **"Allow any" is on and I am still denied.** Confirm the switch reads on after a page reload. If it does not, the row behind it is disabled or was edited through the API, and turning it on again restores it. Then confirm the request reached the app you are looking at: read `applicationId` in the error body.
 
-**`SOROBAN_AUTH_NO_POLICY`, but I can see my rows.** The allowlist belongs to one application, and so does each API key. Configuring one app while signing with another app's key produces exactly this error, with the rows visibly present in the dashboard. The `applicationName` in the response body is the app your key actually resolves to; if it is not the one on screen, that is the answer. Apps also come in testnet and mainnet pairs with separate allowlists.
+**`SOROBAN_AUTH_NO_POLICY`, but I can see my rows.** The allowlist belongs to one application, and so does each API key. Configuring one app while signing with another app's key produces exactly this error, with the rows visibly present in the dashboard. The `applicationName` in the response body is the app your key actually resolves to; if it is not the one on screen, that is the answer. Apps also come in Test mode and live pairs with separate allowlists.
 
 **`SOROBAN_AUTH_FUNCTION_NOT_ALLOWED` on a function I allowlisted.** Compare the two strings character for character. `Transfer` against `transfer` is the usual answer; so is a trailing space, or `transfer()` written with parentheses. Re-saving the row will now refuse a name the contract does not have.
 

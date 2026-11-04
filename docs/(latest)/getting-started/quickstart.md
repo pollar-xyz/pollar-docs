@@ -92,7 +92,7 @@ export function LoginButton() {
 When `login()` is called, Pollar:
 
 1. Authenticates the user via OAuth (Google or GitHub) or email OTP and opens the session
-2. Creates a wallet on every chain the app enables (a Stellar G-address, a Solana address, ...). On testnet it is a Pollar-managed wallet whose key Pollar's wallet service keeps encrypted at rest; on mainnet it is a [co-signed or self-custody](https://docs.pollar.xyz/docs/core-concepts/co-signed-wallets) Turnkey wallet whose key only the user's device can use
+2. Creates a wallet on every chain the app enables (a Stellar G-address, a Solana address, ...). In Test mode it is a Pollar-managed wallet whose key Pollar's wallet service keeps encrypted at rest; on Live it is a [co-signed or self-custody](https://docs.pollar.xyz/docs/core-concepts/co-signed-wallets) Turnkey wallet whose key only the user's device can use
 3. In the background, activates the Stellar account on-chain, enables trustlines for the assets configured in your Dashboard, and funds it per your [funding mode](https://docs.pollar.xyz/docs/core-concepts/funding-modes); on Solana, sends the starting SOL you configured
 
 `isAuthenticated` turns true at step 1. `wallet` is `null` until the wallet exists, and on an app with [on-demand wallet creation](https://docs.pollar.xyz/docs/core-concepts/wallet-creation) it stays `null` until you call `createWallet()`. A payment sent while the Stellar account is still being activated returns `SDK_WALLET_NOT_READY`; retry once `wallet.provisioning` is `READY`.
