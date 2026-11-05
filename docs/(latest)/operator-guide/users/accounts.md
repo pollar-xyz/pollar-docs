@@ -27,6 +27,7 @@ Search by name, email, ID or wallet address. Filter with **All accounts**, **Wit
 The row menu offers:
 
 - **Copy user ID** and **Copy wallet public key**
-- **Allow sponsored signer rotation** / **Revoke signer rotation**, for a user with an external wallet, while signer rotation and its external sub-option are on under [Sponsored fees](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship#signer-rotation). A grant covers one rotation.
+- **Allow rotation to the user's own key** / **Revoke signer rotation**, for a user whose wallet Pollar holds, while signer rotation is on under [Sponsored fees](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship#signer-rotation). The rotation hands the wallet to a key of the user's own.
+- **Allow sponsored signer rotation** / **Revoke signer rotation**, for a user with an external wallet, while signer rotation and its external sub-option are on. A grant covers one rotation.
 
 There is no per-user detail page. To fund a user's Stellar wallet by hand, use **Fund** on the wallet's row in [All wallets](https://docs.pollar.xyz/docs/operator-guide/wallets/user-wallets); transactions are in [Monitoring > Transactions](https://docs.pollar.xyz/docs/operator-guide/monitor/transactions).

@@ -131,16 +131,21 @@ Because a fee-bumped user is the transaction source, a contract's `require_auth`
 
 ### Signer rotation
 
-For account recovery of wallets Pollar does not custody: the user adds a new signer to their wallet and disables the old key (`setOptions`), keeping the same `G...` address. **Sponsor signer rotations** (off by default) lets your app pay for it. Each new signer is a ledger subentry with a 0.5 XLM reserve, so this uses the sponsor-as-source mechanism, not a fee bump: the FUNDING (or GLOBAL) wallet is the transaction source and pays both the reserve and the fee.
+A signer rotation changes which key controls a wallet and keeps its `G...` address (`setOptions`). **Sponsor signer rotations** (off by default) lets your app pay for it, in two cases:
 
-Rotation exists only for wallets Pollar does not custody, so turn on both **Sponsor signer rotations** and its sub-option **Include external and self-custody wallets**. Even then the settings alone sponsor nothing: a user is covered only while they hold a **grant**, which you give on request:
+- **Wallets Pollar holds** (users who log in with email, Google or another social login), under the main setting: the rotation hands the wallet to a key of the user's own, for a move to self-custody. The wallet becomes an external wallet of the same user and Pollar stops signing for it.
+- **External and self-custody wallets**, with the sub-option **Include external and self-custody wallets** on as well: the user adds a new signer and disables the old key, for account recovery.
 
-- From **Users > Accounts**: while both settings are on, the row menu of a user with an external wallet shows **Allow sponsored signer rotation**.
+ Each new signer is a ledger subentry with a 0.5 XLM reserve, so this uses the sponsor-as-source mechanism, not a fee bump: the FUNDING (or GLOBAL) wallet is the transaction source and pays both the reserve and the fee.
+
+The settings alone sponsor nothing: a user is covered only while they hold a **grant**, which you give on request:
+
+- From **Users > Accounts**: the row menu shows **Allow rotation to the user's own key** for a wallet Pollar holds, and **Allow sponsored signer rotation** for an external wallet while the sub-option is on.
 - From your backend: `POST /v3/wallets/{publicKey}/signer-rotation` in the [Server API](https://docs.pollar.xyz/docs/sdk-reference/server-api).
 
 A grant covers **one** rotation and is spent when that rotation lands on-chain. A later recovery needs a new grant. You can revoke an unspent grant from the same menu or with `DELETE` on the same endpoint.
 
-Signer changes on **custodial** wallets are never allowed: a new signer would take the wallet out of Pollar's custody. How the client builds a rotation is in [Rotate the wallet signer](https://docs.pollar.xyz/docs/guides/custom-wallet-adapter#rotate-the-wallet-signer).
+Outside a granted rotation, signer changes on wallets Pollar holds are never allowed: a new signer would take the wallet out of Pollar's custody. How the client builds each rotation is in [Rotate the wallet signer](https://docs.pollar.xyz/docs/guides/custom-wallet-adapter#rotate-the-wallet-signer).
 
 ### Token transfer sponsorship
 

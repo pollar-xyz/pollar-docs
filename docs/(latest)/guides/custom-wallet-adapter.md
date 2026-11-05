@@ -230,7 +230,50 @@ For account recovery, a wallet can change which key controls it while keeping th
 | `masterWeight` | Optional, 0 to 255. `0` disables the old master key. |
 | `removeSigners` | Up to 3 existing signers to remove, for example the key from a previous recovery. |
 
-Only wallets Pollar does not custody can rotate, and only once they exist on the network. While a rotation built for the user can still be submitted, a second build returns `409 SIGNER_ROTATION_PENDING`. The other refusals are listed under [Signer rotation errors](https://docs.pollar.xyz/docs/sdk-reference/error-codes#signer-rotation).
+Only wallets that exist on the network can rotate. While a rotation built for the user can still be submitted, a second build returns `409 SIGNER_ROTATION_PENDING`. The other refusals are listed under [Signer rotation errors](https://docs.pollar.xyz/docs/sdk-reference/error-codes#signer-rotation).
+
+### Move a Pollar wallet to the user's own key
+
+A user who logged in with email or Google holds a wallet Pollar custodies. The same endpoints, on `/v3`, hand that wallet to a key of the user's own, for a move to self-custody: same `G...` address, same Pollar user, with their history and KYC. After it, the user logs in with your adapter (SEP-10) and Pollar no longer signs for the wallet.
+
+1. The app turns on **Sponsor signer rotations** under [Sponsored fees](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship#signer-rotation). The external-wallets sub-option is not needed for this.
+2. The app grants the user one rotation: from **Users > Accounts** (**Allow rotation to the user's own key**), or with `POST /v3/wallets/{publicKey}/signer-rotation`.
+3. The client creates the new key and signs, with it, this message as a SEP-53 signed message (the same `signMessage` scheme wallets use):
+
+   ```text
+   Pollar signer rotation
+   Account: GABC...WALLET
+   Signer: GNEW...KEY
+   ```
+
+4. With the user's current session, the client builds the rotation:
+
+   ```http
+   POST /v3/wallet/signer/build
+   Content-Type: application/json
+
+   {
+     "signer": "GNEW...KEY",
+     "signerProof": "<base64 signature of the message above>"
+   }
+   ```
+
+   `signerWeight` is 1 and `masterWeight` 0 (or left out), with no `removeSigners`: the new key becomes the only signer. The response has the same shape as for an external wallet, but `sponsorSignedXdr` already carries every signature it needs: the sponsor's and the wallet's current key, which Pollar holds.
+
+5. The client sends that XDR, unchanged, before `expiresAt`:
+
+   ```http
+   POST /v3/wallet/signer/submit
+   Content-Type: application/json
+
+   { "signedXdr": "<sponsorSignedXdr>" }
+   ```
+
+   The answer is `{ hash, status, released }`. `released: true` means the ledger shows the new key in control and the wallet is now an external wallet of the same user. A `PENDING` submit is completed by the next build or by the user's next wallet login.
+
+6. The user logs in with your adapter, which signs the SEP-10 challenge of the same `G...` address with the new key. Pollar resolves the same user.
+
+Every step can be retried. The ledger decides: once the rotation is on-chain, a build answers `409 SIGNER_ROTATION_DONE` and builds nothing. A Pollar session that is still open keeps reading balances and history, and a server signature answers `EXTERNAL_WALLET_SERVER_SIGN`. The signer of a Stellar account is an ed25519 key (a `G...` public key); a WebAuthn passkey (P-256) cannot be one.
 
 ---
 

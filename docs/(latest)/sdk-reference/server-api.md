@@ -106,14 +106,14 @@ Content-Type: application/json
 
 ### `POST /v3/wallets/{publicKey}/signer-rotation`
 
-Grants the user whose external Stellar wallet is `publicKey` one sponsored signer rotation, for account recovery. The user then builds it from the client with `POST /wallet/signer/build` (see [Rotate the wallet signer](https://docs.pollar.xyz/docs/guides/custom-wallet-adapter#rotate-the-wallet-signer)), and the app pays the fee and the 0.5 XLM reserve of the new signer. The grant is spent when that rotation lands; another rotation needs a new grant.
+Grants the user whose Stellar wallet is `publicKey` one sponsored signer rotation. For an external wallet it is an account recovery; for a wallet Pollar holds, the rotation hands it to a key of the user's own (same address, same user). The user then builds it from the client with `POST /v3/wallet/signer/build` (see [Rotate the wallet signer](https://docs.pollar.xyz/docs/guides/custom-wallet-adapter#rotate-the-wallet-signer)), and the app pays the fee and the 0.5 XLM reserve of the new signer. The grant is spent when that rotation lands; another rotation needs a new grant.
 
 ```bash
 POST https://server.api.pollar.xyz/v3/wallets/GBW4...CX7H/signer-rotation
 x-pollar-api-key: sec_mainnet_xxxxxxxxxxxxxxxxxxxx
 ```
 
-Requires **Sponsor signer rotations** and its **Include external wallets** sub-option on under **Dashboard > Wallets > Sponsored fees**. Granting while the user already holds an unspent grant returns that grant.
+Requires **Sponsor signer rotations** on under **Dashboard > Wallets > Sponsored fees**, and for an external wallet its **Include external wallets** sub-option as well. Granting while the user already holds an unspent grant returns that grant. `/v1` grants external wallets only.
 
 **Response codes:**
 
@@ -122,7 +122,7 @@ Requires **Sponsor signer rotations** and its **Include external wallets** sub-o
 | `200 OK` | Granted (`SERVER_SIGNER_ROTATION_GRANTED`). `content` is `{ userId, grant }`, where `grant` has `id`, `status` (`ACTIVE`, `CONSUMED`, `REVOKED`) and its timestamps. |
 | `403 Forbidden` | The app does not sponsor rotations (`SIGNER_ROTATION_NOT_ENABLED`). |
 | `404 Not Found` | No user of this app has that wallet (`USER_NOT_FOUND`). |
-| `422 Unprocessable` | The wallet is custodial; only wallets Pollar does not hold are rotated (`SIGNER_ROTATION_INVALID`). |
+| `422 Unprocessable` | The wallet cannot rotate: a smart (passkey) or co-signed wallet (`SIGNER_ROTATION_INVALID`). |
 
 ### `DELETE /v3/wallets/{publicKey}/signer-rotation`
 

@@ -194,10 +194,11 @@ SDK only. Every signing call passes the app's confirmation policy first (see [Si
 
 | Code | Description | Resolution |
 | --- | --- | --- |
-| `SIGNER_ROTATION_NOT_ENABLED` (403) | The app does not sponsor signer rotations | Turn on **Sponsor signer rotations** and **Include external wallets** under **Wallets > Sponsored fees** |
+| `SIGNER_ROTATION_NOT_ENABLED` (403) | The app does not sponsor signer rotations for this kind of wallet | Turn on **Sponsor signer rotations** under **Wallets > Sponsored fees**, and **Include external wallets** for an external wallet |
 | `SIGNER_ROTATION_NOT_GRANTED` (403) | The user holds no unspent rotation grant, or already used it | Grant one from **Users > Accounts** or with `POST /v3/wallets/{publicKey}/signer-rotation` |
 | `SIGNER_ROTATION_PENDING` (409) | A sponsored rotation built for this user can still be submitted | Submit it, or wait until its `expiresAt` passes |
-| `SIGNER_ROTATION_INVALID` (422) | The wallet is custodial or not created yet, or the requested change is not allowed | Read `details`; see [the rotation rules](https://docs.pollar.xyz/docs/guides/custom-wallet-adapter#rotate-the-wallet-signer) |
+| `SIGNER_ROTATION_INVALID` (422) | The wallet cannot rotate (smart or co-signed, or not created yet), the requested change is not allowed, or `signerProof` is missing or does not verify | Read `details`; see [the rotation rules](https://docs.pollar.xyz/docs/guides/custom-wallet-adapter#rotate-the-wallet-signer) |
+| `SIGNER_ROTATION_DONE` (409) | The wallet was already handed to the user's own key | Log in with the new key (SEP-10) |
 
 ---
 
