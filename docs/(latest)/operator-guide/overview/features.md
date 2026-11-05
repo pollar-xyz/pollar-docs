@@ -2,9 +2,9 @@
 title: "Features"
 ---
 
-**Dashboard > Features** - Chains: all
+**Dashboard > Home > Features** - Chains: all
 
-Choose which areas of Pollar your app uses. Each area is a card. Turn a card on and its section shows up in the sidebar, and the card gets a **Set up** link to its first page. Cards that are on are listed under **On**; the rest are under **Available to turn on**.
+Choose which areas of Pollar your app uses. Features is a section of Home, and each area is a card. Turn a card on and its section shows up in the sidebar, and the card gets a **Set up** link to its first page. Cards that are on are listed under **On**; the rest are under **Available to turn on**.
 
 ---
 

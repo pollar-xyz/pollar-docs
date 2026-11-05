@@ -19,16 +19,15 @@ Each app you create is isolated, with its own API keys, wallets and configuratio
 
 ## Navigation
 
-The per-app sidebar has three single pages and nine groups. Each page below lists the **chains** it applies to: an app enables Stellar, Solana and Polygon independently under [Wallets > Settings](https://docs.pollar.xyz/docs/operator-guide/wallets/settings#enabled-chains), and the full feature-by-chain matrix is in [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support). Pages marked `upcoming` are gated behind a "coming soon" state.
+The per-app sidebar has two single pages and eight groups. Each page below lists the **chains** it applies to: an app enables Stellar, Solana and Polygon independently under [Wallets > Settings](https://docs.pollar.xyz/docs/operator-guide/wallets/settings#enabled-chains), and the full feature-by-chain matrix is in [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support). Pages marked `upcoming` are gated behind a "coming soon" state.
 
-[Features](https://docs.pollar.xyz/docs/operator-guide/overview/features) decides which groups you see. Cash in and out, Identity checks, Cards and the Savings page show only while they are on.
+[Features](https://docs.pollar.xyz/docs/operator-guide/overview/features), on Home, decides which groups you see. Cash in and out, Identity checks, Cards and the Savings page show only while they are on. Pollar Pay is not available yet, so it is not in the sidebar.
 
 ### Single pages
 
 | Section | What you do here | Chains |
 | --- | --- | --- |
-| **Home** | API v1 banner, setup progress and transaction metrics | All |
-| **Features** | Turn on the areas your app needs, which shows them in the sidebar | All |
+| **Home** | API v1 banner, setup progress, Features and transaction metrics | All |
 | **Get started** | Onboarding checklist (hidden once every step is done) | Stellar-centric steps |
 
 ### Users
@@ -79,12 +78,6 @@ The per-app sidebar has three single pages and nine groups. Each page below list
 | --- | --- | --- |
 | **Issued cards** | Your users' cards: identity verification, the card and its credit line | All |
 | **Providers** | Enable card providers, set the card label and the redirect URL | All (funding from Stellar or Solana) |
-
-### Pollar Pay
-
-| Section | What you do here | Chains |
-| --- | --- | --- |
-| **Overview, Branches, Charge, Transactions, Plan** `upcoming` | Pollar Pay for this app | Stellar |
 
 ### Developers
 
