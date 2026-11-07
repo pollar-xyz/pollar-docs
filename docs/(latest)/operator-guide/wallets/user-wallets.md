@@ -43,7 +43,7 @@ On an app on [credits](https://docs.pollar.xyz/docs/operator-guide/settings/cred
 
 Expanding a row shows the wallet's assets:
 
-- **Stellar**: each enabled asset with its trustline state (Active, Removed, Not opened), balance, available amount and limit. **Enable trustline** opens a missing trustline on the user's wallet; the 0.5 XLM reserve is paid by the user's wallet, which needs at least 0.5 XLM available. Use it only with a clear product reason.
+- **Stellar**: each enabled asset with its trustline state (Active, Removed, Not opened), balance, available amount and limit. **Enable trustline** opens a missing trustline on the user's wallet; the 0.5 XLM reserve is paid by the user's wallet, which needs at least 0.5 XLM available. Use it only with a clear product reason. It works on the app's own wallets and on the wallets Pollar custodies. On a co-signed or self-custody wallet (it signs on the user's device) and on an external wallet (the user's own) the button is shown disabled, with the reason: the user adds the trustline from the app.
 - **Solana and Polygon**: the balance of each token the app enables on that chain.
 
 A Stellar wallet expands only once its account exists on-chain.
@@ -53,6 +53,8 @@ A Stellar wallet expands only once its account exists on-chain.
 ## Funding a wallet manually
 
 A Stellar wallet that is **Not funded** (Deferred mode, or an Immediate-mode wallet whose funding did not complete) shows a **Fund** button next to its status. It creates the account exactly as the login does: the funding wallet sponsors the reserve and sends the configured starting XLM. On an app on credits, Pollar's pool sponsors it and the app's credits pay. The status flips to **Active** as soon as the account is on the ledger.
+
+On a co-signed or self-custody wallet the account needs the user's approval: **Fund** sends them the account creation request, the dashboard confirms it was sent, and the account appears once they approve it on their device. On an external wallet (the user's own) or a passkey wallet the button is shown disabled, with the reason.
 
 Solana and Polygon wallets have no account to create: they are topped up from the chain's GAS wallet according to [Sponsored fees](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship), and a new Solana wallet receives its starting SOL from [Starting balance](https://docs.pollar.xyz/docs/operator-guide/wallets/account-funding).
 

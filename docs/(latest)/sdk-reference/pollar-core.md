@@ -33,7 +33,7 @@ const pollar = new PollarClient({
 | `apiKey`         | `string`         | -                                | **Required.** Your Pollar publishable key.                                 |
 | `stellarNetwork` | `StellarNetwork` | `'testnet'`                      | Target Stellar network: `'testnet'` or `'mainnet'`.                        |
 | `baseUrl`        | `string`         | `'https://sdk.api.pollar.xyz'`   | Override the Pollar API base URL. Pass the origin only: the SDK appends `/v3`. Useful for self-hosted deployments. |
-| `confirmation`   | `'auto' \| 'prompt' \| { window: { seconds, maxUsd } }` | unset: the app's dashboard setting, which defaults to `'prompt'` | How a signing call treats the user, whatever the wallet's custody. Set, the stricter of this and the dashboard setting applies. A ramp leg always asks. See [Confirmation policy](#confirmation-policy). |
+| `confirmation`   | `'auto' \| 'prompt' \| { window: { seconds, maxUsd } }` | unset: the app's dashboard setting, which defaults to `'prompt'` | How a signing call treats the user, whatever the wallet's custody. Set, the stricter of this and the dashboard setting applies. A ramp leg always asks, except a provider's sign-in under `'auto'`. See [Confirmation policy](#confirmation-policy). |
 | `cosignManual`   | `boolean`        | `false`                          | Keep the raw `cosign_pending` outcome instead of letting the SDK settle co-sign requests: your app drives `client.cosign` itself. |
 | `cosignKeyManager` | `KeyManager`   | a second key manager under the `cosign` storage namespace | Where the device key of a Turnkey wallet lives. Pass your own to hold it in hardware-backed storage. |
 | `recoveryPasskey` | `RecoveryPasskeyCeremony` | injected by `@pollar/react` | The passkey ceremonies wallet recovery uses (`create` / `get`). Without one, the passkey methods of `client.cosign.recovery` are unavailable. See [Wallet recovery](#wallet-recovery). |
@@ -735,7 +735,7 @@ const removeSigner = pollar.registerRampSigningHandler('STELLAR', 'xdr', async (
 await pollar.signRampLeg(order.id, order.pendingAction.actionId);
 ```
 
-`signRampLeg` reads the order again and signs only if the pending action is still the one the user saw (`actionId`) and has not expired. A ramp leg always asks the user for confirmation, whatever the [confirmation policy](#confirmation-policy). Polling an order never signs. `<RampWidget>` lends the connected wallet as the Stellar and Solana signer while the user authorizes, unless the app registered its own.
+`signRampLeg` reads the order again and signs only if the pending action is still the one the user saw (`actionId`) and has not expired. A ramp leg always asks the user for confirmation, whatever the [confirmation policy](#confirmation-policy), except a provider's sign-in under `'auto'` (see below). Polling an order never signs. `<RampWidget>` lends the connected wallet as the Stellar and Solana signer while the user authorizes, unless the app registered its own.
 
 ---
 
@@ -998,7 +998,7 @@ With `confirmation` unset, the SDK follows the dashboard. Set, the stricter of t
 | `{ window: { seconds, maxUsd } }` | A confirmed signature opens a window of `seconds`. Inside it, the next signatures sign without asking while their USD total stays within `maxUsd`. Only a payment the SDK builds itself (`sendPayment`, `runTx('payment', ...)`) has a value it can read; any other signature (a raw `signTx`, a swap, a contract call) always asks, and so does an asset with no price. The window closes on logout |
 | `'auto'` | No prompt. A Turnkey wallet still votes through the device; an external wallet still shows its own popup |
 
-A ramp leg always asks, whatever the policy.
+A ramp leg always asks, whatever the policy, with one exception: a ramp provider's sign-in. It signs a transaction the network can never accept (sequence 0, data entries only), so no money moves and nothing is sent; it proves to the provider that the wallet is the user's. Under `'auto'`, `client.autoApproveSignIn(request)` approves it on the device without the prompt, and `<RampWidget>` calls it before opening the approval. It resolves `false`, leaving the request for the prompt, under any other policy, with `cosignManual`, or for anything that is not a sign-in.
 
 `@pollar/react` renders the prompt (`<ConfirmModal>`). A headless app subscribes with `onConfirmationRequest` and answers each `PendingConfirmation` with `confirm()` or `reject()`. While nothing is subscribed, a signing call that has to ask fails with `SDK_CONFIRMATION_UNAVAILABLE` instead of signing unasked; a declined one fails with `SDK_CONFIRMATION_DECLINED`.
 
@@ -1074,7 +1074,7 @@ The raw surface, for an app that drives the flow itself (`cosignManual: true`) o
 
 With `cosignManual: true`, a signing call on a co-signed wallet returns `{ status: 'cosign_pending', request, buildData? }` and `TransactionState` sits on `awaiting_cosign` until your app approves through `pollar.cosign.approve()`.
 
-`recognizedSetupRequest(request)` tells a setup request (account creation, a trustline, an account on a new chain) apart, for an app that labels it. `transactionErrorMessage(code, details)` gives user-facing text for a failed transaction or approval.
+`recognizedSetupRequest(request)` tells a setup request (account creation, a trustline, an account on a new chain) apart, for an app that labels it. `recognizedSignInRequest(request)` tells a ramp provider's sign-in apart (`kind: 'SEP10'`, operation `provider_sign_in`), read from the transaction itself: sequence 0, data entries only, the first one the wallet's own account. `transactionErrorMessage(code, details)` gives user-facing text for a failed transaction or approval.
 
 ### Wallet recovery
 
@@ -1214,6 +1214,8 @@ Every code is listed in [Error Codes](https://docs.pollar.xyz/docs/sdk-reference
 ## Server-side ramp adapters
 
 `@pollar/core/ramps` is a separate entry point for a ramp provider adapter registered with Pollar and run server-side, not for apps. It exports `defineRampAdapter`, `defineRampAdapterRegistration`, `RampAdapterError`, `isRampAdapterError` and the `RampAdapter*` types. The contract is version 2 (`RAMP_ADAPTER_CONTRACT_VERSION`); a registration without `contractVersion` is treated as version 1.
+
+An adapter whose provider reads orders with a session that lapses (an anchor's SEP-10 token) can implement the optional `renewal({ providerOrderRef, user })`. It returns the sign-in (`sign_transaction`, purpose `authentication`) that renews the session before it lapses, or `null` while it does not lapse soon or when the adapter renews it without the user. Pollar asks the user for it while it keeps reading the order with the current session, shows it only when the order asks nothing else of the user, and hands the signature back through `continue` with the order's reference. A session that lapses anyway is asked for again by `status`, and the order waits for that sign-in.
 
 ```typescript
 import { defineRampAdapter, defineRampAdapterRegistration } from '@pollar/core/ramps';

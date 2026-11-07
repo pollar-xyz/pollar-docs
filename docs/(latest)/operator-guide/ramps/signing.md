@@ -25,7 +25,9 @@ Each mode shows its status:
 
 To enable another mode, contact Pollar.
 
-Whatever the mode, a ramp leg signed in the SDK always asks the user to confirm, whatever the app's [signature confirmation](https://docs.pollar.xyz/docs/operator-guide/wallets/settings#signature-confirmation) setting.
+Whatever the mode, a ramp leg signed in the SDK always asks the user to confirm, whatever the app's [signature confirmation](https://docs.pollar.xyz/docs/operator-guide/wallets/settings#signature-confirmation) setting. The one exception is the payment provider's sign-in ("Confirm it's you"): it moves no money and sends nothing, so with signature confirmation set to **Auto** a co-signed wallet approves it without a prompt.
+
+Some providers keep a session for the order that lapses after about a day. When it is about to lapse on a wallet Pollar does not sign for, the user is asked to sign in again; the order keeps running meanwhile, and the request never covers a payment or verification step the order is showing.
 
 ---
 
