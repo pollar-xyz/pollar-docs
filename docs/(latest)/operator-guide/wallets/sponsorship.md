@@ -119,6 +119,8 @@ Each card has an **Include external and self-custody wallets** sub-option. It ex
 
 **Include external and self-custody wallets** (on by default): applies the same to wallets Pollar does not custody. For those, `POST /wallet/assets/trustline/build` returns a transaction already signed by the sponsor. The user adds their signature and submits it with `POST /tx/submit`. When sponsoring does not apply, the same endpoint returns a plain unsigned `change_trust` that the user pays for, so the client always calls one endpoint.
 
+**Trustlines your ramps need are always sponsored.** When a live ramp route needs a Stellar token in the user's wallet (it is marked **Used by ramps** under [Tokens](https://docs.pollar.xyz/docs/operator-guide/wallets/tokens-trustlines)), its trustline is sponsored whether or not the token is enabled and whatever the two switches above say, on every kind of wallet. It costs the same as any sponsored trustline: the 0.5 XLM reserve from the FUNDING wallet and the fee from the GAS wallet, or the app's credits when Pollar's pool pays. A token the user picks as the destination of a quote is not covered unless one of your routes needs it.
+
 ### Swap sponsorship
 
 Pick the venues (SDEX, Soroswap, Aquarius, and on Solana Jupiter and Titan) whose swaps your app pays the fee for. Only venues enabled under [Swap](https://docs.pollar.xyz/docs/operator-guide/wallets/swap) appear. **Include external and self-custody wallets** extends it to wallets Pollar does not custody.

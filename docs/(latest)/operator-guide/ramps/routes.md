@@ -27,6 +27,8 @@ The fewest legs win; the others are fallbacks. The number of legs per route is c
 
 Each leg is priced and timed when your user asks for a quote, so the page shows paths, not prices.
 
+When a leg leaves a Stellar token in a wallet that has no trustline for it, the route asks your user to add it first. Your app sponsors that trustline: the token is listed as **Used by ramps** under [Tokens](https://docs.pollar.xyz/docs/operator-guide/wallets/tokens-trustlines).
+
 If no route is listed, enable a ramp provider under [Providers](https://docs.pollar.xyz/docs/operator-guide/ramps/providers); its routes show up as soon as it is on.
 
 ---

@@ -29,7 +29,7 @@ Each enabled token also carries a **sponsor transfers** switch on the [Sponsored
 | **Wallets** | Stellar only: how many user wallets have the trustline open |
 | **Balance** | Polygon and Solana: your app wallet's balance of the token |
 | **Added** / **Last modified** | When the token was added and last changed |
-| **Enabled** | Enabled or Disabled |
+| **Enabled** | Enabled or Disabled. A token marked **Used by ramps** shows as on and locked (see below) |
 
 ---
 
@@ -41,6 +41,16 @@ Click **Add token** and pick the chain:
 - **Solana and Polygon**: pick one of the **Recommended tokens** curated by the platform, or **Add a custom token** by its **Mint address** (Solana) or **Contract address** (Polygon). **Read from chain** fills in the symbol, name and decimals, or you type them. Then click **Enable token**.
 
 New accounts get the enabled tokens set up when they are created. On Stellar, existing accounts pick up an enable or disable on their next login, and each trustline operation consumes gas from the app wallet; on Solana and Polygon the token is visible immediately.
+
+---
+
+## Tokens your ramps need
+
+A Stellar token that one of your live ramp routes delivers or takes appears in the Stellar list on its own, marked **Used by ramps**. Hovering the badge lists the routes that need it, as currency and country (for example `ARS (AR)`). These are the tokens a route can leave in the user's wallet: the token of a Stellar corridor, and the token a bridge carries onto Stellar from another chain's Buy route.
+
+Such a token is not set up on every wallet. Its trustline is opened only when a user takes that route, and it is always sponsored: see [Trustline sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship). Its toggle reads as on and cannot be turned off here; it leaves the list when you turn off the routes that need it under [Providers](https://docs.pollar.xyz/docs/operator-guide/ramps/providers).
+
+To also set it up on every wallet at creation and login, add it with **Add token** like any other token. Turning that off later brings it back to the locked state.
 
 ---
 
