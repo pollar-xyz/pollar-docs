@@ -167,7 +167,17 @@ Card calls throw a `PollarApiError`:
 | `SDK_CARDS_FUNDING_UNAVAILABLE` | Funding cannot start now: `reason` is `no_route`, `bridge_not_available`, `bridge_low_gas`, `solana_not_available`, `no_solana_usdc_deposit_address`, `no_polygon_usdc_deposit_address` or `wallet_not_supported` |
 | `SDK_WALLET_REQUIRED` | The user has no wallet on the chain asked for |
 | `SDK_CARDS_PROVIDER_USER_TAKEN` | The email is already registered with the provider through another app |
+| `SDK_CARDS_IP_NOT_SUPPORTED` | The provider takes the terms acceptance only from an IPv4 and the user is on IPv6. From 0.12.1, `@pollar/core` gets the user's IPv4 attested and retries on its own, so you see this only when that also fails. See [Users on IPv6](#users-on-ipv6) |
 | `SDK_CARDS_PROVIDER_ERROR` | The provider did not answer |
+
+### Users on IPv6
+
+A provider may accept the user's consent to its terms only from an IPv4 address. A user whose network gives them IPv6 (common on mobile carriers, and on home internet in Brazil) gets a 422 `SDK_CARDS_IP_NOT_SUPPORTED` from `POST /v3/requirements/card-registration/{cardProviderId}` and `POST /v3/cards/holder/kyc`, with `ipv4BaseUrl` in the body. That URL is the v3 API on a host with only an IPv4 address, so the device reaches it over IPv4:
+
+1. Call `GET {ipv4BaseUrl}/client-ip/attest` with the user's session (API key and access token, as for any v3 call). It answers with a `token`, valid for two minutes, that signs the IPv4 the request came from.
+2. Send the same request again with the header `x-pollar-ip-attestation: <token>`.
+
+The provider receives that IPv4, and Pollar keeps the user's IPv6 next to it as part of the consent record. `@pollar/core` 0.12.1 and later does both steps inside `submitCardKyc` and the registration step, so this only matters to a client that calls the API directly.
 
 ---
 

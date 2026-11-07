@@ -1147,7 +1147,7 @@ const funding = await pollar.fundCard({ amount: '25' });
 const { pan, cvc } = await pollar.revealCardSecrets(card.id);
 ```
 
-Errors are `PollarApiError`s: `SDK_CARDS_PROVIDER_ERROR` (the provider is down), `SDK_CARDS_IP_NOT_SUPPORTED`, `SDK_CARDS_PROVIDER_USER_TAKEN` (the email is already registered through another app), and `SDK_CARDS_REQUIREMENT_REQUIRED` (409: a platform step is still open; the body names `requirementType` and `optionId`).
+Errors are `PollarApiError`s: `SDK_CARDS_PROVIDER_ERROR` (the provider is down), `SDK_CARDS_IP_NOT_SUPPORTED` (the user is on IPv6 and attesting their IPv4 also failed: `submitCardKyc` and the registration step retry with an attested IPv4 on their own, see [Users on IPv6](https://docs.pollar.xyz/docs/guides/cards-guide#users-on-ipv6)), `SDK_CARDS_PROVIDER_USER_TAKEN` (the email is already registered through another app), and `SDK_CARDS_REQUIREMENT_REQUIRED` (409: a platform step is still open; the body names `requirementType` and `optionId`).
 
 Types: `CardProvider`, `CardHolder`, `CardKycStatus`, `CardKycInput`, `CardInfo`, `CardStatus`, `CardBalance`, `CardTransaction`, `CardFunding`, `CardFundingStatus`, `CardFundingChain`, `CardFundingOutcome`, `CardSecrets`, `CardRequirements`, `CardRequirementStep`.
 

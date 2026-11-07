@@ -346,7 +346,8 @@ Ramps run on `/v3/ramps` (see [Ramps](https://docs.pollar.xyz/docs/core-concepts
 | `SDK_CARDS_KYC_ALREADY_SUBMITTED` (409) / `SDK_CARDS_KYC_NOT_APPROVED` (409) | The provider's KYC is already submitted, or not approved yet |
 | `SDK_CARDS_REQUIREMENT_REQUIRED` (409) | A provider step (KYC, form, registration) is still open |
 | `SDK_CARDS_PROVIDER_USER_TAKEN` (409) | The provider already holds this person under another account |
-| `SDK_CARDS_PROVIDER_REJECTED` (422) / `SDK_CARDS_IP_NOT_SUPPORTED` (422) / `SDK_CARDS_OPERATION_UNSUPPORTED` (422) | The provider refused the request, the user's region, or the operation |
+| `SDK_CARDS_PROVIDER_REJECTED` (422) / `SDK_CARDS_OPERATION_UNSUPPORTED` (422) | The provider refused the request, the user's region, or the operation |
+| `SDK_CARDS_IP_NOT_SUPPORTED` (422) | The provider takes the terms acceptance only from an IPv4 and the request came over IPv6. The body carries `ipv4BaseUrl`, where `GET /client-ip/attest` signs the user's IPv4 for the retry. See [Users on IPv6](https://docs.pollar.xyz/docs/guides/cards-guide#users-on-ipv6) |
 | `SDK_CARDS_FUNDING_UNAVAILABLE` (422) / `SDK_CARDS_FUNDING_WALLET_NOT_READY` (422) / `SDK_CARDS_FUNDING_INVALID_STATE` (409) | Funding is not possible now, the wallet is not ready, or the funding is not in a state for this action |
 | `SDK_CARDS_PROVIDER_ERROR` (502) | The provider failed upstream; retry in a moment |
 
