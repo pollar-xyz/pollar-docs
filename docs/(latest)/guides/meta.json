@@ -1,6 +1,6 @@
 {
   "title": "Guides",
-  "description": "Step-by-step guides for upgrading the SDK, deferred flows, passkeys, payments UI, swaps, cards, moving USDC between networks, x402 payments, the testnet sandbox anchor, custom wallet adapters, and going live.",
+  "description": "Step-by-step guides for upgrading the SDK, deferred flows, passkeys, payments UI, swaps, cards, moving USDC between networks, x402 payments, the testnet sandbox anchor, custom wallet adapters, community integrations, and going live.",
   "pages": [
     "upgrade-to-0-12",
     "deferred-flow-guide",
@@ -12,6 +12,7 @@
     "x402-payments",
     "sandbox-anchor",
     "custom-wallet-adapter",
+    "community-integrations",
     "mainnet-checklist"
   ]
 }
