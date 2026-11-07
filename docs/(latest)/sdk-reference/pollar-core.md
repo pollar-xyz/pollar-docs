@@ -830,7 +830,7 @@ await pollar.sendPayment({
   chain: 'SOLANA',
   destination: '7xKX...',
   amount: '2500000',
-  mint: 'EPjFWdd5AufqSSqeM3qQw8xJXpY4zFrPyLKS3jcKBVMy',
+  mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
 });
 ```
 

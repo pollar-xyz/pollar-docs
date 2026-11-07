@@ -65,7 +65,7 @@ Expanding a Stellar token's row (**Show wallets**) shows how many wallets have i
 | Asset | Issuer                                                     |
 | ----- | ---------------------------------------------------------- |
 | USDC  | `GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN` |
-| EURC  | `GDHU6WRG4IEQXM5NZ4BMPKOXHW76MZM4Y2IEMFDVXBSDP6SJY4ITNPP`  |
+| EURC  | `GDHU6WRG4IEQXM5NZ4BMPKOXHW76MZM4Y2IEMFDVXBSDP6SJY4ITNPP2` |
 | AQUA  | `GBNZILSTVQZ4R7IKQDGHYGY2QXL5QOFJYQMXPKWRRM5PAV7Y4M67AQUA` |
 
 Always verify issuer addresses from the official asset issuer before adding.
@@ -76,8 +76,8 @@ Always verify issuer addresses from the official asset issuer before adding.
 
 | Token | Mint (mainnet-beta) |
 | ----- | ------------------- |
-| USDC  | `EPjFWdd5AufqSSqeM3qQw8xJXpY4zFrPyLKS3jcKBVMy` |
-| USDT  | `Es9vMFrzaCETj8uUkUHdrK1xHGdmsAiRd9yiirtm3fab` |
+| USDC  | `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` |
+| USDT  | `Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB` |
 
 On devnet, Circle's USDC mint is `4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU`; the SDK's balance modal links to Circle's faucet for it.
 
