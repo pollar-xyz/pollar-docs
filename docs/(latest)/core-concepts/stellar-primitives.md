@@ -70,7 +70,7 @@ SEP-10 is a Stellar standard for authenticating ownership of a Stellar account u
 
 SEP-24 is a Stellar standard for fiat on/off-ramps. It defines a protocol between a wallet app and an **anchor** (a licensed financial institution) for depositing and withdrawing fiat currency in exchange for Stellar assets like USDC.
 
-**What Pollar uses it for:** Ramps through a SEP-24 anchor (Anclap). The anchor's flow opens as a hosted route of a ramp order, where the user picks the payment method inside the anchor's own page. Enable the provider under **Cash in and out > Providers**; see [Ramps](https://docs.pollar.xyz/docs/core-concepts/ramps).
+**What Pollar uses it for:** Ramps through a SEP-24 anchor (Anclap). The anchor's flow opens as a hosted route of a ramp order, where the user picks the payment method inside the anchor's own page. Turn on its countries and methods under **Cash in and out > Countries and methods**; see [Ramps](https://docs.pollar.xyz/docs/core-concepts/ramps).
 
 ---
 

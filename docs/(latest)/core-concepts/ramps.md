@@ -28,7 +28,7 @@ The providers registered today:
 
 Bridge and PagFinance are being integrated and are not offered on any route yet.
 
-Which routes an app offers depends on the providers and corridors it enables under **Cash in and out > Providers** and on the chains it serves. **Cash in and out > Routes** in the dashboard lists them leg by leg. Routes end only on chains the app serves.
+Which routes an app offers depends on the countries and methods it turns on under **Cash in and out > Countries and methods** and on the chains it serves. Routes end only on chains the app serves.
 
 ---
 
@@ -85,5 +85,5 @@ An app's backend can run ramps for users it manages, without an SDK session, thr
 ## Related
 
 - [@pollar/core](https://docs.pollar.xyz/docs/sdk-reference/pollar-core): the ramp methods and helpers
-- [Routes](https://docs.pollar.xyz/docs/operator-guide/ramps/routes), [Orders](https://docs.pollar.xyz/docs/operator-guide/ramps/orders) and [Signing](https://docs.pollar.xyz/docs/operator-guide/ramps/signing) in the Operator Guide
+- [Countries and methods](https://docs.pollar.xyz/docs/operator-guide/ramps/methods), [Orders](https://docs.pollar.xyz/docs/operator-guide/ramps/orders) and [Signing](https://docs.pollar.xyz/docs/operator-guide/ramps/signing) in the Operator Guide
 - [Chain Support](https://docs.pollar.xyz/docs/core-concepts/chain-support): ramps per chain

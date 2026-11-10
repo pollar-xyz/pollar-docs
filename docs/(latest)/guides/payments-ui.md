@@ -252,7 +252,7 @@ export function Balances() {
 
 ## Fiat on/off-ramp
 
-Ramps integrate third-party providers (configure them under **Cash in and out > Providers**). A ramp is an order of one or more legs (the provider, a swap, a bridge) that Pollar runs server-side; see [Ramps](https://docs.pollar.xyz/docs/core-concepts/ramps). Open the pre-built widget with `openRampModal()`:
+Ramps integrate third-party providers (choose the countries and payment methods under **Cash in and out > Countries and methods**). A ramp is an order of one or more legs (the provider, a swap, a bridge) that Pollar runs server-side; see [Ramps](https://docs.pollar.xyz/docs/core-concepts/ramps). Open the pre-built widget with `openRampModal()`:
 
 ```tsx
 'use client';
@@ -280,4 +280,4 @@ const order = await client.createRampOrder({ quoteId: quotes[0].quoteId, payee: 
 // order.pendingAction says what the user does next: FIAT_PAYMENT, SIGNATURE, COSIGN_APPROVAL or KYC.
 ```
 
-See [Ramp providers](https://docs.pollar.xyz/docs/operator-guide/ramps/providers) and [Routes](https://docs.pollar.xyz/docs/operator-guide/ramps/routes) for setup.
+See [Countries and methods](https://docs.pollar.xyz/docs/operator-guide/ramps/methods) for setup.

@@ -13,10 +13,10 @@ Your app's ramp orders, newest first: the orders your users open with `@pollar/c
 | Column | Description |
 | --- | --- |
 | **Created** | When the order was opened |
-| **Type** | Buy or Sell, and the provider |
+| **Type** | Buy or Sell, the country and the payment method, for example Buy, Bolivia, QR |
 | **State** | For example awaiting payment, processing, completed, failed, refunded |
-| **Legs** | One badge per leg (Provider, Swap, Bridge), colored by its status |
-| **Needs** | Who has to act when the order stopped (Pollar, your app, your user, the provider), or what it is waiting for (for example a fiat payment or a signature) |
+| **Legs** | One badge per leg, named by what it does (for example Buy USDT, Convert USDT to USDC, Send to Stellar) and colored by its status, with its amounts in and out |
+| **Needs** | Who has to act when the order stopped (Pollar, your app, your user, the payment partner), or what it is waiting for (for example a fiat payment or a signature) |
 
 Filter by state: **All**, **awaiting payment**, **processing**, **completed**, **failed**.
 
@@ -40,7 +40,7 @@ A card says **Stopped at leg N** with the failure code, who resolves it and what
 | **Your user** | Quote again and accept the new price, add funds, add the USDC trustline, approve or sign the leg again, finish identity verification, or start a new order |
 | **Your app** | Fund the app's gas wallet, or enable the signing mode the route needs (see [Signing](https://docs.pollar.xyz/docs/operator-guide/ramps/signing)) |
 | **Pollar** | Contact Pollar with the order id (shown on the card), or wait while Pollar confirms the funds on-chain |
-| **The provider** | Wait for the provider |
+| **The payment partner** | Wait for the payment partner |
 
 Temporary failures are retried by Pollar on its own.
 
@@ -50,6 +50,6 @@ When your app may retry, the detail shows **Retry from this leg**. The retry con
 
 ## Related
 
-- [Routes](https://docs.pollar.xyz/docs/operator-guide/ramps/routes): the paths these orders follow
+- [Countries and methods](https://docs.pollar.xyz/docs/operator-guide/ramps/methods): the countries and payment methods your users can order with
 - [All wallets](https://docs.pollar.xyz/docs/operator-guide/wallets/user-wallets#rail-wallets): rail wallets that hold funds between two legs
 - [Ramps](https://docs.pollar.xyz/docs/core-concepts/ramps): how an order runs

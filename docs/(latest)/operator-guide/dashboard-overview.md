@@ -42,7 +42,7 @@ The per-app sidebar has two single pages and eight groups. Each page below lists
 
 | Section | What you do here | Chains |
 | --- | --- | --- |
-| **Settings** | Enabled chains and their order, custody (Pollar in Test mode, Turnkey co-signed or self-custody), when wallets are created, and signature confirmation | All |
+| **Settings** | Enabled chains and their order, custody (Pollar in Test mode, co-signed or self-custody), when wallets are created, and signature confirmation | All |
 | **All wallets** | Every wallet on every chain: status, custody, balances, tokens, rail wallets, manual funding | Stellar, Solana, Polygon |
 | **Starting balance** | A Stellar tab (funding wallet, Immediate / Deferred, starting XLM) and a Solana tab (starting SOL) | Stellar, Solana |
 | **Sponsored fees** | One tab per enabled chain: Stellar fee bumps and reserves, Solana GAS wallet, top-up policy and transfer sponsorship, Polygon GAS wallet and top-up policy | Stellar, Solana, Polygon |
@@ -59,17 +59,16 @@ The per-app sidebar has two single pages and eight groups. Each page below lists
 
 | Section | What you do here | Chains |
 | --- | --- | --- |
+| **Countries and methods** | Turn on Buy and Sell for each payment method in each country, and set the return URL after identity check. Pollar picks who serves each method | Stellar, Solana, Polygon |
 | **Orders** | Your ramp orders from SDK 0.12 and the Server API, with each leg and who resolves a stop | Stellar, Solana, Polygon |
-| **Transactions** | Ramp transactions from SDKs older than 0.12 | Stellar, Solana, Polygon |
-| **Routes** | The paths a ramp can take, leg by leg | Stellar, Solana, Polygon |
+| **Transactions** | Ramp transactions from SDKs older than 0.12, and the ones Pollar is reviewing | Stellar, Solana, Polygon |
 | **Signing** | Who signs ramp legs, and the app-custody terms | Stellar, Solana, Polygon |
-| **Providers** | Enable ramp providers and their corridors, bring your own provider account, KYC per corridor | Stellar, Solana, Polygon (per route) |
 
 ### Identity checks
 
 | Section | What you do here | Chains |
 | --- | --- | --- |
-| **Providers** | The KYC options your app offers, and your own Didit account | All |
+| **Providers** | The KYC options your app offers, and your own identity check account | All |
 | **Verification steps** | The steps your users complete, in order | All |
 
 ### Cards

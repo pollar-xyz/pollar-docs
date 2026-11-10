@@ -48,7 +48,7 @@ New accounts get the enabled tokens set up when they are created. On Stellar, ex
 
 A Stellar token that one of your live ramp routes delivers or takes appears in the Stellar list on its own, marked **Used by ramps**. Hovering the badge lists the routes that need it, as currency and country (for example `ARS (AR)`). These are the tokens a route can leave in the user's wallet: the token of a Stellar corridor, and the token a bridge carries onto Stellar from another chain's Buy route.
 
-Such a token is not set up on every wallet. Its trustline is opened only when a user takes that route, and it is always sponsored: see [Trustline sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship). Its toggle reads as on and cannot be turned off here; it leaves the list when you turn off the routes that need it under [Providers](https://docs.pollar.xyz/docs/operator-guide/ramps/providers).
+Such a token is not set up on every wallet. Its trustline is opened only when a user takes that route, and it is always sponsored: see [Trustline sponsorship](https://docs.pollar.xyz/docs/operator-guide/wallets/sponsorship). Its toggle reads as on and cannot be turned off here; it leaves the list when you turn off the methods that need it under [Countries and methods](https://docs.pollar.xyz/docs/operator-guide/ramps/methods).
 
 To also set it up on every wallet at creation and login, add it with **Add token** like any other token. Turning that off later brings it back to the locked state.
 

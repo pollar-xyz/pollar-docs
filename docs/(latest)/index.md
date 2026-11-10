@@ -97,11 +97,10 @@ The sections below mirror the Dashboard sidebar: **Home, Features, Get started, 
 
 | <br /> | <br /> |
 | ------ | ------ |
+| [Countries and methods](https://docs.pollar.xyz/docs/operator-guide/ramps/methods) | Where your users can buy and sell, and how they pay |
 | [Orders](https://docs.pollar.xyz/docs/operator-guide/ramps/orders) | Ramp orders and what each one needs |
 | [Transactions](https://docs.pollar.xyz/docs/operator-guide/ramps/transactions) | Ramps from SDKs older than 0.12 |
-| [Routes](https://docs.pollar.xyz/docs/operator-guide/ramps/routes) | The paths a ramp can take, leg by leg |
 | [Signing](https://docs.pollar.xyz/docs/operator-guide/ramps/signing) | How ramp legs are signed |
-| [Providers](https://docs.pollar.xyz/docs/operator-guide/ramps/providers) | Fiat on/off-ramp providers and corridors |
 
 **Identity checks**
 

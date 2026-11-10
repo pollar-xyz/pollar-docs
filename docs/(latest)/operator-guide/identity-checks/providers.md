@@ -18,7 +18,7 @@ The KYC options your [verification steps](https://docs.pollar.xyz/docs/operator-
 2. Enter the **Return URL**: an allowed app origin or a registered redirect URI (see [Websites](https://docs.pollar.xyz/docs/operator-guide/developers/domains)).
 3. Click **Enable / update option**.
 
-Each enabled option is listed with **Disable standalone option**. These settings do not replace or disable a ramp's mandatory KYC, which is set per corridor under [Cash in and out > Providers](https://docs.pollar.xyz/docs/operator-guide/ramps/providers#mandatory-kyc-per-corridor).
+Each enabled option is listed with **Disable standalone option**. These settings do not replace or disable a ramp's mandatory KYC, which Pollar sets per method (see [Cash in and out > Countries and methods](https://docs.pollar.xyz/docs/operator-guide/ramps/methods#identity-check)).
 
 ---
 
@@ -35,4 +35,4 @@ Create a private KYC option for this app on your own [Didit](https://didit.me) a
 | **Presentation** | **Iframe** (inside your app) or **Redirect** (Didit's page) |
 | **Return URL** | An allowed app origin or a registered redirect URI |
 
-**Create standalone KYC option** saves it; it then appears among the options you can enable. Your own options are also what a ramp running on your own provider keys uses for its KYC (see [Configure](https://docs.pollar.xyz/docs/operator-guide/ramps/providers#configure-your-own-provider-account)).
+**Create standalone KYC option** saves it; it then appears among the options you can enable. Your own options are also what a ramp running on your own provider account uses for its KYC; Pollar sets that up on request (see [Countries and methods](https://docs.pollar.xyz/docs/operator-guide/ramps/methods#your-own-provider-account-or-identity-check)).
