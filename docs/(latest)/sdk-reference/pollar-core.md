@@ -472,9 +472,10 @@ await pollar.fetchTxHistory({
 |----------|----------|---------|--------------------------------------------------------------------|
 | `limit`  | `number` | `20`    | Number of records to return, 1 to 50.                              |
 | `offset` | `number` | `0`     | Offset for pagination (history uses offset-based paging).          |
-| `chain`  | `'STELLAR' \| 'POLYGON' \| 'SOLANA'` | - | Only this chain's records. Omit for all chains. |
+| `chain`  | `'STELLAR' \| 'POLYGON' \| 'SOLANA'` | - | Only this chain's records. Omit for all chains. A ramp order is included when any of its legs runs on this chain. |
+| `includeRamps` | `'true' \| 'false'` | `'true'` | Adds the user's ramp orders as `kind: 'ramp'` rows. Pass `'false'` for transactions only. |
 
-> Only transactions submitted through Pollar appear here. A record reads `PENDING` immediately after build and updates to `SUCCESS` or `FAILED` once submitted. Each record exposes `id`, `hash`, `chain`, `network`, `status`, `operation`, `summary`, `details`, `fee` (`{ amount, unit }`, with `unit` naming what the amount is in, for example `XLM`), `resultCode`, and `createdAt`.
+> Only transactions submitted through Pollar appear here, plus the user's ramp orders with `includeRamps`. A record reads `PENDING` immediately after build and updates to `SUCCESS` or `FAILED` once submitted. Each record exposes `kind` (`'tx'` or `'ramp'`), `id`, `hash`, `chain`, `network`, `status`, `operation`, `summary`, `details`, `fee` (`{ amount, unit }`, with `unit` naming what the amount is in, for example `XLM`), `resultCode`, and `createdAt`. See [Ramp orders in the history](https://docs.pollar.xyz/docs/core-concepts/transaction-history#ramp-orders-in-the-history) for what a ramp row carries.
 
 ---
 

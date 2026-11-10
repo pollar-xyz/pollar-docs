@@ -25,15 +25,17 @@ flowchart LR
     classDef app fill:#e1f5ee,stroke:#1d9e75,color:#085041
 ```
 
-Pollar records a transaction when it handles it, on every chain: Stellar fee-bumps and sponsored operations, Solana and Polygon transfers, co-signed requests and ramp legs. A background reconcile then follows each record until the chain settles it. Transaction records are kept for at least 5 years, the period anti-money-laundering rules require for transaction records.
+Pollar records a transaction when it handles it, on every chain: Stellar fee-bumps and sponsored operations, Solana and Polygon transfers and co-signed requests. A background reconcile then follows each record until the chain settles it. Transaction records are kept for at least 5 years, the period anti-money-laundering rules require for transaction records.
 
 A transaction an external wallet submits on its own, without going through Pollar, does not appear in the history.
+
+A ramp order is not a transaction record: it is an order with its own legs, which can run on several chains and move funds the user receives rather than sends. The history includes the user's ramp orders when you ask for them with `includeRamps`, each as one row. See [Ramp orders in the history](#ramp-orders-in-the-history).
 
 ---
 
 ## SDK: React hook
 
-`txHistory` is a reactive state machine (`TxHistoryState`). Trigger a load with `fetchTxHistory()` on the underlying client; the provider keeps `txHistory` in sync.
+`txHistory` is a reactive state machine (`TxHistoryState`). Trigger a load with `fetchTxHistory()` on the underlying client; the provider keeps `txHistory` in sync. `fetchTxHistory()` includes the user's ramp orders unless you pass `includeRamps: 'false'`.
 
 ```tsx
 'use client';
@@ -61,7 +63,7 @@ export function TxHistory() {
 }
 ```
 
-> The simplest path is the built-in modal: call `openTxHistoryModal()` from `usePollar()`.
+> The simplest path is the built-in modal: call `openTxHistoryModal()` from `usePollar()`. It lists ramp orders next to the transactions, with the fiat amount of each order.
 
 ## SDK: Core client
 
@@ -94,7 +96,8 @@ GET https://sdk.api.pollar.xyz/v3/tx/history?limit=20&offset=0
 | --------- | -------- | ------- | ------------------------------------ |
 | `limit`   | `number` | `20`    | Records per page, 1 to 50.           |
 | `offset`  | `number` | `0`     | Offset for pagination.               |
-| `chain`   | `'STELLAR' \| 'SOLANA' \| 'POLYGON'` | all | Only this chain's records. |
+| `chain`   | `'STELLAR' \| 'SOLANA' \| 'POLYGON'` | all | Only this chain's records. A ramp order is included when any of its legs runs on this chain. |
+| `includeRamps` | `'true' \| 'false'` | `'false'` | `'true'` adds the user's ramp orders to the list. The SDK sends `'true'` unless you pass `'false'`. |
 
 The environment is the one of the API key; there is no `network` parameter. A `limit` outside 1 to 50 answers `400 VALIDATION_ERROR`.
 
@@ -113,7 +116,8 @@ The environment is the one of the API key; there is no `network` parameter. A `l
       "fee": { "amount": "0.00001", "unit": "XLM" },
       "details": {},
       "summary": "Sent 10.00 USDC",
-      "createdAt": "2026-03-15T10:30:00Z"
+      "createdAt": "2026-03-15T10:30:00Z",
+      "kind": "tx"
     },
     {
       "id": "tx_def456",
@@ -125,7 +129,8 @@ The environment is the one of the API key; there is no `network` parameter. A `l
       "fee": { "amount": "5000", "unit": "lamports" },
       "details": {},
       "summary": "Sent 10.00 USDC",
-      "createdAt": "2026-03-15T10:31:00Z"
+      "createdAt": "2026-03-15T10:31:00Z",
+      "kind": "tx"
     }
   ],
   "total": 42,
@@ -133,6 +138,59 @@ The environment is the one of the API key; there is no `network` parameter. A `l
   "offset": 0
 }
 ```
+
+---
+
+## Ramp orders in the history
+
+With `includeRamps=true`, each of the user's ramp orders is one row with `kind: "ramp"`, in the same newest-first list as the transactions. The orders count in `total` and page together with the transactions, so `limit`, `offset` and `total` work the same way.
+
+```json
+{
+  "kind": "ramp",
+  "id": "cmw1q2r3s0000ab12cd34ef56",
+  "chain": "SOLANA",
+  "hash": "4Nd1mBQt...",
+  "network": "mainnet",
+  "status": "SUCCESS",
+  "operation": "onramp",
+  "details": {
+    "orderId": "cmw1q2r3s0000ab12cd34ef56",
+    "direction": "ONRAMP",
+    "state": "completed",
+    "fiatAmount": "70",
+    "fiatCurrency": "BOB",
+    "cryptoAmount": "9.98",
+    "assetCode": "USDC",
+    "legs": [
+      { "index": 0, "kind": "PROVIDER_ONRAMP", "status": "COMPLETED", "chainIn": null, "chainOut": "POLYGON", "hash": "0x9f2c..." },
+      { "index": 1, "kind": "BRIDGE", "status": "COMPLETED", "chainIn": "POLYGON", "chainOut": "SOLANA", "hash": "4Nd1mBQt..." }
+    ]
+  },
+  "summary": "Buy 9.98 USDC",
+  "createdAt": "2026-11-10T12:00:00Z"
+}
+```
+
+| Field | On a ramp row |
+| ----- | ------------- |
+| `id` | The order id, the same one `getRampOrder` takes. |
+| `operation` | `onramp` or `offramp`. |
+| `chain` | Where the user ends up holding the asset on an on-ramp, or where the asset leaves from on an off-ramp. |
+| `hash` | The last on-chain hash of the order, or `""` while it has none. Each leg's hash is in `details.legs`. |
+| `details` | The fiat and crypto amounts, as decimal strings, and the order's legs. Amounts are the actual ones once a leg has settled, the quoted ones before. |
+| `fee` | Not present on a ramp row. |
+
+The order's state maps to the history status:
+
+| Order state | `status` |
+| ----------- | -------- |
+| `created`, `awaiting_payment`, `processing`, `settling_onchain` | `PENDING` |
+| `completed` | `SUCCESS` |
+| `failed` | `FAILED` |
+| `refunded` | `FAILED`, with `resultCode: "refunded"` |
+
+The row is a summary. To follow an order step by step, or to act on one waiting for the user, read it with `getRampOrder` or `listRampOrders`.
 
 ---
 
@@ -179,7 +237,8 @@ The human-readable `operation` and `summary` fields describe what the transactio
 
 ```typescript
 type TxHistoryRecord = {
-  id: string;
+  kind: 'tx' | 'ramp'; // 'ramp' only with includeRamps
+  id: string; // the order id on a ramp row
   chain: 'STELLAR' | 'POLYGON' | 'SOLANA';
   hash: string;
   network: 'testnet' | 'mainnet';
