@@ -83,15 +83,15 @@ Auth flow error codes (surfaced on the `error` `AuthState`) are exported as `AUT
 
 | Code                         | Description                                                   | Resolution                                                         |
 | ---------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------ |
-| `INVALID_CREDENTIALS`        | Missing or invalid credentials                               | Check the credentials you are sending                              |
-| `FORBIDDEN`                  | Authenticated but not allowed to perform this action         | Verify the key type / permissions                                  |
-| `API_KEY_NOT_FOUND`          | API key does not exist or was revoked                        | Generate a new key from **Developers > API keys**                       |
-| `API_KEY_EXPIRED`            | API key has expired                                          | Rotate the key                                                     |
-| `API_KEY_TYPE_NOT_ALLOWED`   | Publishable key used on a secret-key route (or vice versa)   | Use a secret key on the Server API, publishable on the SDK API     |
-| `ORIGIN_NOT_ALLOWED`         | Request origin is not in the app's allowed origins           | Add the origin under **Developers > Websites**                           |
-| `REDIRECT_URI_NOT_ALLOWED`   | OAuth `redirect_uri` is not in the app's allowed redirect URIs | Add its origin under **Developers > Websites**                          |
-| `APPLICATION_HAS_NO_REDIRECT_URIS` | The app has no allowed redirect URI registered, so no OAuth login can start | Register the callback under **Developers > Websites**              |
-| `RATE_LIMITED`               | Too many requests                                            | Back off and retry                                                 |
+| `INVALID_CREDENTIALS` (401)  | Missing or invalid credentials                               | Check the credentials you are sending                              |
+| `FORBIDDEN` (403)            | Authenticated but not allowed to perform this action         | Verify the key type / permissions                                  |
+| `API_KEY_NOT_FOUND` (404)    | API key does not exist or was revoked                        | Generate a new key from **Developers > API keys**                       |
+| `API_KEY_EXPIRED` (401)      | API key has expired                                          | Rotate the key                                                     |
+| `API_KEY_TYPE_NOT_ALLOWED` (403) | Publishable key used on a secret-key route (or vice versa)   | Use a secret key on the Server API, publishable on the SDK API     |
+| `ORIGIN_NOT_ALLOWED` (403)   | Request origin is not in the app's allowed origins           | Add the origin under **Developers > Websites**                           |
+| `REDIRECT_URI_NOT_ALLOWED` (400) | OAuth `redirect_uri` is not in the app's allowed redirect URIs | Add its origin under **Developers > Websites**                          |
+| `APPLICATION_HAS_NO_REDIRECT_URIS` (409) | The app has no allowed redirect URI registered, so no OAuth login can start | Register the callback under **Developers > Websites**              |
+| `RATE_LIMITED` (429)         | Too many requests                                            | Back off and retry. The Server API sends `Retry-After` with the seconds to wait |
 | `API_VERSION_SUNSET` (410)   | The request used a retired API version (SDK API v1). The body carries `message`, `sunsetAt` and `migrationGuide` | Upgrade the SDK; see [API versions](https://docs.pollar.xyz/docs/sdk-reference/api-versions) |
 
 > Keys are environment-specific by prefix: `pub_testnet_` / `pub_mainnet_` (publishable) and `sec_testnet_` / `sec_mainnet_` (secret).
@@ -326,7 +326,7 @@ Ramps run on `/v3/ramps` (see [Ramps](https://docs.pollar.xyz/docs/core-concepts
 | `SDK_RAMPS_QUOTE_NOT_FOUND` (404)     | The quote does not exist or belongs to another user | Quote again |
 | `SDK_RAMPS_QUOTE_EXPIRED` (400)       | The quote expired                            | Quote again |
 | `VALIDATION_ERROR` (400)              | A `payee` field is missing or the provider would refuse it; the reason is in `message`. Nothing moved | Fix the field |
-| `VALIDATION_ERROR` (409)              | The order request does not match the quote   | Create the order from the quote as returned |
+| `SDK_RAMPS_ORDER_INPUT_MISMATCH` (409) | The quote already made an order with other `payee` values. The same quote and `payee` answer that order again | Send the `payee` of the first request, or quote again for a new order |
 | `SDK_RAMPS_WALLET_NOT_READY` (422)    | The route needs the user's wallet on another chain and it waits for the user's approval | Approve the co-sign request; the order is retried once it is approved |
 | `SDK_RAMPS_ACTION_STALE` (409)        | The pending action changed since it was read, or the leg is busy | Read the order again and act on its current `pendingAction` |
 | `SDK_RAMPS_NOTHING_TO_RETRY` (409)    | The order has no failure the user can retry  | Read the order; quote again if it says so |
@@ -371,9 +371,9 @@ End-user session and token errors (sdk-api). These are handled by the SDK's auth
 
 | Code                                            | Description                                  |
 | ----------------------------------------------- | -------------------------------------------- |
-| `SDK_AUTH_INVALID_TOKEN` / `SDK_AUTH_TOKEN_EXPIRED` | Access token invalid or expired          |
-| `SDK_AUTH_DPOP_REQUIRED` / `SDK_AUTH_DPOP_INVALID` / `SDK_AUTH_DPOP_USE_NONCE` | DPoP proof required / invalid / needs nonce |
-| `SDK_REFRESH_TOKEN_INVALID` / `_EXPIRED` / `_REUSED` | Refresh token invalid, expired, or reused |
+| `SDK_AUTH_INVALID_TOKEN` / `SDK_AUTH_TOKEN_EXPIRED` (401) | Access token invalid or expired |
+| `SDK_AUTH_DPOP_REQUIRED` / `SDK_AUTH_DPOP_INVALID` / `SDK_AUTH_DPOP_USE_NONCE` (401) | DPoP proof required / invalid / needs nonce |
+| `SDK_REFRESH_TOKEN_INVALID` / `_EXPIRED` / `_REUSED` (401) | Refresh token invalid, expired, or reused |
 | `PASSKEY_CHALLENGE_MISSING` / `PASSKEY_VERIFICATION_FAILED` / `PASSKEY_DEPLOY_FAILED` | Passkey ceremony errors (smart wallets) |
 
 > This is not the full enum: the server defines additional internal codes (hub-api admin, Pollar Pay, wallet services). The codes above are the ones an SDK or Server API integrator is most likely to encounter.

@@ -33,7 +33,7 @@ The key decides the app and its environment: every call acts on the app that own
 | `401 API_KEY_EXPIRED` | The key is past its expiration date |
 | `403 API_KEY_TYPE_NOT_ALLOWED` | A publishable (`pub_`) key was sent; this API takes secret keys only |
 
-There is no rate limit on the Server API.
+**Rate limits.** Every `/v3` call counts against a per-app quota and a per-route quota, each with a one-minute window and a one-second burst. Every answer carries the quota that applies: `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset` (seconds) and `RateLimit-Policy` (every window and its limit). Past it, the call answers `429 RATE_LIMITED` with `Retry-After` in seconds: wait that long, then back off with jitter.
 
 **Response envelope.** Every response is wrapped:
 
@@ -217,14 +217,40 @@ POST /v3/ramps/orders
 
 `payee` carries a value for each of the quote's `requiredFields`, by key; a missing or wrong one answers `400` before anything moves. The same quote always answers the same order, so retrying a request that timed out is safe. The answer is `201` with the order.
 
-An order has `id`, `direction`, `state` (`created`, `awaiting_payment`, `processing`, `settling_onchain`, `completed`, `failed`, `refunded`), its `legs` (each with planned and actual amounts, `status`, `onchainTxHash`, `failure`, and the chain `steps` of a swap or bridge leg), the `pendingAction`, the order's `failure`, and `nextPollAfter`: when to read it again, `null` once it no longer moves.
+An order has `id`, `direction`, `state`, its `legs`, the `pendingAction`, the order's `failure`, and `nextPollAfter`.
+
+| Field | Values |
+|---|---|
+| `state` | `created`, `awaiting_payment`, `processing`, `settling_onchain`, `completed`, `failed`, `refunded` |
+| `legs[].status` | `PENDING`, `ACTIVE`, `AWAITING_ACTION` (the `pendingAction` is this leg's), `COMPLETED`, `HELD`, `FAILED`, `CANCELLED` |
+| `legs[].signingMode` | How the user's wallet signs on the leg: `EXTERNAL`, `APP_CUSTODY`, `COSIGNED`, `SELF_CUSTODY`, or `null` for a leg the user does not sign |
+| `legs[].fundsLocation` | Where the leg's funds are now: `{ chain, address, asset, amount }`, or `null` |
+| `failure` | `{ legIndex, code, retryable, resolutionOwner, resolutionAction, detail }`, on the leg and on the order |
+
+Each leg also carries its planned and actual amounts, `onchainTxHash`, and the chain `steps` of a swap or bridge leg.
+
+**A held order.** A leg that stops after funds moved is `HELD`: the funds wait where `fundsLocation` says, and the order keeps the `state` it stopped in, so the leg's status and the order's `failure` are what show it. `failure.resolutionOwner` says who acts (`POLLAR`, `APPLICATION`, `END_USER`, `PROVIDER`) and `resolutionAction` what to do; when the end user resolves it, `POST /orders/{id}/retry` runs the leg again. A leg that stops before anything moved is `FAILED`. `failure.code` is one of the leg failure codes in the [OpenAPI document](https://server.api.pollar.xyz/openapi.v3.json).
+
+**Following an order.** Ramp orders send no webhooks: read the order at `nextPollAfter`. It is a few seconds away while a signature or a chain step is pending, and up to a minute while a fiat payment is. `null` means the order no longer moves on its own: it is final, or a leg is `HELD` or `FAILED` and `failure` says who acts. To find the orders that need you, list them with `pending=true` or `open=true`.
+
+**The user's wallet on a leg.** A quote leg's `wallet.mode` and an order leg's `signingMode` name how that wallet signs:
+
+| Mode | The wallet |
+|---|---|
+| `EXTERNAL` | An address the user or your backend holds, linked with `PUT /customers/wallets/{chain}`. Each step that spends from it is a `SIGNATURE` action |
+| `APP_CUSTODY` | A wallet in your app's custody, open only to your backend, which signs each step through a `SIGNATURE` action. On mainnet it needs the app-custody terms accepted in the dashboard |
+| `COSIGNED` | A wallet co-signed by the user's device and Pollar; each step is a `COSIGN_APPROVAL` |
+| `SELF_CUSTODY` | A wallet only the user's device signs; each step is a `COSIGN_APPROVAL` |
+| `INTERNAL` | A wallet whose key Pollar holds (quote legs only) |
+
+This is not the `wallet.type` of `POST /tokens/verify`, which is the kind of wallet the user signs in with (`internal`, `external`, `smart`).
 
 `pendingAction` says what the order waits on:
 
 | `kind` | What to do |
 |---|---|
 | `FIAT_PAYMENT` | Show your user the `instructions`: a QR to scan (`qr`, with a rendered `scannable` image), bank details (`bank_transfer`) or the provider's page (`hosted`) |
-| `SIGNATURE` | Sign `payload` unchanged and send it to the signature route. Comes up for an `EXTERNAL` wallet (linked with `PUT /customers/wallets/{chain}`) or an app-custody wallet |
+| `SIGNATURE` | Sign `payload.value` unchanged and send it to the signature route. `payload.encoding` is `xdr` (a Stellar transaction), `evm-eip1559-json` (a Polygon transaction), `solana-v0-json` or `solana-cctp-json` (a Solana message or CCTP burn) or `solana-wire-base64` (a Solana transaction as wire bytes). Comes up for an `EXTERNAL` or `APP_CUSTODY` wallet |
 | `COSIGN_APPROVAL` | The user approves it on their device, where the SDK holds the co-signed wallet's key |
 | `KYC` | The provider's own verification: open `url` for your user (a redirect or an iframe). The user verifies there, with the provider; the order checks the result on each pass and goes on by itself once approved. Once the provider approves the user, their later orders with it skip this step |
 | `NONE` | Nothing to do: read the order again at `nextPollAfter` |
@@ -295,7 +321,7 @@ There is no server-side equivalent of the SDK's `POST /orders/{id}/check`: read 
 | `402 SDK_CREDITS_INSUFFICIENT` / `SDK_BILLING_OVERDUE` | App on credits: its credits do not cover the route's fees, or a statement is overdue |
 | `404 SDK_RAMPS_QUOTE_NOT_FOUND` | Unknown quote, or another user's |
 | `404 SDK_RAMPS_TX_NOT_FOUND` | Unknown order, or another user's |
-| `409 VALIDATION_ERROR` | The order's input does not match its quote |
+| `409 SDK_RAMPS_ORDER_INPUT_MISMATCH` | The quote already made an order with other `payee` values; send the first `payee`, or quote again |
 | `409 SDK_RAMPS_ACTION_STALE` | The pending action changed or the leg is busy: read the order again |
 | `409 SDK_RAMPS_NOTHING_TO_RETRY` | Nothing to retry, or the order needs a new quote |
 | `409 SDK_RAMPS_ORDER_NOT_CANCELLABLE` | Funds already moved, or an approval is open |
